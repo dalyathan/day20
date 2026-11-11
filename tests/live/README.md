@@ -6,8 +6,10 @@ evidence check dropped, and provenance (commit, model, prompt hash, time).
   genuine 2 runs), plus screenshots of 6 scams and 6 held-out genuine emails.
 - `live-2026-11-11-95b7bb3.jsonl`: the same check code (95b7bb3 only changed wording and demo samples): screenshots
   of the other 18 scams, and held-out set 8 as text.
+- `live-2026-11-11-f0c0afd.jsonl`: after the round-3 fix (refunds of another amount; keep scam emails as evidence): the
+  real-world set (tests/realworld/, 3 runs), set 8 (1 run) and the 24 scams (1 run). Adds `cautions` and `report`.
 - `deployed-2026-11-11*.jsonl`, `heldout-h8-2026-11-11.jsonl`: earlier versions of the evidence check (v0, v1, v2).
 
-The two 2026-11-11 `live-*` files were run in a browser with `scripts/live-eval-browser.js`, exported in a compact
+The three 2026-11-11 `live-*` files were run in a browser with `scripts/live-eval-browser.js`, exported in a compact
 form and re-expanded: every non-red row was "careful", every check was judged by the model (mode "agent"), and none
 failed. Summary: `npm run live-summary`.

@@ -133,6 +133,8 @@ Sets 4–7 were then tuned on and moved to regression; set 8 is still held out. 
 | Genuine emails flagged red (36) | 0/36 | **0/36 in each of 2 runs** |
 | Scam screenshots flagged red (all 24, 1 run) | can't read images | **11/24**, the same 11 as text ([rows](tests/live/live-2026-11-11-95b7bb3.jsonl) and the first file) |
 | Held-out set 8, genuine, flagged red | 1/12 | 1/12 as text (1 run), 1/6 as screenshots; the same h8_01 every time |
+| **Real messages scam sellers sent buyers** (6, quoted in public threads, never tuned on; [sources](tests/realworld/SOURCES.md)): told "Don't close it" | 5/6 | **5/6 in each of 3 runs**; Claude added nothing; none red, none called safe ([rows](tests/live/live-2026-11-11-f0c0afd.jsonl)) |
+| After the round-3 fix (f0c0afd): set 8 flagged red / scams flagged red | 0/12 / 9/24 | **0/12** (h8_01 fixed after scoring, so set 8 is no longer unseen) / **11/24**, the same 11 |
 
 Claude's 2 extra catches on text (s2_01, s2_08) are reworded refund lies; s2_01 is Maya's 3:14 a.m. email in the demo. The rows were exported from the browser in a compact form and re-expanded (every non-red row was "careful"; no check failed or fell back to rules).
 
