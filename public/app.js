@@ -167,20 +167,16 @@ async function checkScreen(id) {
   });
 }
 
-const SAMPLE = `From: PayPal <service@paypal.com>
-Subject: Case PP-R-UZH-10198816: refund issued
+const SAMPLE = `From: PayPal Service <service@paypal.com>
+Subject: Re: PP-R-UZH-10198816
 
-Hello Maya,
+Hi Maya,
 
-Good news! The seller has issued a full refund of $66.00 USD for your dispute PP-R-UZH-10198816.
-Your case has been resolved. No further action is required.
+Just a quick note so you're not left wondering. Your $66.00 is already sitting in your PayPal balance on our side - take a look under Activity when you get a chance and it should be there for you.
 
-To receive your funds faster, please close your case and confirm your account here:
-https://paypal-resolution-center.help/confirm
+Everything looks good from here. Thanks for your patience.
 
-Funds may take 5-10 business days to appear.
-
-PayPal Resolution Center`;
+PayPal Service`;
 
 async function runCheck() {
   const id = CASE.view.id;
@@ -332,7 +328,7 @@ document.addEventListener("click", async (e) => {
   if (act === "runcheck") return runCheck();
   if (act === "sample") { document.getElementById("em").value = SAMPLE; return; }
   if (act === "sampleshot") {
-    // A screenshot of a test email (no text to paste): only the model can read it.
+    // The same 3:14 a.m. email as a screenshot (no text to paste): only the model can read it.
     const blob = await fetch("/samples/scam_s2_01.png").then((r) => r.blob());
     const data = await new Promise((r) => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(blob); });
     SHOT = { type: "image/png", data: String(data).split(",")[1] };

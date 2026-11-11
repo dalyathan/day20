@@ -20,7 +20,8 @@
     "live-eval": "node --env-file=.env scripts/live-eval.js",
     "live-eval-deployed": "node scripts/live-eval-deployed.mjs",
     "check": "node --env-file=.env scripts/check.js",
-    "demo": "node --env-file=.env scripts/demo.js"
+    "demo": "node --env-file=.env scripts/demo.js",
+    "live-summary": "node scripts/live-summary.mjs tests/live/live-*.jsonl"
   },
   "author": "Surafel Melese Tariku <surafelmelese09@gmail.com> (https://github.com/dalyathan)",
   "repository": {
