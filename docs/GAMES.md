@@ -31,7 +31,7 @@ These 24 scenes became the eval suite (`tests/scenarios.js`).
 |---|---|---|
 | **Rule-breaker 2** | 33 new harmful sentences, **0 caught**. 23 of 30 helpful sentences were flagged. | **Regexes can't police what a model means.** We closed the AI's output space instead. The model no longer writes free text for the buyer: it picks 2–4 sentences that code wrote from PayPal's record. The rules stay as a tripwire, and the eval checks every sentence the model could pick. |
 | **AI-assurance judge** | Train/test leakage: the attacks we fixed against were reported as pass rates. 21 checks couldn't fail. The live model was never tested. | Results are split three ways: designed, regression and held-out. We removed the checks that couldn't fail. `npm run live-eval` runs the real model and writes JSONL. |
-| **Scammer 2** | 12 new emails. **12/12 rated "careful" (never "safe")**, and the bottom line (built by code) showed the real record. **0/12 flagged red.** Lies worded without our keywords got a generic warning instead of a contradiction. | The emails are frozen as a held-out set (`tests/heldout/`). We report this number and haven't tuned on it. |
+| **Scammer 2** | 12 new emails. **12/12 rated "careful" (never "safe")**, and the bottom line (built by code) showed the real record. **0/12 flagged red.** Lies worded without our keywords got a generic warning instead of a contradiction. | We scored these once, before tuning on them, and report that number. Game 5's sentence-level rewrite then changed the reader, so the set moved to regression (`tests/fixtures/scams/s2_*`). `npm run replay-heldout` re-scores it with the code at `ab9d746` to reproduce 12/12 and 0/12. |
 
 ## Games 5–7: does it cry wolf?
 
@@ -45,7 +45,7 @@ A checker that calls everything a scam is useless. It would also make Maya repor
 
 The cost of fewer false alarms: on the scam regression set, "flagged red" moved between 8 and 10 of 24 (9 now). Every scam stayed at least "careful".
 
-**A note on what we couldn't run:** a fresh agent asked to write a new round of scam emails declined, stopped by a safety check. We didn't try to get around it. So our held-out scam number is still the game-4 one.
+**A note on what we couldn't run:** a fresh agent asked to write a new round of scam emails declined, stopped by a safety check. We didn't try to get around it. So our only held-out scam number is the game-4 one, measured before the game-5 rewrite. We haven't measured the current reader on unseen scams.
 
 ## The numbers, phrased honestly
 
@@ -53,13 +53,15 @@ From `npm run eval`:
 
 - **Designed cases** (24 scenes plus test emails, written alongside the code): all pass. *That shows the code does what we designed, not that it generalizes.*
 - **Regression** (attacks and false alarms we fixed): all pass. *That shows no regressions. It isn't evidence of generalization.*
-- **Held-out scams** (game 4, measured before we tuned on them): 12 of 12 were never called safe, and 0 of 12 were flagged red. *The safe default held, but the keyword reader missed reworded lies.*
+- **Held-out scams** (game 4, measured before we tuned on them): 12 of 12 were never called safe, and 0 of 12 were flagged red. *"Never called safe" is mostly guaranteed by design (only a refund or closed-case claim that matches the record reads as agreeing). Flagged red is the real measure, and the keyword reader missed every reworded lie.*
 - **Held-out genuine emails** (each round measured before we tuned on it):
   - game 5: 0 of 12 clean;
   - game 6: 5 of 12 clean;
   - game 7: 11 of 12 clean.
 
   Each set was then fixed and moved to regression, where all 36 genuine emails are now clean.
+
+No set is held out right now: each one we measured was then tuned on. The first measurements are in `tests/heldout/RESULTS.md`, and `npm run replay-heldout` reproduces every one of them from the commit it was scored against.
 - **Live model:** run `npm run live-eval` with a real key.
 
 ## What we'd do next

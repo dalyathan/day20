@@ -35,14 +35,14 @@ Day 20 never files, escalates, closes or accepts anything. She does those in Pay
 
 We tested it the way it would be attacked, as games with incentives:
 
-- **Scammer agents** were paid for every fake email the checker called safe. In round one, 7 of 12 got through, because a real case number made an email look "consistent". We changed the design: a real case number never counts as proof, and any email about the case defaults to "careful".
-- **A cheat** was paid for false claims that reached the one-page case. It forged a tag through a newline. Buyer text is now sanitised, and only a validated ZIP can sit in a checkable line.
-- **A rule-breaker** was paid for harmful notes that passed our honesty rules. Round two caught 0 of 33 new ones: regexes can't police what a model means. **So we closed the model's output space.** It picks sentences written by code instead of writing its own.
-- **Honest senders** were paid for genuine emails that Day 20 wrongly flagged red, because a checker that cries wolf makes buyers report honest sellers. Over three fresh rounds, clean genuine emails went from 0/12 to 5/12 to 11/12.
+- **Scammer agents** scored a point for every fake email the checker called safe. In round one, 7 of 12 got through, because a real case number made an email look "consistent". We changed the design: a real case number never counts as proof, and any email about the case defaults to "careful".
+- **A cheat** scored a point for false claims that reached the one-page case. It forged a tag through a newline. Buyer text is now sanitised, and only a validated ZIP can sit in a checkable line.
+- **A rule-breaker** scored a point for harmful notes that passed our honesty rules. Round two caught 0 of 33 new ones: regexes can't police what a model means. **So we closed the model's output space.** It picks sentences written by code instead of writing its own.
+- **Honest senders** scored a point for genuine emails that Day 20 wrongly flagged red, because a checker that cries wolf makes buyers report honest sellers. Over three fresh rounds, clean genuine emails went from 0/12 to 5/12 to 11/12.
 - **A blind reviewer ("Rosa")** judged the one-page cases. She caught a buyer's lie because the line was tagged as checkable.
 - **An AI-assurance judge** caught us reporting fixed-against attacks as pass rates.
 
-Every successful attack became a regression test, and we report a **held-out** set separately. Fresh scammer agents wrote 12 new emails after our last change. Day 20 called **none of them safe**, and, by construction, every result showed PayPal's real refund status and deadline. It flagged **0 of 12** as an outright contradiction, because paraphrased lies slip past keyword reading. That's the honest number, and it's the model's job to raise it. In a live run on 36 test emails, Claude's reading turned 2 of those "careful" results red, 3 prompt-injection emails changed nothing, no sentence shown broke a rule, and on the deployed app it flagged none of the 12 genuine emails that had caused false alarms.
+Every successful attack became a regression test, and each new set was scored once, **before** we tuned on it. A fresh scammer agent wrote 12 emails. Day 20 called none of them safe, but that's mostly by design: it only says an email agrees when PayPal's record agrees. The real measure is that it flagged **0 of 12** red, because paraphrased lies slip past keyword reading. That's the honest number, and it's the model's job to raise it. `npm run replay-heldout` reproduces every held-out number from the commit it was scored against. In a live run on 36 test emails, Claude's reading turned 2 of those "careful" results red, 3 prompt-injection emails changed nothing, no sentence shown broke a rule, and on the deployed app it flagged none of the 12 genuine emails that had caused false alarms.
 
 ## Challenges
 
