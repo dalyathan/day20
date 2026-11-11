@@ -10,7 +10,7 @@ import { esStep } from "./lib/es.js";
 import { buildPage, cleanText, cleanZip, cleanCity } from "./lib/onepage.js";
 import { runCheck } from "./lib/agent.js";
 import { suggestReminders, toICS } from "./lib/reminders.js";
-import { facts as factsDb, checks as checksDb, push as pushDb, reminders as remDb, forget } from "./lib/store.js";
+import { facts as factsDb, checks as checksDb, push as pushDb, reminders as remDb, forget, cleanup } from "./lib/store.js";
 import { vapidKeys, sendPush, sendEmail } from "./lib/push.js";
 import { WEB, ENV } from "./lib/paypal.js";
 
@@ -109,7 +109,7 @@ async function api(req, res, url, s) {
   }
 
   if (p === "/api/disconnect" && m === "POST") {
-    forget(owner(s));
+    forget(owner(s), s.demo ? null : s.payerId);
     endSession(res, s);
     return send(res, 200, { ok: true, deleted: true });
   }
@@ -268,4 +268,5 @@ async function sendDue() {
 if (process.argv[1] && new URL(import.meta.url).pathname === process.argv[1]) {
   server.listen(PORT, () => console.log(`Day 20 on http://localhost:${PORT} · source: ${source()} · PayPal ${ENV} · demo case ${DEMO_DISPUTE_ID} · web ${WEB}`));
   setInterval(() => sendDue().catch((e) => console.error("reminders", e)), 60000).unref();
+  cleanup(); setInterval(() => { try { cleanup(); } catch (e) { console.error("cleanup", e); } }, 6 * 3600000).unref();
 }
