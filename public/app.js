@@ -300,6 +300,7 @@ function privacyScreen() {
 
 async function route() {
   const [name, id] = location.hash.slice(1).split("/");
+  window.scrollTo(0, 0);
   try {
     if (name === "privacy") return privacyScreen();
     if (!ME?.signedIn) return home();
