@@ -102,7 +102,7 @@ function honestDir(rel, group, prefix) {
   return files.map((f) => {
     const text = readFileSync(new URL(f, dir), "utf8");
     const cmp = compare(extractClaims(text), r, at(7));
-    return { id: `${prefix}${f.replace(/\D+/g, "")}`, group, who: text.match(/^Subject:\s*(.+)$/m)?.[1]?.slice(0, 60) || f, kind: cmp.overall,
+    return { id: `${prefix}${f.replace(/\.txt$/, "")}`, group, who: text.match(/^Subject:\s*(.+)$/m)?.[1]?.slice(0, 60) || f, kind: cmp.overall,
       checks: [{ name: "a genuine email is never flagged red", pass: cmp.overall !== "mismatch", detail: cmp.findings.filter((x) => x.verdict === "contradicts").map((x) => x.says).join("; ") }] };
   });
 }

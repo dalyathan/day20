@@ -1,0 +1,15 @@
+From: PayPal <service@paypal.com>
+To: Maya
+Date: Wed, Nov 18, 2026, 1:09 AM
+Subject: Your one-time code
+
+Hi Maya,
+
+Here's your one-time code to log in: 482913
+
+Enter this code on the PayPal login page to finish logging in. It expires in 10 minutes.
+
+If you didn't try to log in, change your password right away.
+
+Thanks,
+PayPal

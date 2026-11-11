@@ -3,7 +3,7 @@
 import { runAll } from "./evals.js";
 
 const results = runAll();
-const groups = { designed: "Designed with the code (24 scenes + emails)", regression: "Regression: game 3–4 scam emails we fixed against", "regression-honest": "Regression: game-5 genuine emails we fixed false alarms on", "held-out": "Held-out scam emails: frozen, never tuned on", honest: "Held-out genuine emails: frozen, never tuned on (false alarms)" };
+const groups = { designed: "Designed with the code (24 scenes + emails)", regression: "Regression: game 3–4 scam emails we fixed against", "regression-honest": "Regression: game 5–6 genuine emails we fixed false alarms on", "held-out": "Held-out scam emails: frozen, never tuned on", honest: "Held-out genuine emails: frozen, never tuned on (false alarms)" };
 const tally = {};
 for (const r of results) {
   const failedHard = r.checks.filter((c) => !c.pass && !c.soft);
