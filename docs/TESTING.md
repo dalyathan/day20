@@ -41,4 +41,4 @@ Then ask your assistant, for example: "Check this email against PayPal case PP-R
 
 ## Postman
 
-Import `postman/Day20.postman_collection.json`. Folder 1 gets a token, folder 3 holds the read-only case calls in order, and folder 4 is Log in with PayPal. Folder 5 tests Day 20's own API, including a test that the fake refund is caught.
+Import `postman/Day20.postman_collection.json` **and** `postman/Day20.sandbox.postman_environment.json`, select the environment, and put your sandbox `client_id` and `client_secret` there. Folder 1 gets a token, folder 3 holds the read-only case calls in order, and folder 4 is Log in with PayPal. Folder 5 tests Day 20's own API, including a test that the fake refund is caught.

@@ -30,7 +30,7 @@ def app(name, method, path, body=None, tests=None):
 
 token = {"name": "1. Get access token",
     "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
-        "const j = pm.response.json();", "pm.collectionVariables.set('access_token', j.access_token);",
+        "const j = pm.response.json();", "(pm.environment.name ? pm.environment : pm.collectionVariables).set('access_token', j.access_token);",
         "pm.test('token issued', () => pm.expect(j.access_token).to.be.a('string'));"]}}],
     "request": {"method": "POST",
         "auth": {"type": "basic", "basic": [{"key": "username", "value": "{{client_id}}", "type": "string"}, {"key": "password", "value": "{{client_secret}}", "type": "string"}]},
@@ -40,18 +40,21 @@ token = {"name": "1. Get access token",
         "description": "Client-credentials token. Day 20 uses it only for read-only calls."}}
 
 setup = [
-    req("Create Maya's $66 order", "POST", "/v2/checkout/orders", "Sandbox setup only (scripts/demo.js). Approve the payer-action link as the sandbox buyer.",
+    tests(req("Create Maya's $66 order", "POST", "/v2/checkout/orders", "Sandbox setup only (scripts/demo.js). Approve the payer-action link as the sandbox buyer.",
         {"intent": "CAPTURE", "purchase_units": [{"reference_id": "maya-dress", "description": "Emerald satin midi dress (Day 20 demo)", "amount": {"currency_code": "USD", "value": "66.00"}}],
          "payment_source": {"paypal": {"experience_context": {"return_url": "https://example.com/approved", "cancel_url": "https://example.com/cancelled", "user_action": "PAY_NOW"}}}}),
-    req("Capture the order", "POST", "/v2/checkout/orders/{{order_id}}/capture", "Sandbox setup only.", {}),
+        ["const j = pm.response.json();", "pm.test('order created', () => pm.expect(j.id).to.be.a('string'));", "pm.collectionVariables.set('order_id', j.id);"]),
+    tests(req("Capture the order", "POST", "/v2/checkout/orders/{{order_id}}/capture", "Sandbox setup only. Saves capture_id.", {}),
+        ["const j = pm.response.json();", "const c = j.purchase_units && j.purchase_units[0].payments.captures[0];",
+         "pm.test('captured', () => pm.expect(c.status).to.eql('COMPLETED'));", "pm.collectionVariables.set('capture_id', c.id);"]),
     req("Seller adds tracking", "POST", "/v2/checkout/orders/{{order_id}}/track", "Sandbox setup only: the tracking number the seller claims.",
         {"capture_id": "{{capture_id}}", "tracking_number": "9400111899223197428490", "carrier": "USPS", "notify_payer": False}),
 ]
 read = [
-    tests(req("List disputes", "GET", "/v1/customer/disputes", "Find cases. Day 20 matches them to the signed-in buyer's payer ID. Sets dispute_id to the first case if none is set.", query=[("page_size", "20")]),
+    tests(req("List disputes", "GET", "/v1/customer/disputes", "Find cases. Day 20 matches them to the signed-in buyer's payer ID. Always sets dispute_id to the first case if none is set.", query=[("page_size", "20")]),
         ["pm.test('200 OK', () => pm.response.to.have.status(200));",
          "const j = pm.response.json();",
-         "if (!pm.collectionVariables.get('dispute_id') && j.items && j.items.length) pm.collectionVariables.set('dispute_id', j.items[0].dispute_id);"]),
+         "if (j.items && j.items.length) pm.collectionVariables.set('dispute_id', j.items[0].dispute_id);", "pm.test('found a case to read', () => pm.expect(pm.collectionVariables.get('dispute_id')).to.be.a('string').and.not.empty);"]),
     tests(req("Read the case", "GET", "/v1/customer/disputes/{{dispute_id}}", "Status, reason, amount, refund outcome, dates: the record Day 20 checks emails against. Sets capture_id."),
         ["pm.test('200 OK', () => pm.response.to.have.status(200));",
          "const j = pm.response.json();",
@@ -77,7 +80,7 @@ login = [
                 "host": ["https://www.sandbox.paypal.com"], "path": ["signin", "authorize"]},
         "description": "Identity only: gives Day 20 the buyer's payer ID, not her transactions."}},
     {"name": "Log in with PayPal: exchange the code", "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
-        "const j = pm.response.json();", "pm.collectionVariables.set('user_access_token', j.access_token);",
+        "const j = pm.response.json();", "(pm.environment.name ? pm.environment : pm.collectionVariables).set('user_access_token', j.access_token);",
         "pm.test('user token issued', () => pm.expect(j.access_token).to.be.a('string'));"]}}],
      "request": {"method": "POST",
         "auth": {"type": "basic", "basic": [{"key": "username", "value": "{{client_id}}", "type": "string"}, {"key": "password", "value": "{{client_secret}}", "type": "string"}]},
@@ -92,12 +95,12 @@ login = [
 ]
 day20 = [
     app("Day 20: start a demo session", "POST", "/api/demo", {}),
-    app("Day 20: check an email against the case", "POST", "/api/cases/{{dispute_id}}/check",
+    app("Day 20: check an email against the case", "POST", "/api/cases/{{demo_dispute_id}}/check",
         {"text": "From: PayPal <service@paypal.com>\nThe seller has issued a full refund of $66.00 USD. Your case has been resolved. No further action is required."},
         ["const j = pm.response.json();",
          "pm.test('fake refund is caught', () => pm.expect(j.comparison.overall).to.eql('mismatch'));",
          "pm.test('the agent never claims to act', () => pm.expect(j.note).to.not.match(/I (filed|escalated|closed)/i));"]),
-    app("Day 20: one-page case", "GET", "/api/cases/{{dispute_id}}/page"),
+    app("Day 20: one-page case", "GET", "/api/cases/{{demo_dispute_id}}/page"),
 ]
 
 col = {"info": {"name": "Day 20 · buyer-side PayPal dispute flow",
@@ -109,11 +112,13 @@ col = {"info": {"name": "Day 20 · buyer-side PayPal dispute flow",
     "variable": [{"key": k, "value": v} for k, v in [
         ("base_url", "https://api-m.sandbox.paypal.com"), ("app_url", "https://day20.onrender.com"),
         ("access_token", ""), ("user_access_token", ""), ("auth_code", ""), ("return_url", "https://day20.onrender.com/auth/paypal/callback"),
-        ("dispute_id", "PP-R-UZH-10198816"), ("capture_id", "0PP7442882460564M"), ("order_id", "42J2970806644392S")]]}
+        ("dispute_id", ""), ("capture_id", ""), ("order_id", ""), ("demo_dispute_id", "PP-R-UZH-10198816")]]}
 
 env = {"name": "Day 20 sandbox", "values": [
     {"key": "client_id", "value": "", "type": "default", "enabled": True},
-    {"key": "client_secret", "value": "", "type": "secret", "enabled": True}]}
+    {"key": "client_secret", "value": "", "type": "secret", "enabled": True},
+    {"key": "access_token", "value": "", "type": "secret", "enabled": True},
+    {"key": "user_access_token", "value": "", "type": "secret", "enabled": True}]}
 
 here = os.path.dirname(os.path.abspath(__file__))
 out = os.path.join(here, "..", "postman", "Day20.postman_collection.json")

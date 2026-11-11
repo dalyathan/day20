@@ -18,6 +18,7 @@
     "mcp": "node mcp/server.js",
     "live-check": "node --env-file=.env scripts/live-check.js",
     "live-eval": "node --env-file=.env scripts/live-eval.js",
+    "live-eval-deployed": "node scripts/live-eval-deployed.mjs",
     "check": "node --env-file=.env scripts/check.js",
     "demo": "node --env-file=.env scripts/demo.js"
   }

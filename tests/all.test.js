@@ -182,3 +182,76 @@ test("model red flags need a plain quoted sentence (live false alarms g5_02, g7_
   // Fields that can't turn an email red pass through without evidence.
   assert.equal(gateModelClaims({}, { urgency: true }, "x").kept.urgency, true);
 });
+
+test("gate judges the clause that makes the claim (live miss on s2_01, Nov 11)", async () => {
+  const { gateModelClaims } = await import("../lib/agent.js");
+  const { readFileSync } = await import("node:fs");
+  const t = readFileSync(new URL("./fixtures/scams/s2_01.txt", import.meta.url), "utf8");
+  const g = (q) => gateModelClaims({}, { refundClaimed: true, evidence: { refundClaimed: q } }, t).kept.refundClaimed === true;
+  assert.ok(g("Your $66.00 is already sitting in your PayPal balance on our side - take a look under Activity when you get a chance and it should be there for you."));
+  assert.ok(!g("take a look under Activity when you get a chance and it should be there for you."));
+});
+
+test("gate: requests may be conditional but must ask (live miss on scam_06, Nov 11)", async () => {
+  const { gateModelClaims } = await import("../lib/agent.js");
+  const { readFileSync } = await import("node:fs");
+  const f = (n) => readFileSync(new URL(`./fixtures/${n}.txt`, import.meta.url), "utf8");
+  const g = (field, q, t) => gateModelClaims({}, { [field]: true, evidence: { [field]: q } }, t).kept[field] === true;
+  assert.ok(g("asksToCloseCase", "If that works for you, please end the PayPal claim from your side and reply \"OK\" to this email.", f("scams/scam_06")));
+  assert.ok(g("asksForSecret", "Please reply to this email with that code before the end of the day so the refund isn't sent back to the seller.", f("scams/scam_11")));
+  // PayPal's own "you can close the case" is permission, not a request; "you don't need to close" is negated.
+  assert.ok(!g("asksToCloseCase", "If you've resolved this with the seller, you can close the case in the Resolution Center.", f("honest/g5_07")));
+  assert.ok(!g("asksToCloseCase", "you don't need to close or change your PayPal case because of it", f("honest/g7_03")));
+  // Statements of fact still can't be conditional.
+  assert.ok(!g("refundClaimed", "If you accept it there, the refund of $20 would be sent to your PayPal balance right away.", f("honest/g5_02")));
+});
+
+test("gate keeps real catches the engineer judge found it dropping (round 2)", async () => {
+  const { gateModelClaims } = await import("../lib/agent.js");
+  const g = (q, t = q) => gateModelClaims({}, { refundClaimed: true, evidence: { refundClaimed: q } }, t).kept.refundClaimed === true;
+  assert.ok(g("After reviewing your case, we've sent the $66.00 back to your account."));
+  assert.ok(g("We can confirm the $66.00 is back in your PayPal balance."));
+  assert.ok(g("We've sent the $66.00 back, so there's no need to escalate."));
+  assert.ok(g("Your $66.00 refund is done - check your balance.", "Hi,\n\nYour $66.00 refund is done – check your balance.\n"));
+  assert.ok(!g("The refund of $66.00 would be sent once you close the case."));
+  assert.ok(!g("A refund may be issued after review."));
+});
+
+test("gate: a hypothetical after the quote still blocks; full-sentence quotes work (AI-assurance judge, round 2)", async () => {
+  const { gateModelClaims } = await import("../lib/agent.js");
+  const { readFileSync } = await import("node:fs");
+  const g = (q, t = q) => gateModelClaims({}, { refundClaimed: true, evidence: { refundClaimed: q } }, t).kept.refundClaimed === true;
+  const t = "Hi Maya,\n\nYour partial refund of $20 will be sent to your balance as soon as you accept it.\n";
+  assert.ok(!g("Your partial refund of $20 will be sent to your balance", t));
+  const s201 = readFileSync(new URL("./fixtures/scams/s2_01.txt", import.meta.url), "utf8");
+  assert.ok(g("Your $66.00 is already sitting in your PayPal balance on our side - take a look under Activity when you get a chance and it should be there for you.", s201));
+});
+
+test("gate: case IDs and links must be in the email as written (AI-assurance judge, round 2)", async () => {
+  const { gateModelClaims } = await import("../lib/agent.js");
+  const t = "Hi Maya, your order #JL1042 shipped. Questions: hello@juniperandlace.com or https://juniperandlace.com/help";
+  const k = gateModelClaims({}, { caseIds: ["JL1042", "PP-R-ABC-12345678"], links: ["https://juniperandlace.com/help", "https://paypa1-secure.com"] }, t).kept;
+  assert.deepEqual(k.caseIds, []);
+  assert.deepEqual(k.links, ["https://juniperandlace.com/help"]);
+});
+
+test("refunds made on the payment count; a partial refund of unknown size is never 'no refund'", async () => {
+  const { normalize, money } = await import("../lib/record.js");
+  const d = { dispute_id: "PP-R-AAA-11111111", disputed_transactions: [{}], dispute_amount: { value: "66.00", currency_code: "USD" } };
+  const order = (capStatus, refunds) => ({ purchase_units: [{ payments: { captures: [{ status: capStatus, amount: { value: "66.00" } }], refunds } }] });
+  assert.equal(normalize(d, order("REFUNDED", [{ status: "COMPLETED", amount: { value: "66.00" } }])).refund.value, "66.00");
+  assert.equal(normalize(d, order("PARTIALLY_REFUNDED", [{ status: "COMPLETED", amount: { value: "20.00" } }])).refund.value, "20.00");
+  // The dispute hold shows as a PENDING refund: not a refund.
+  assert.equal(normalize(d, order("COMPLETED", [{ status: "PENDING", amount: { value: "66.00" } }])).refund, null);
+  // Order unreadable but the capture says partially refunded: amount unknown, still a refund.
+  const r = normalize(d, null, [], { status: "PARTIALLY_REFUNDED", amount: { value: "66.00" } });
+  assert.equal(money(r.refund), "a partial amount");
+});
+
+test("rate limits key on the real address, not a client-supplied one", async () => {
+  const { clientIp } = await import("../server.js");
+  const req = (h) => ({ headers: h, socket: { remoteAddress: "10.0.0.1" } });
+  assert.equal(clientIp(req({ "x-forwarded-for": "1.2.3.4, 203.0.113.9" })), "203.0.113.9");
+  assert.equal(clientIp(req({ "x-forwarded-for": "1.2.3.4", "cf-connecting-ip": "198.51.100.7" })), "198.51.100.7");
+  assert.equal(clientIp(req({})), "10.0.0.1");
+});

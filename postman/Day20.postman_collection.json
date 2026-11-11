@@ -14,7 +14,7 @@
             "type": "text/javascript",
             "exec": [
               "const j = pm.response.json();",
-              "pm.collectionVariables.set('access_token', j.access_token);",
+              "(pm.environment.name ? pm.environment : pm.collectionVariables).set('access_token', j.access_token);",
               "pm.test('token issued', () => pm.expect(j.access_token).to.be.a('string'));"
             ]
           }
@@ -109,7 +109,20 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "pm.test('order created', () => pm.expect(j.id).to.be.a('string'));",
+                  "pm.collectionVariables.set('order_id', j.id);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Capture the order",
@@ -138,7 +151,7 @@
                 "capture"
               ]
             },
-            "description": "Sandbox setup only.",
+            "description": "Sandbox setup only. Saves capture_id.",
             "body": {
               "mode": "raw",
               "raw": "{}"
@@ -153,7 +166,21 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "const c = j.purchase_units && j.purchase_units[0].payments.captures[0];",
+                  "pm.test('captured', () => pm.expect(c.status).to.eql('COMPLETED'));",
+                  "pm.collectionVariables.set('capture_id', c.id);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Seller adds tracking",
@@ -235,7 +262,7 @@
                 }
               ]
             },
-            "description": "Find cases. Day 20 matches them to the signed-in buyer's payer ID. Sets dispute_id to the first case if none is set.",
+            "description": "Find cases. Day 20 matches them to the signed-in buyer's payer ID. Always sets dispute_id to the first case if none is set.",
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -255,7 +282,8 @@
                 "exec": [
                   "pm.test('200 OK', () => pm.response.to.have.status(200));",
                   "const j = pm.response.json();",
-                  "if (!pm.collectionVariables.get('dispute_id') && j.items && j.items.length) pm.collectionVariables.set('dispute_id', j.items[0].dispute_id);"
+                  "if (j.items && j.items.length) pm.collectionVariables.set('dispute_id', j.items[0].dispute_id);",
+                  "pm.test('found a case to read', () => pm.expect(pm.collectionVariables.get('dispute_id')).to.be.a('string').and.not.empty);"
                 ]
               }
             }
@@ -507,7 +535,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "const j = pm.response.json();",
-                  "pm.collectionVariables.set('user_access_token', j.access_token);",
+                  "(pm.environment.name ? pm.environment : pm.collectionVariables).set('user_access_token', j.access_token);",
                   "pm.test('user token issued', () => pm.expect(j.access_token).to.be.a('string'));"
                 ]
               }
@@ -640,14 +668,14 @@
               }
             ],
             "url": {
-              "raw": "{{app_url}}/api/cases/{{dispute_id}}/check",
+              "raw": "{{app_url}}/api/cases/{{demo_dispute_id}}/check",
               "host": [
                 "{{app_url}}"
               ],
               "path": [
                 "api",
                 "cases",
-                "{{dispute_id}}",
+                "{{demo_dispute_id}}",
                 "check"
               ]
             },
@@ -681,14 +709,14 @@
               }
             ],
             "url": {
-              "raw": "{{app_url}}/api/cases/{{dispute_id}}/page",
+              "raw": "{{app_url}}/api/cases/{{demo_dispute_id}}/page",
               "host": [
                 "{{app_url}}"
               ],
               "path": [
                 "api",
                 "cases",
-                "{{dispute_id}}",
+                "{{demo_dispute_id}}",
                 "page"
               ]
             }
@@ -724,15 +752,19 @@
     },
     {
       "key": "dispute_id",
-      "value": "PP-R-UZH-10198816"
+      "value": ""
     },
     {
       "key": "capture_id",
-      "value": "0PP7442882460564M"
+      "value": ""
     },
     {
       "key": "order_id",
-      "value": "42J2970806644392S"
+      "value": ""
+    },
+    {
+      "key": "demo_dispute_id",
+      "value": "PP-R-UZH-10198816"
     }
   ]
 }
