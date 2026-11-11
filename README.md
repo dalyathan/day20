@@ -37,7 +37,7 @@ To design it, we role-played 24 dispute scenes with AI agents (an exercise, not 
 | **Checks an email against it** | Refund claimed vs refund on file, "case closed" vs status, reshipment numbers vs tracking on file, lookalike links, requests for codes, stalling ("no need to escalate"). The sender is never treated as proof. |
 | **Tells her the next step** | Including **"not yet"** when an honest seller deserves time, and **"not covered"** when Buyer Protection doesn't apply. It never helps a false claim. |
 | **Keeps the deadline** | Day 15 and day 18 reminders she chooses, by web push, email or calendar. Silent by default. |
-| **Drafts the one-page case** | The deciding fact first. Every line is tagged `PAYPAL RECORD`, `PAYPAL CAN CHECK` or `BUYER REPORTS`, so the reviewer knows what to verify. |
+| **Drafts the one-page case** | The checkable facts first: line 1 is the carrier's delivered ZIP (on tracking the seller added), line 2 is PayPal's ship-to ZIP. Every line is tagged `PAYPAL RECORD`, `PAYPAL CAN CHECK` or `BUYER REPORTS`, so the reviewer knows what to verify. |
 
 **What it never does:** file, escalate, close or accept anything; message the seller; ask for a password or code; send sign-in links. The app, the agent and the MCP server only read from PayPal; the only writes are in the sandbox setup script, which plays the seller to build the demo case.
 
@@ -110,20 +110,31 @@ Sets 4–7 were then tuned on and moved to regression; set 8 is still held out. 
 - No sentence shown tripped the honesty rules. (A tripwire, not proof: every sentence shown is written by code, and the rules alone missed harmful model-written text in game 3.)
 - Median time was 4.7 s.
 
-**Live model on the deployed app** (all 24 scam and 36 genuine regression emails, Nov 11; reproduce with `APP_URL=… npm run live-eval-deployed`):
+**How the evidence check got here** (three versions of the check, one run each, all 24 scam and 36 genuine regression emails, Nov 11). The current code's repeated runs are in the next table.
 
-| Run | Scams flagged red | Genuine emails flagged red | Judged by the model |
+| Version | Scams flagged red | Genuine emails flagged red | Judged by the model |
 |---|---|---|---|
 | Rules alone (no model) | 9/24 | 0/36 | 0/60 |
-| Model, no evidence check ([run 1](tests/live/deployed-2026-11-11.jsonl)) | 11/24 | **2/31** (of the 31 genuine emails the model judged) | 55/60 (credit ran out; the last 5, all genuine, fell back to rules and still answered) |
-| Model + evidence check v1 ([run 2](tests/live/deployed-2026-11-11-gate1.jsonl)) | 10/24 | 0/36 | 60/60 |
-| Model + evidence check v2 ([run 3](tests/live/deployed-2026-11-11-gate2.jsonl)) | **11/24** | **0/36** | 60/60 |
+| Model, no evidence check ([check v0 run](tests/live/deployed-2026-11-11.jsonl)) | 11/24 | **2/31** (of the 31 genuine emails the model judged) | 55/60 (credit ran out; the last 5, all genuine, fell back to rules and still answered) |
+| Model + evidence check v1 ([check v1 run](tests/live/deployed-2026-11-11-gate1.jsonl)) | 10/24 | 0/36 | 60/60 |
+| Model + evidence check v2 ([check v2 run](tests/live/deployed-2026-11-11-gate2.jsonl)) | **11/24** | **0/36** | 60/60 |
 
-- Run 1: the model caught 2 reworded refund lies the keyword reader missed, but also flagged 2 genuine emails red: a seller's "if you accept, the refund of $20 would be sent" and a PayPal chat saying "no refund has been issued yet".
+- Check v0: the model caught 2 reworded refund lies the keyword reader missed, but also flagged 2 genuine emails red: a seller's "if you accept, the refund of $20 would be sent" and a PayPal chat saying "no refund has been issued yet".
 - So a model flag that can turn an email red now needs evidence. A refund, closed case, close request, code request or off-PayPal payment needs the exact sentence quoted, and code checks it's in the email and isn't negated or hypothetical. Case IDs, links and tracking numbers must appear in the email as written.
 - v1 was too strict: it dropped a real catch because the sentence went on to say "it should be there". v2 judges the clause that makes the claim, lets requests be conditional ("if that works for you, please end the claim"), and keeps the engineer judge's must-stay-red sentences ("We can confirm the $66.00 is back").
-- Run 3 kept every catch and no false alarm. The check also stopped one false alarm by itself: on g5_12 the model listed a case ID that isn't in the email. No sentence shown tripped the honesty rules (a tripwire; every sentence shown is written by code); median 5.2 s.
+- Check v2 kept every catch and no false alarm. The check also stopped one false alarm by itself: on g5_12 the model listed a case ID that isn't in the email. No sentence shown tripped the honesty rules (a tripwire; every sentence shown is written by code); median 5.2 s.
 - These are the same 60 emails we tuned on, so they show the check works as designed, not how it does on unseen email. One run per email.
+
+**Current code, repeated on the deployed app** (Claude on, Nov 11; check code at commit 197d0f3, unchanged in 95b7bb3; `npm run live-summary` prints this from the raw rows; re-run by pasting `scripts/live-eval-browser.js` into the browser console on the live site):
+
+| | Keyword rules alone | With Claude |
+|---|---|---|
+| Scam emails flagged red (24, tuned on) | 9/24 | **11/24 in each of 3 runs**, the same 11 each time ([rows](tests/live/live-2026-11-11-197d0f3.jsonl)) |
+| Genuine emails flagged red (36) | 0/36 | **0/36 in each of 2 runs** |
+| Scam screenshots flagged red (all 24, 1 run) | can't read images | **11/24**, the same 11 as text ([rows](tests/live/live-2026-11-11-95b7bb3.jsonl) and the first file) |
+| Held-out set 8, genuine, flagged red | 1/12 | 1/12 as text (1 run), 1/6 as screenshots; the same h8_01 every time |
+
+Claude's 2 extra catches on text (s2_01, s2_08) are reworded refund lies; s2_01 is Maya's 3:14 a.m. email in the demo. The rows were exported from the browser in a compact form and re-expanded (every non-red row was "careful"; no check failed or fell back to rules).
 
 Raw results: [`tests/live/`](tests/live/).
 
