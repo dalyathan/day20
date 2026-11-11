@@ -96,9 +96,9 @@ We tested it by playing games. Agents attacked Day 20 for points, with evidence 
 | Group | What it is | Result |
 |---|---|---|
 | Designed | 24 dispute scenes plus test emails, written with the code | all pass |
-| Regression | 24 scam emails and 36 genuine emails from the games, fixed against | every scam at least "careful" (9/24 red); every genuine email clean |
+| Regression | 24 scam emails and 36 genuine emails from the games, fixed against | every scam at least "careful" (9/24 red); no genuine email flagged red |
 | **Held-out scams** | 12 game-4 emails, scored once before we tuned on them | **0/12 flagged red**; 12/12 never called safe (mostly by design) |
-| **Held-out genuine emails** | fresh writers each round, scored before tuning | **clean: 0/12 → 5/12 → 11/12** over games 5–7 |
+| **Held-out genuine emails** | fresh writers each round, scored before tuning | **not flagged red: 0/12 → 5/12 → 11/12** over games 5–7 |
 
 Every held-out set was then tuned on and moved to regression, so none is held out today. `npm run replay-heldout` re-scores each set with the commit it was first scored against and reproduces the numbers above ([RESULTS.md](tests/heldout/RESULTS.md)).
 
@@ -136,14 +136,28 @@ npm run replay-heldout  # re-score each held-out set with the commit it was firs
 
 ## Run it
 
-Node 22.13+, no dependencies.
+Node 22.13+, no dependencies, macOS, Linux or Windows.
+
+**Offline, no keys (1 minute):**
 
 ```bash
-npm run replay                 # offline: a saved copy of a real sandbox dispute and order (the carrier name on the tracker is filled in by hand: the order API omits it)
-cp .env.example .env           # then fill in sandbox keys
-npm run live-check             # runs every read-only PayPal call behind the case screen against the sandbox (not Log in with PayPal)
-npm run dev                    # http://localhost:3000
+git clone https://github.com/dalyathan/day20
+cd day20
+npm test                       # unit + integration tests
+npm run eval                   # every scene and email, by group
+npm run replay                 # then open http://localhost:3000 and tap "Try it as Maya" (Ctrl+C to stop)
 ```
+
+Replay serves a saved copy of a real sandbox dispute and order. One detail is filled in by hand: the carrier name on the tracker, which the order API omits. `npm run replay-heldout` needs the full git history (not `--depth 1`).
+
+**With your own PayPal sandbox (about 15 minutes):** you need a sandbox dispute of your own; the demo case can only be read live with the maintainer's keys. Follow [TESTING.md, option 3](docs/TESTING.md): create a sandbox app with Disputes enabled, `cp .env.example .env` and add your keys, run `npm run demo` to create and pay an order, open a dispute as the sandbox buyer, put its ID in `DEMO_DISPUTE_ID`, then:
+
+```bash
+npm run live-check             # every read-only PayPal call behind the case screen, against your case (not Log in with PayPal)
+npm run dev                    # http://localhost:3000; the demo chip can switch to "Live sandbox case"
+```
+
+The AI is optional: add `ANTHROPIC_API_KEY` to `.env` to turn it on; without it Day 20 runs on rules alone.
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/dalyathan/day20)
 

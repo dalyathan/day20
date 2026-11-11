@@ -7,9 +7,9 @@ import { mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { pathToFileURL, fileURLToPath } from "node:url";
 
-const root = resolve(new URL("..", import.meta.url).pathname);
+const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const git = (...a) => execFileSync("git", ["-C", root, ...a], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
 
 // [set, files, commit the code was at when the set was first scored, kind, published result, sha256 of the emails]
@@ -21,6 +21,7 @@ const ROUNDS = [
   ["Game 7 genuine emails", "tests/fixtures/honest", /^g7_/, "2de19d6", "genuine", "11/12 clean (not flagged red)", "30403afcada14cfc"],
 ];
 let failed = 0;
+if (git("rev-parse", "--is-shallow-repository") === "true") { console.log("This is a shallow clone. Run `git fetch --unshallow` first: the replay checks out old commits."); process.exit(1); }
 
 const out = [];
 for (const [name, dir, re, commit, kind, expected, sha] of ROUNDS) {

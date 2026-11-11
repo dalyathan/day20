@@ -55,11 +55,11 @@ From `npm run eval`:
 - **Regression** (attacks and false alarms we fixed): all pass. *That shows no regressions. It isn't evidence of generalization.*
 - **Held-out scams** (game 4, measured before we tuned on them): 12 of 12 were never called safe, and 0 of 12 were flagged red. *"Never called safe" is mostly guaranteed by design (only a refund or closed-case claim that matches the record reads as agreeing). Flagged red is the real measure, and the keyword reader missed every reworded lie.*
 - **Held-out genuine emails** (each round measured before we tuned on it):
-  - game 5: 0 of 12 clean;
-  - game 6: 5 of 12 clean;
-  - game 7: 11 of 12 clean.
+  - game 5: 0 of 12 not flagged red;
+  - game 6: 5 of 12 not flagged red;
+  - game 7: 11 of 12 not flagged red.
 
-  Each set was then fixed and moved to regression, where all 36 genuine emails are now clean.
+  Each set was then fixed and moved to regression, where all 36 genuine emails are now not flagged red.
 
 No set is held out right now: each one we measured was then tuned on. The first measurements are in `tests/heldout/RESULTS.md`, and `npm run replay-heldout` reproduces every one of them from the commit it was scored against.
 - **Live model, deployed app (Nov 11):** on all 60 regression emails, the model with the evidence check flags 11/24 scams red (rules alone: 9/24) and 0/36 genuine emails. Without the check it had flagged 2 genuine emails red. See game 9. Reproduce with `npm run live-eval-deployed`.

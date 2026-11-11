@@ -1,5 +1,7 @@
 // Day 20 web server. Zero dependencies: Node 22 built-ins only.
 import http from "node:http";
+import { fileURLToPath } from "node:url";
+import { resolve as resolvePath } from "node:path";
 import crypto from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize as normPath } from "node:path";
@@ -17,7 +19,9 @@ import { vapidKeys, sendPush, sendEmail } from "./lib/push.js";
 import { WEB, ENV } from "./lib/paypal.js";
 
 const PORT = Number(process.env.PORT || 3000);
-const PUBLIC = new URL("./public/", import.meta.url).pathname;
+const PUBLIC = fileURLToPath(new URL("./public/", import.meta.url));
+// `node server.js --replay` works on every OS (setting REPLAY=1 inline doesn't work in Windows cmd).
+if (process.argv.includes("--replay")) process.env.REPLAY = "1";
 const DAY = 86400000;
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png", ".webmanifest": "application/manifest+json", ".json": "application/json", ".ico": "image/x-icon" };
 
@@ -267,6 +271,7 @@ async function handle(req, res) {
     return await serveStatic(res, url.pathname);
   } catch (e) {
     console.error(e);
+    if (e.status === 404) return send(res, 404, { error: "PayPal has no case with that ID for these API keys. With your own sandbox keys, open a dispute first (docs/TESTING.md, option 3) and set DEMO_DISPUTE_ID to its ID." });
     send(res, e.status === 413 ? 413 : 500, { error: e.status === 413 ? "That file is too big." : "Something went wrong reading PayPal. Try again in a minute." });
   }
 }
@@ -287,7 +292,7 @@ async function sendDue() {
   }
 }
 
-if (process.argv[1] && new URL(import.meta.url).pathname === process.argv[1]) {
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolvePath(process.argv[1])) {
   server.listen(PORT, () => console.log(`Day 20 on http://localhost:${PORT} · source: ${source()} · PayPal ${ENV} · demo case ${DEMO_DISPUTE_ID} · web ${WEB}`));
   setInterval(() => sendDue().catch((e) => console.error("reminders", e)), 60000).unref();
   cleanup(); setInterval(() => { try { cleanup(); } catch (e) { console.error("cleanup", e); } }, 6 * 3600000).unref();
