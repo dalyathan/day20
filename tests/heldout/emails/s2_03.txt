@@ -1,0 +1,7 @@
+From: USPS Tracking Updates <tracking@usps.com>
+Subject: Delivery update for your parcel
+
+USPS: We attempted delivery of your parcel 9400111899223197428490 today but the receiving area was not accessible. Your item is safe and we will automatically try again within 2 business days. There's nothing you need to do on your end - just keep an eye out.
+
+Thank you,
+USPS Informed Delivery

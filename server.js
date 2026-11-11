@@ -56,7 +56,7 @@ function caseSummary(r, s, f) {
     record: r,
     view: {
       id: r.disputeId,
-      reason: REASONS[r.reason] || r.reason,
+      reason: s.lang === "es" ? ({ MERCHANDISE_OR_SERVICE_NOT_RECEIVED: "Artículo no recibido", MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED: "No es como se describió" }[r.reason] || REASONS[r.reason] || r.reason) : REASONS[r.reason] || r.reason,
       amount: money(r.amount),
       refund: r.refund ? money(r.refund) : "none",
       status: s.lang === "es" ? { open: "Abierto", with_paypal: "Con un revisor de PayPal", your_turn: "Esperando tu respuesta", resolved: "Resuelto" }[ph] : STATUS_WORDS[ph],
@@ -69,7 +69,7 @@ function caseSummary(r, s, f) {
       shipTo: r.shipTo ? `${r.shipTo.city}, ${r.shipTo.state} ${r.shipTo.zip}` : null,
       tracking: (r.trackers || []).map((t) => `${t.carrier || ""} ${t.number}`.trim()),
       source: r.source,
-      sourceLabel: r.source === "live" ? `Live from PayPal ${ENV}` : r.scenarioLabel,
+      sourceLabel: s.lang === "es" ? (r.source === "live" ? `En vivo desde PayPal ${ENV}` : r.source === "scenario" ? "Repetición: el mismo caso en la etapa abierta" : "Repetición de un caso real de sandbox") : r.source === "live" ? `Live from PayPal ${ENV}` : r.scenarioLabel,
     },
     facts: f,
     step: s.lang === "es" ? esStep(nextStep(r, f, now), r, f, now) : nextStep(r, f, now),
