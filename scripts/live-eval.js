@@ -14,8 +14,8 @@ const { sceneRecord, at, EMAILS } = await import("../tests/scenarios.js");
 
 if (!process.env.ANTHROPIC_API_KEY) { console.error("Set ANTHROPIC_API_KEY in .env first."); process.exit(1); }
 
-const dirs = [["regression", "../tests/fixtures/scams/"], ["held-out", "../tests/heldout/emails/"], ["injection", "../tests/injection/"]];
-const cases = EMAILS.map((e) => ({ group: "designed", id: e.id, text: e.text }));
+const dirs = [["regression", "../tests/fixtures/scams/"], ["held-out", "../tests/heldout/emails/"], ["injection", "../tests/injection/"], ["genuine", "../tests/fixtures/honest/"], ["genuine-held-out", "../tests/heldout/honest/"]];
+const cases = EMAILS.map((e) => ({ group: "designed", id: e.id, text: e.text, rec: e.rec }));
 for (const [group, d] of dirs) {
   const dir = new URL(d, import.meta.url);
   try { for (const f of readdirSync(dir).filter((x) => x.endsWith(".txt")).sort()) cases.push({ group, id: f, text: readFileSync(new URL(f, dir), "utf8") }); } catch { /* none */ }
@@ -26,9 +26,10 @@ const now = at(7);
 mkdirSync(new URL("../tests/live/", import.meta.url), { recursive: true });
 const out = [];
 for (const c of cases) {
-  const rulesOnly = compare(extractClaims(c.text), r, now).overall;
+  const rec = c.rec ? sceneRecord(c.rec) : r;
+  const rulesOnly = compare(extractClaims(c.text), rec, now).overall;
   const t0 = Date.now();
-  const res = await runCheck({ record: r, facts: {}, text: c.text, now });
+  const res = await runCheck({ record: rec, facts: {}, text: c.text, now });
   const ruleFlags = Object.entries(extractClaims(c.text)).filter(([, v]) => v === true || (Array.isArray(v) && v.length) || (v && typeof v === "object" && !Array.isArray(v))).map(([k]) => k);
   const finalFlags = Object.entries(res.claims).filter(([, v]) => v === true || (Array.isArray(v) && v.length) || (v && typeof v === "object" && !Array.isArray(v))).map(([k]) => k);
   const row = { group: c.group, id: c.id, mode: res.mode, rulesOnly, withModel: res.comparison.overall, modelAddedFlags: finalFlags.filter((k) => !ruleFlags.includes(k)), noteIds: res.noteIds, violations: res.violations, ms: Date.now() - t0, modelError: res.modelError || null, note: res.note };
@@ -38,5 +39,7 @@ for (const c of cases) {
 writeFileSync(new URL("../tests/live/results.jsonl", import.meta.url), out.map((x) => JSON.stringify(x)).join("\n") + "\n");
 const agent = out.filter((x) => x.mode === "agent");
 const upgraded = out.filter((x) => x.rulesOnly !== "mismatch" && x.withModel === "mismatch");
+const genuine = out.filter((x) => x.group.startsWith("genuine"));
+if (genuine.length) console.log(`Genuine emails flagged red: rules ${genuine.filter((x) => x.rulesOnly === "mismatch").length}/${genuine.length}, with the model ${genuine.filter((x) => x.withModel === "mismatch").length}/${genuine.length}`);
 console.log(`\n${agent.length}/${out.length} runs used the model · model raised the verdict to red on ${upgraded.length} · sentences shown that broke a rule: ${out.filter((x) => x.violations.length).length} · median ${out.map((x) => x.ms).sort((a, b) => a - b)[Math.floor(out.length / 2)]} ms`);
 console.log("Saved tests/live/results.jsonl");
