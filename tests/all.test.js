@@ -324,3 +324,11 @@ test("a refund for another purchase isn't called a lie about her case, and she k
   assert.equal(scam.comparison.overall, "mismatch");
   assert.ok(!/delete it/i.test(scam.note) && /keep it/i.test(scam.note));
 });
+
+test("a model-added 'case decided / money on its way' claim needs a quote too (judge round 4)", async () => {
+  const { gateModelClaims } = await import("../lib/agent.js");
+  const text = "Hi Maya, we're still checking with USPS about your package and will update you this week.";
+  const { kept, dropped } = gateModelClaims({ outcomeClaimed: false }, { outcomeClaimed: true }, text);
+  assert.ok(!kept.outcomeClaimed);
+  assert.ok(dropped.some((d) => d.startsWith("outcomeClaimed")));
+});
