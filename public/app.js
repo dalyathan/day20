@@ -1,4 +1,5 @@
 import { STR } from "./i18n.js";
+import { maya, rosa } from "./characters.js";
 
 const $app = document.getElementById("app");
 let ME = null;
@@ -56,12 +57,13 @@ const foot = () => `<div class="foot">${t("disclaimer")}<br><a href="#privacy">P
 
 function home() {
   $app.innerHTML = `
-  <section class="hero">${MOON}<div style="position:relative">
+  <section class="hero"><div class="hero-row"><div class="hero-text">
     <div class="brand" style="font-size:15px;opacity:.85">${LOGO} Day 20</div>
-    <h1 style="margin-top:36px">Day 20</h1>
+    <h1 style="margin-top:30px">Day 20</h1>
     <div class="tag">${t("tagline")}</div>
+  </div><div class="hero-maya">${maya("determined", { size: 128 })}</div></div>
     <p class="sub">${t("heroSub")}</p>
-  </div></section>
+  </section>
   <div class="pad stack">
     ${ME?.loginEnabled ? `<button class="btn paypal stacked" data-act="consent">${t("continuePP")}<span class="sub">${t("sandbox")}</span></button>` : ""}
     <button class="btn dark stacked" data-act="demo">${t("tryDemo")}<span class="sub">${t("demoSub")}</span></button>
@@ -143,8 +145,8 @@ async function checkScreen(id) {
   SHOT = null;
   $app.innerHTML = `${topbar({ back: `#case/${id}`, title: CASE.view.item ? "Case" : "Back" })}
   <div class="pad stack">
-    <h2>${t("checkEmail")}</h2>
-    <p class="small">${t("checkIntro")}</p>
+    <div class="check-head"><div id="maya-slot">${maya("determined", { size: 74 })}</div><div><h2>${t("checkEmail")}</h2>
+    <p class="small" style="margin-top:6px">${t("checkIntro")}</p></div></div>
     ${ME.demo ? `<button class="btn light" data-act="sample">📩 ${t("useSample")}</button>` : ""}
     <label for="em">${t("pasteEmail")}</label>
     <textarea id="em" placeholder="From: service@paypal.com&#10;Subject: Your refund has been issued&#10;…"></textarea>
@@ -194,6 +196,7 @@ function renderResult(r) {
   const el = document.getElementById("result");
   if (r.needText) { el.innerHTML = `<div class="card amber">${esc(r.message)}</div>`; return; }
   const c = r.comparison;
+  const slot = document.getElementById("maya-slot"); if (slot) slot.innerHTML = maya("proud", { size: 74 });
   const tone = c.overall === "mismatch" ? "red" : c.overall === "careful" ? "amber" : c.overall === "consistent" ? "emerald" : "";
   const icon = { contradicts: "✕", matches: "✓", caution: "!", cant_check: "?", neutral: "·" };
   el.innerHTML = `
@@ -213,7 +216,7 @@ async function pageScreen(id) {
   if (!CASE || CASE.view.id !== id) await loadCase(id);
   const pg = await api(`/api/cases/${encodeURIComponent(id)}/page`);
   $app.innerHTML = `${topbar({ back: `#case/${id}`, title: "Case" })}
-  <div class="pad stack"><h2>${t("pageTitle")}</h2><p class="small">${t("pageIntro")}</p>
+  <div class="pad stack"><div class="rosa-card">${rosa({ size: 250 })}<p class="small" style="margin:6px 4px 2px">${t("rosaLine")}</p></div><h2>${t("pageTitle")}</h2><p class="small">${t("pageIntro")}</p>
   <div class="page">${pg.lines.map((l, i) => `<div class="pline ${i === 0 ? "first" : ""}"><span class="src ${l.tag === "BUYER REPORTS" ? "buyer" : l.tag === "LABEL" ? "label" : l.tag === "PAYPAL RECORD" ? "record" : ""}">${esc(l.tag)}</span><div>${esc(l.text)}</div></div>`).join("")}</div>
   <button class="btn primary" data-act="copypage">${t("copy")}</button>
   <div class="card blue"><div class="kicker">${t("wherePaste")}</div><p>${t("wherePasteBody")}</p></div>
