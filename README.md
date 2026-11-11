@@ -1,5 +1,7 @@
 # Day 20
 
+[![test](https://github.com/dalyathan/day20/actions/workflows/test.yml/badge.svg)](https://github.com/dalyathan/day20/actions/workflows/test.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) · Live: **https://day20.onrender.com**
+
 **Emails can lie. Your PayPal case can't.**
 
 Day 20 is a read-only assistant for PayPal buyers with an open dispute. It reads the buyer's real case record from PayPal, checks any email about the case against that record, tells her the next step and the real deadline, and drafts a one-page case for the PayPal reviewer. Filing, escalating and closing stay with her, in PayPal.
@@ -12,6 +14,10 @@ Day 20 is a read-only assistant for PayPal buyers with an open dispute. It reads
 </p>
 
 > **Try it:** open **https://day20.onrender.com**, tap **Try it as Maya**, then **Got an email about this case? Check it** → **Use Maya's 3:14 a.m. email** → **Check it against my case**. No sign-in needed. See [TESTING.md](docs/TESTING.md).
+>
+> **Run it in 30 seconds** (Node 22.13+, no dependencies, no keys): `git clone https://github.com/dalyathan/day20 && cd day20 && npm test && npm run replay`, then open http://localhost:3000.
+>
+> **In one line:** on 60 test emails, the live model with its evidence check flagged 11 of 24 scams as contradicting the PayPal record and 0 of 36 genuine emails; every scam got at least a "go by your PayPal case" warning. Details and caveats [below](#who-tests-the-ai).
 
 ## The problem
 
@@ -21,7 +27,7 @@ Then, at 3:14 a.m. on a break, she gets an email from `service@paypal.com`: *"Th
 
 It isn't true. If she believes it and stops watching, then under PayPal's current rules her case closes by itself after 20 days unless she escalates, and a closed case can't be reopened. Ghost stores send emails like this because tired, honest buyers give up. Security researchers have reported scams delivered from PayPal's own genuine `service@paypal.com` address, by abusing PayPal features (Malwarebytes, [Dec 2025](https://www.malwarebytes.com/blog/news/2025/12/paypal-closes-loophole-that-let-scammers-send-real-emails-with-fake-purchase-notices) and [Apr 2026](https://www.malwarebytes.com/blog/news/2026/04/more-paypal-emails-hijacked-to-deliver-tech-support-scams)).
 
-In our 24-scene simulated dispute game, honest buyers mostly lost **before** review, to the clock and to traps, not **at** review.
+To design it, we role-played 24 dispute scenes with AI agents (an exercise, not data about real buyers). In those scenes, honest buyers mostly lost **before** review, to the clock and to traps, not **at** review.
 
 ## What Day 20 does
 
@@ -108,7 +114,7 @@ Every held-out set was then tuned on and moved to regression, so none is held ou
 | Run | Scams flagged red | Genuine emails flagged red | Judged by the model |
 |---|---|---|---|
 | Rules alone (no model) | 9/24 | 0/36 | 0/60 |
-| Model, no evidence check ([run 1](tests/live/deployed-2026-11-11.jsonl)) | 11/24 | **2/31** | 55/60 (credit ran out; the last 5 fell back to rules and still answered) |
+| Model, no evidence check ([run 1](tests/live/deployed-2026-11-11.jsonl)) | 11/24 | **2/31** (of the 31 genuine emails the model judged) | 55/60 (credit ran out; the last 5, all genuine, fell back to rules and still answered) |
 | Model + evidence check v1 ([run 2](tests/live/deployed-2026-11-11-gate1.jsonl)) | 10/24 | 0/36 | 60/60 |
 | Model + evidence check v2 ([run 3](tests/live/deployed-2026-11-11-gate2.jsonl)) | **11/24** | **0/36** | 60/60 |
 
@@ -133,9 +139,9 @@ npm run replay-heldout  # re-score each held-out set with the commit it was firs
 Node 22.13+, no dependencies.
 
 ```bash
-npm run replay                 # offline, with a saved copy of a real sandbox case
+npm run replay                 # offline: a saved copy of a real sandbox dispute and order (the carrier name on the tracker is filled in by hand: the order API omits it)
 cp .env.example .env           # then fill in sandbox keys
-npm run live-check             # proves every PayPal call against the sandbox
+npm run live-check             # runs every read-only PayPal call behind the case screen against the sandbox (not Log in with PayPal)
 npm run dev                    # http://localhost:3000
 ```
 
@@ -168,6 +174,6 @@ Tools: `day20_read_case`, `day20_check_email`, `day20_next_step`, `day20_draft_p
 
 ## Maintainer
 
-Surafel Melese Tariku ([@dalyathan](https://github.com/dalyathan), surafelmelese09@gmail.com). Built with Claude as a coding partner; commits co-authored by Claude are marked. Security reports: see [SECURITY.md](SECURITY.md).
+Surafel Melese Tariku ([@dalyathan](https://github.com/dalyathan), surafelmelese09@gmail.com). Most of the code and docs were written with Claude (Anthropic) as a coding partner, as the `Co-Authored-By` lines on the commits show; design decisions, testing direction and accounts are the maintainer's. Security reports: see [SECURITY.md](SECURITY.md).
 
 [Privacy and threat model](docs/PRIVACY_AND_THREATS.md) · MIT licensed · Not affiliated with or endorsed by PayPal. Not legal or financial advice. PayPal decides every case.

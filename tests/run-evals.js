@@ -21,6 +21,9 @@ for (const [g, label] of Object.entries(groups)) {
   if (t.casesOk !== t.cases && g !== "held-out" && g !== "honest") allOk = false;
   console.log(`${label}: ${t.casesOk}/${t.cases} cases, ${t.checksOk}/${t.checks} checks${t.attacks ? ` · flagged red: ${t.red}/${t.attacks}` : ""}`);
 }
+// The published rules-only red rate is a floor, not a soft number.
+const RED_FLOOR = 9;
+if (tally.regression && tally.regression.red < RED_FLOOR) { allOk = false; console.log(`✗ Scams flagged red fell to ${tally.regression.red}/${tally.regression.attacks}; published floor is ${RED_FLOOR}.`); }
 if (!tally["held-out"] && !tally.honest) {
   console.log("Held-out: none frozen right now. Every set we measured was later tuned on and moved to regression.");
   console.log("  Those first measurements are in tests/heldout/RESULTS.md; `npm run replay-heldout` reproduces them from the old commits.");

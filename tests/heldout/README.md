@@ -1,8 +1,9 @@
-# Held-out attacks
+# Held-out sets
 
-Written by fresh agents after the last change to the email checker (`docs/GAMES.md`). Frozen: we report results
-on these and don't tune the checker on them. When we fix something they reveal, they move to
-`tests/fixtures/scams/` (regression), and a new held-out set gets written.
+**Empty right now.** Every set we scored here was then tuned on and moved to `tests/fixtures/` as regression
+tests. Their first scores, against the code before tuning, are in [RESULTS.md](RESULTS.md), and
+`npm run replay-heldout` re-scores them from those commits (CI fails if a number drifts).
 
-- `emails/`: scam emails (must never read as safe; ideally flagged red)
-- `honest/`: genuine emails a buyer with an open case could get (must never be flagged red)
+To add a new held-out set, create `emails/` (scam emails: must never read as safe) or `honest/` (genuine emails:
+must never be flagged red) here, add the files **before changing any code**, run `npm run eval`, and record the
+result and commit in RESULTS.md. See CONTRIBUTING.md.

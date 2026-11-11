@@ -88,7 +88,8 @@ function evalAttackDir(dir, group, prefix) {
 
 // Attacks from games 3 and 4: we fixed the code against these, so they're regression tests, not evidence.
 export const evalScams = () => evalAttackDir(new URL("./fixtures/scams/", import.meta.url), "regression", "S");
-// Held-out: written by fresh agents after the last change, frozen, never tuned on.
+// Held-out: emails scored before any tuning. Empty today (every set was later tuned on and moved to
+// fixtures/); the first scores are in heldout/RESULTS.md and replayed by scripts/replay-heldout.mjs.
 export const evalHeldOut = () => evalAttackDir(new URL("./heldout/emails/", import.meta.url), "held-out", "H");
 
 // Genuine messages a buyer with an open case could get. Must never be flagged red.
