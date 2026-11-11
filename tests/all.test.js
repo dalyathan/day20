@@ -119,6 +119,15 @@ test("server: demo, case, check, page, disconnect", async () => {
     const pg = await call("GET", `/api/cases/${id}/page`);
     assert.ok(pg.json.plain.includes("refund so far: none"));
     assert.equal((await call("GET", "/api/cases/PP-D-00000000")).status, 404);
+    // Push subscriptions only to real browser push services (no requests to arbitrary hosts).
+    const keys = { p256dh: "x", auth: "y" };
+    assert.equal((await call("POST", "/api/push/subscribe", { endpoint: "https://169.254.169.254/latest", keys })).status, 400);
+    assert.equal((await call("POST", "/api/push/subscribe", { endpoint: "https://fcm.googleapis.com.evil.test/x", keys })).status, 400);
+    assert.equal((await call("POST", "/api/push/subscribe", { endpoint: "https://fcm.googleapis.com/fcm/send/abc", keys })).status, 200);
+    // A forged session cookie is refused.
+    const good = cookie; cookie = good.replace(/\.[^.]*$/, ".AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    assert.equal((await call("GET", "/api/cases")).status, 401);
+    cookie = good;
     await call("POST", "/api/disconnect");
     assert.equal((await call("GET", "/api/cases")).status, 401);
   } finally { server.close(); }

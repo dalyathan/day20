@@ -74,11 +74,11 @@ All of these are in the [Postman collection](postman/Day20.postman_collection.js
 
 We tested it by playing games. Agents attacked Day 20 for points, with evidence required ([docs/GAMES.md](docs/GAMES.md)).
 
-- **Scammers** were paid for every fake email the checker rated safe. In round one, 7 of 12 got through, so a real case number stopped counting as proof.
+- **Scammers** scored a point for every fake email the checker rated safe. In round one, 7 of 12 got through, so a real case number stopped counting as proof.
 - **A cheat** forged a "PAYPAL CAN CHECK" line with a newline. Buyer text is now sanitized.
 - **A rule-breaker** showed that regexes can't police what a language model means: 0 of 33 new harmful sentences were caught. **So we closed the model's output space.** It now picks sentences written by code instead of writing its own.
 - **A blind PayPal reviewer** shaped the one-page case.
-- **Honest senders** were paid for genuine emails that Day 20 flagged red. In round one, all 12 were flagged, because a checker that cries wolf makes Maya report honest sellers. We rewrote the reader to work sentence by sentence.
+- **Honest senders** scored a point for genuine emails that Day 20 flagged red. In round one, all 12 were flagged, because a checker that cries wolf makes Maya report honest sellers. We rewrote the reader to work sentence by sentence.
 - **An AI-assurance judge** caught us reporting fixed-against attacks as pass rates. We now split the numbers.
 
 `npm run eval` reports where each case came from, because a pass rate on cases we fixed against isn't evidence:
@@ -87,8 +87,10 @@ We tested it by playing games. Agents attacked Day 20 for points, with evidence 
 |---|---|---|
 | Designed | 24 dispute scenes plus test emails, written with the code | all pass |
 | Regression | 24 scam emails and 36 genuine emails from the games, fixed against | every scam at least "careful" (9/24 red); every genuine email clean |
-| **Held-out scams** | 12 game-4 emails, measured before we tuned on them | **12/12 never called safe**; 0/12 flagged red |
-| **Held-out genuine emails** | fresh writers each round, measured before tuning | **clean: 0/12 → 5/12 → 11/12** over games 5–7 |
+| **Held-out scams** | 12 game-4 emails, scored once before we tuned on them | **0/12 flagged red**; 12/12 never called safe (mostly by design) |
+| **Held-out genuine emails** | fresh writers each round, scored before tuning | **clean: 0/12 → 5/12 → 11/12** over games 5–7 |
+
+Every held-out set was then tuned on and moved to regression, so none is held out today. `npm run replay-heldout` re-scores each set with the commit it was first scored against and reproduces the numbers above ([RESULTS.md](tests/heldout/RESULTS.md)).
 
 **Live model** (`npm run live-eval`, Claude on 36 test emails, Nov 11):
 - 36 of 36 runs completed.

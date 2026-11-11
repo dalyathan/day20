@@ -21,5 +21,9 @@ for (const [g, label] of Object.entries(groups)) {
   if (t.casesOk !== t.cases && g !== "held-out" && g !== "honest") allOk = false;
   console.log(`${label}: ${t.casesOk}/${t.cases} cases, ${t.checksOk}/${t.checks} checks${t.attacks ? ` · flagged red: ${t.red}/${t.attacks}` : ""}`);
 }
+if (!tally["held-out"] && !tally.honest) {
+  console.log("Held-out: none frozen right now. Every set we measured was later tuned on and moved to regression.");
+  console.log("  Those first measurements are in tests/heldout/RESULTS.md; `npm run replay-heldout` reproduces them from the old commits.");
+}
 // Held-out failures are reported, not hidden, and don't fail the build: they're the honest number.
 process.exit(allOk ? 0 : 1);

@@ -1,8 +1,9 @@
 // Day 20 web server. Zero dependencies: Node 22 built-ins only.
 import http from "node:http";
+import crypto from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize as normPath } from "node:path";
-import { readSession, startSession, updateSession, endSession, loginEnabled, loginUrl, finishLogin } from "./lib/auth.js";
+import { readSession, startSession, updateSession, endSession, loginEnabled, loginUrl, finishLogin, safeEqual } from "./lib/auth.js";
 import { readCase, casesFor, source, DEMO_DISPUTE_ID, SCENARIOS } from "./lib/cases.js";
 import { phase, clock, money, REASONS, STATUS_WORDS } from "./lib/record.js";
 import { nextStep } from "./lib/advice.js";
@@ -42,7 +43,15 @@ const owner = (s) => (s.demo ? `demo:${s.sid}` : `pp:${s.payerId}`);
 const nowFor = (s, r) => (s.demoDay != null && r?.openedAt ? new Date(new Date(r.openedAt).getTime() + s.demoDay * DAY + 3600000) : new Date());
 const isSecure = (req) => (req.headers["x-forwarded-proto"] || "").includes("https");
 
-// Simple per-session limit on model calls.
+// Only real browser push services. Anything else would let a caller make us send requests to any host.
+const PUSH_HOSTS = [/^fcm\.googleapis\.com$/, /^updates\.push\.services\.mozilla\.com$/, /(^|\.)push\.apple\.com$/, /(^|\.)notify\.windows\.com$/];
+export function pushHostAllowed(endpoint) {
+  try { const u = new URL(endpoint); return u.protocol === "https:" && !u.port && PUSH_HOSTS.some((re) => re.test(u.hostname)); } catch { return false; }
+}
+// Render puts the caller's address first in x-forwarded-for.
+const clientIp = (req) => String(req.headers["x-forwarded-for"] || req.socket.remoteAddress || "").split(",")[0].trim();
+
+// Simple per-session and per-address limits on model calls and new demo sessions.
 const hits = new Map();
 function limited(key, max = 20, windowMs = 3600000) {
   const now = Date.now(); const arr = (hits.get(key) || []).filter((t) => t > now - windowMs);
@@ -89,6 +98,7 @@ async function api(req, res, url, s) {
     return send(res, 200, { signedIn: Boolean(s), demo: Boolean(s?.demo), name: s?.name || null, loginEnabled: loginEnabled(), source: source(), env: ENV, scenarios: Object.fromEntries(Object.entries(SCENARIOS).map(([k, v]) => [k, v.label])), lang: s?.lang || "en", demoDay: s?.demoDay ?? null, scenario: s?.scenario || null });
   }
   if (p === "/api/demo" && m === "POST") {
+    if (limited("demo:" + clientIp(req), 30)) return send(res, 429, { error: "Too many new demos from here this hour. Try again later." });
     const b = await readBody(req).catch(() => ({}));
     const sess = startSession(res, { demo: true, name: "Maya", demoDay: 7, scenario: SCENARIOS[b.scenario] ? b.scenario : null, lang: b.lang === "es" ? "es" : "en" }, isSecure(req));
     // Maya's own answers, pre-filled so the demo starts where her story does. Labelled as hers everywhere.
@@ -148,7 +158,7 @@ async function api(req, res, url, s) {
     }
 
     if (sub === "/check" && m === "POST") {
-      if (limited(o)) return send(res, 429, { error: "That's a lot of checks for one hour. Try again later." });
+      if (limited(o) || limited("ip:" + clientIp(req), 60)) return send(res, 429, { error: "That's a lot of checks for one hour. Try again later." });
       const b = await readBody(req);
       const text = str(b.text, 20000) || "";
       let image = null;
@@ -192,7 +202,7 @@ async function api(req, res, url, s) {
   if (p === "/api/push/key" && m === "GET") return send(res, 200, { key: vapidKeys().publicKey });
   if (p === "/api/push/subscribe" && m === "POST") {
     const b = await readBody(req);
-    if (!b?.endpoint || !/^https:\/\//.test(b.endpoint) || !b.keys?.p256dh || !b.keys?.auth) return send(res, 400, { error: "Bad subscription" });
+    if (!b?.endpoint || !pushHostAllowed(b.endpoint) || !b.keys?.p256dh || !b.keys?.auth) return send(res, 400, { error: "Bad subscription" });
     pushDb.add(owner(s), { endpoint: b.endpoint, keys: { p256dh: b.keys.p256dh, auth: b.keys.auth } });
     return send(res, 200, { ok: true });
   }
@@ -229,13 +239,13 @@ export const server = http.createServer(async (req, res) => {
 
     if (url.pathname === "/auth/paypal") {
       if (!loginEnabled()) return send(res, 400, "Log in with PayPal isn't configured here. Use the demo.", "text/plain");
-      const state = Math.random().toString(36).slice(2);
+      const state = crypto.randomBytes(16).toString("hex");
       res.writeHead(302, { Location: loginUrl(state), "Set-Cookie": `d20s=${state}; Path=/; HttpOnly; SameSite=Lax; Max-Age=600${isSecure(req) ? "; Secure" : ""}` });
       return res.end();
     }
     if (url.pathname === "/auth/paypal/callback") {
-      const state = (req.headers.cookie || "").match(/d20s=([a-z0-9]+)/)?.[1];
-      if (!state || state !== url.searchParams.get("state")) return send(res, 400, "Login expired. Try again.", "text/plain");
+      const state = (req.headers.cookie || "").match(/d20s=([a-f0-9]+)/)?.[1];
+      if (!state || !safeEqual(state, url.searchParams.get("state") || "")) return send(res, 400, "Login expired. Try again.", "text/plain");
       const who = await finishLogin(url.searchParams.get("code"));
       startSession(res, { demo: false, payerId: who.payerId, name: who.name, lang: "en" }, isSecure(req));
       res.writeHead(302, { Location: "/#cases" }); return res.end();
