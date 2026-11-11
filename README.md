@@ -103,12 +103,20 @@ Every held-out set was then tuned on and moved to regression, so none is held ou
 - 0 sentences shown broke an honesty rule.
 - Median time was 4.7 s.
 
-**Live model on the deployed app** (all 24 scam and 36 genuine regression emails, Nov 11, [`deployed-2026-11-11.jsonl`](tests/live/deployed-2026-11-11.jsonl)):
-- The model's reading raised scams flagged red from 9/24 (rules alone) to **11/24**.
-- It also flagged **2 of 36 genuine emails** red that the rules called "careful": a seller's conditional offer ("if you accept, the refund of $20 would be sent") and a PayPal chat transcript ("no refund has been issued yet"). The model is allowed to add flags, and here it added wrong ones.
-- 0 sentences shown broke an honesty rule. Median time 5.3 s.
-- The API credit ran out at email 56. The last 5 fell back to rules on their own and still got an answer: that's the fallback working in production.
-- **What we changed:** a model flag that can turn an email red (refund, closed case, close request, code request, off-PayPal payment) now needs the exact sentence quoted from the email. Code checks the quote is really there and is a plain statement up to the end of the quote: not negated, not conditional, not an offer. Replayed on the four sentences behind the live results, it keeps both catches and drops both false alarms. We tuned this on those two emails, so it's a fix, not evidence; it needs a fresh live run.
+**Live model on the deployed app** (all 24 scam and 36 genuine regression emails, Nov 11; reproduce with `APP_URL=… npm run live-eval-deployed`):
+
+| Run | Scams flagged red | Genuine emails flagged red | Judged by the model |
+|---|---|---|---|
+| Rules alone (no model) | 9/24 | 0/36 | 0/60 |
+| Model, no evidence check ([run 1](tests/live/deployed-2026-11-11.jsonl)) | 11/24 | **2/31** | 55/60 (credit ran out; the last 5 fell back to rules and still answered) |
+| Model + evidence check v1 ([run 2](tests/live/deployed-2026-11-11-gate1.jsonl)) | 10/24 | 0/36 | 60/60 |
+| Model + evidence check v2 ([run 3](tests/live/deployed-2026-11-11-gate2.jsonl)) | **11/24** | **0/36** | 60/60 |
+
+- Run 1: the model caught 2 reworded refund lies the keyword reader missed, but also flagged 2 genuine emails red: a seller's "if you accept, the refund of $20 would be sent" and a PayPal chat saying "no refund has been issued yet".
+- So a model flag that can turn an email red now needs evidence. A refund, closed case, close request, code request or off-PayPal payment needs the exact sentence quoted, and code checks it's in the email and isn't negated or hypothetical. Case IDs, links and tracking numbers must appear in the email as written.
+- v1 was too strict: it dropped a real catch because the sentence went on to say "it should be there". v2 judges the clause that makes the claim, lets requests be conditional ("if that works for you, please end the claim"), and keeps the engineer judge's must-stay-red sentences ("We can confirm the $66.00 is back").
+- Run 3 kept every catch and no false alarm. The check also stopped one false alarm by itself: on g5_12 the model listed a case ID that isn't in the email. 0 sentences shown broke an honesty rule; median 5.2 s.
+- These are the same 60 emails we tuned on, so they show the check works as designed, not how it does on unseen email. One run per email.
 
 Raw results: [`tests/live/`](tests/live/).
 
