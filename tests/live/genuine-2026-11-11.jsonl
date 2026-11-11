@@ -1,0 +1,13 @@
+{"note": "Run on 2026-11-11 against the deployed app (day20.onrender.com, Claude model on) through POST /api/cases/:id/check. The 12 genuine emails that caused false alarms in games 5-6, some lightly trimmed. Result: 0 of 12 flagged red."}
+{"id": "g6_01", "group": "genuine", "withModel": "careful", "mode": "agent", "modelRead": "case PP-R-UZH-10198816; 1 link(s)"}
+{"id": "g6_02", "group": "genuine", "withModel": "careful", "mode": "agent", "modelRead": "no checkable claims"}
+{"id": "g6_04", "group": "genuine", "withModel": "careful", "mode": "agent", "modelRead": "no checkable claims"}
+{"id": "g6_05", "group": "genuine", "withModel": "careful", "mode": "agent", "modelRead": "tracking 9400111899223197428490; case PP-R-UZH-10198816"}
+{"id": "g6_06", "group": "genuine", "withModel": "careful", "mode": "agent", "modelRead": "1 link(s); urgency"}
+{"id": "g6_07", "group": "genuine", "withModel": "careful", "mode": "agent", "modelRead": "partial offer; case PP-R-UZH-10198816; 1 link(s)"}
+{"id": "g6_10", "group": "genuine", "withModel": "careful", "mode": "agent", "modelRead": "no checkable claims"}
+{"id": "g6_11", "group": "genuine", "withModel": "careful", "mode": "agent", "modelRead": "partial offer"}
+{"id": "g6_12", "group": "genuine", "withModel": "careful", "mode": "agent", "modelRead": "no checkable claims"}
+{"id": "g5_01", "group": "genuine", "withModel": "careful", "mode": "agent", "modelRead": "no checkable claims"}
+{"id": "g5_06", "group": "genuine", "withModel": "careful", "mode": "agent", "modelRead": "no action needed; case PP-R-UZH-10198816"}
+{"id": "g5_11", "group": "genuine", "withModel": "careful", "mode": "agent", "modelRead": "case PP-R-UZH-10198816"}
