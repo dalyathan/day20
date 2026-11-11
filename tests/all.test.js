@@ -149,6 +149,20 @@ test("dates follow the buyer's time zone; bad zones fall back to UTC", async () 
   assert.equal(withTz("../../etc", () => fmtDate(at)), "Tue, Dec 1");
 });
 
+test("reminder days follow the buyer's time zone, not UTC", async () => {
+  const { withTz } = await import("../lib/tz.js");
+  const { suggestReminders, toICS } = await import("../lib/reminders.js");
+  // Paid and opened Nov 10 at 16:00 UTC: escalate from Nov 17 16:00 UTC, closes Nov 30 16:00 UTC.
+  // In Tokyo (UTC+9) those instants fall on Nov 18 and Dec 1, so every reminder day moves one day later.
+  const r = { ...sceneRecord({ amount: "66.00" }), openedAt: "2026-11-10T16:00:00.000Z", paidAt: "2026-11-10T16:00:00.000Z" };
+  const now = new Date("2026-11-12T00:00:00.000Z");
+  const days = (list) => list.map((x) => x.at.slice(0, 10));
+  assert.deepEqual(days(suggestReminders(r, now)), ["2026-11-17", "2026-11-25", "2026-11-28"]);
+  const tokyo = withTz("Asia/Tokyo", () => suggestReminders(r, now));
+  assert.deepEqual(days(tokyo), ["2026-11-18", "2026-11-26", "2026-11-29"]);
+  assert.match(withTz("Asia/Tokyo", () => toICS(r, suggestReminders(r, now))), /DTSTART;VALUE=DATE:20261118/);
+});
+
 test("MCP server: lists read-only tools, reads the saved case, refuses other IDs in replay", async () => {
   const { spawn } = await import("node:child_process");
   const p = spawn(process.execPath, [new URL("../mcp/server.js", import.meta.url).pathname], { env: { ...process.env, REPLAY: "1" }, stdio: ["pipe", "pipe", "pipe"] });
