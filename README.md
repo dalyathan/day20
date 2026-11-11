@@ -19,7 +19,7 @@ Maya is an ICU nurse. She bought a $66 dress for her best friend's wedding, paid
 
 Then, at 3:14 a.m. on a break, she gets an email from `service@paypal.com`: *"The seller has issued a full refund of $66.00. Your case has been resolved. No further action is required."*
 
-It isn't true. If she believes it and stops watching, then under PayPal's current rules her case closes by itself after 20 days unless she escalates, and a closed case can't be reopened. Ghost stores send emails like this because tired, honest buyers give up. Security researchers have reported scams delivered from PayPal's own genuine `service@paypal.com` address, by abusing PayPal features (e.g. Malwarebytes, 2025–2026).
+It isn't true. If she believes it and stops watching, then under PayPal's current rules her case closes by itself after 20 days unless she escalates, and a closed case can't be reopened. Ghost stores send emails like this because tired, honest buyers give up. Security researchers have reported scams delivered from PayPal's own genuine `service@paypal.com` address, by abusing PayPal features (Malwarebytes, [Dec 2025](https://www.malwarebytes.com/blog/news/2025/12/paypal-closes-loophole-that-let-scammers-send-real-emails-with-fake-purchase-notices) and [Apr 2026](https://www.malwarebytes.com/blog/news/2026/04/more-paypal-emails-hijacked-to-deliver-tech-support-scams)).
 
 In our 24-scene simulated dispute game, honest buyers mostly lost **before** review, to the clock and to traps, not **at** review.
 
@@ -37,7 +37,7 @@ In our 24-scene simulated dispute game, honest buyers mostly lost **before** rev
 
 ## Why PayPal would want this
 
-Day 20 isn't a "file more claims" button. In our 24 test scenes it tells the buyer to escalate in 10 and to tell PayPal what actually arrived in 6. In the other 8 it says **don't escalate yet, or don't escalate at all**: the seller is answering and tracking is only stalled, she should check with a neighbour first, the item arrived as described, or the purchase isn't covered. Honest sellers keep their sales, and PayPal's reviewers get fewer weak claims. The claims that do arrive come with a one-page case where the deciding fact is on line 1 and tagged with what PayPal can check, so a reviewer can decide in minutes. And buyers stop losing protection they paid for because a fake email told them to wait out the 20 days.
+Day 20 isn't a "file more claims" button. In the 24 dispute scenes we designed, it tells the buyer to escalate in 10 and to tell PayPal what actually arrived in 6. In the other 8 it says **don't escalate yet, or don't escalate at all**: the seller is answering and tracking is only stalled, she should check with a neighbour first, the item arrived as described, or the purchase isn't covered. That's designed behaviour, not a measured outcome: the aim is that honest sellers keep their sales and weak claims don't reach reviewers. The claims that do arrive come with a one-page case where the deciding fact is on line 1, tagged with what PayPal can check. (The tags are plain text a buyer could edit; they guide the reviewer, they don't prove anything.) And buyers stop losing protection because a fake email told them to wait out the 20 days. What we'd want to measure with PayPal: how many INR cases close by themselves on day 20 without escalating.
 
 ## How it works
 
@@ -69,7 +69,7 @@ Day 20 isn't a "file more claims" button. In our 24 test scenes it tells the buy
 | `GET /v1/customer/disputes`, `GET /v1/customer/disputes/{id}` | The case: status, reason, amount, outcome, dates |
 | `GET /v2/payments/captures/{id}` → `GET /v2/checkout/orders/{id}` | Ship-to address and trackers, for the delivery-ZIP check |
 | `GET /v1/shipping/trackers?transaction_id=` | Tracking numbers the seller added |
-| Log in with PayPal (`/signin/authorize`, `/v1/identity/oauth2/userinfo`) | Identity: her payer ID, used to find her cases in the sandbox demo |
+| Log in with PayPal (`/signin/authorize`, `/v1/identity/oauth2/userinfo`) | Identity: her payer ID, used to find her cases. Built and tested in the sandbox, but **off on the live demo** (it needs a return URL registered on the app); the demo uses "Try it as Maya" |
 | Sandbox setup only: `POST /v2/checkout/orders`, `/capture`, `/track` | Builds Maya's real sandbox case ([`scripts/demo.js`](scripts/demo.js)) |
 
 All of these are in the [Postman collection](postman/Day20.postman_collection.json).
@@ -99,7 +99,7 @@ Every held-out set was then tuned on and moved to regression, so none is held ou
 **Live model** (`npm run live-eval`, Claude on 36 test emails, Nov 11):
 - 36 of 36 runs completed.
 - The model's reading turned 2 "careful" results into red mismatches that the rules missed.
-- 3 prompt-injection emails changed nothing.
+- 3 prompt-injection emails: the model's verdict matched the rules-only verdict on the same email each time, and no rule was broken. (The model can only add flags, so an injection can't remove one. We didn't run injection-free copies as a separate control.)
 - 0 sentences shown broke an honesty rule.
 - Median time was 4.7 s.
 
@@ -133,11 +133,11 @@ npm run dev                    # http://localhost:3000
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/dalyathan/day20)
 
-The button uses [`render.yaml`](render.yaml) (Render Blueprint): one web service with a small disk for SQLite, and `/healthz` checks the database. With no keys it runs in replay mode on the saved sandbox case. Enter secrets in Render's form, never in the repo.
+The button uses [`render.yaml`](render.yaml) (Render Blueprint): one web service on Render's paid **starter** plan with a 1 GB disk for SQLite (about $7/month; `render.yaml` notes how to use the free plan without the disk), and `/healthz` checks the database. With no keys it runs in replay mode on the saved sandbox case. Enter secrets in Render's form, never in the repo.
 
 **Postman:** import `postman/Day20.postman_collection.json` and the environment next to it. Run request 1, then folder 3: each request saves the next ID (dispute → capture → order) and checks the response.
 
-**MCP server** (the same read-only tools for any AI assistant):
+**MCP server** (the same read-only tools for any AI assistant that speaks MCP; with merchant sandbox keys it reads cases on that account, and with no keys only the saved demo case):
 
 ```bash
 claude mcp add day20 -- node /path/to/day20/mcp/server.js

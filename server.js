@@ -49,8 +49,14 @@ const PUSH_HOSTS = [/^fcm\.googleapis\.com$/, /^updates\.push\.services\.mozilla
 export function pushHostAllowed(endpoint) {
   try { const u = new URL(endpoint); return u.protocol === "https:" && !u.port && PUSH_HOSTS.some((re) => re.test(u.hostname)); } catch { return false; }
 }
-// Render puts the caller's address first in x-forwarded-for.
-const clientIp = (req) => String(req.headers["x-forwarded-for"] || req.socket.remoteAddress || "").split(",")[0].trim();
+// The caller's address. A client can put anything at the start of x-forwarded-for; the proxy appends the
+// real address, so take the last entry. Cloudflare's own header wins when present (it overwrites it).
+export function clientIp(req) {
+  const cf = req.headers["cf-connecting-ip"] || req.headers["true-client-ip"];
+  if (cf) return String(cf).trim();
+  const xff = String(req.headers["x-forwarded-for"] || "").split(",").map((x) => x.trim()).filter(Boolean);
+  return xff.length ? xff[xff.length - 1] : String(req.socket?.remoteAddress || "");
+}
 
 // Simple per-session and per-address limits on model calls and new demo sessions.
 const hits = new Map();
@@ -58,6 +64,8 @@ function limited(key, max = 20, windowMs = 3600000) {
   const now = Date.now(); const arr = (hits.get(key) || []).filter((t) => t > now - windowMs);
   arr.push(now); hits.set(key, arr); return arr.length > max;
 }
+// Forget keys with no recent hits, so made-up keys can't grow memory.
+setInterval(() => { const cut = Date.now() - 3600000; for (const [k, v] of hits) if (!v.some((t) => t > cut)) hits.delete(k); }, 600000).unref();
 
 function caseSummary(r, s, f) {
   const now = nowFor(s, r);
