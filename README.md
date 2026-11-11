@@ -99,8 +99,9 @@ We tested it by playing games. Agents attacked Day 20 for points, with evidence 
 | Regression | 24 scam emails and 36 genuine emails from the games, fixed against | every scam at least "careful" (9/24 red); no genuine email flagged red |
 | **Held-out scams** (rules only, no model) | 12 game-4 emails, scored once before we tuned on them | **0/12 flagged red**; 12/12 never called safe (mostly by design) |
 | **Held-out genuine emails** (rules only, no model) | fresh writers each round, scored before tuning | **not flagged red: 0/12 → 5/12 → 11/12** over games 5–7 |
+| **Held-out genuine emails, set 8** (rules, and the live model 3×) | 12 by a fresh writer who never saw the code, frozen before scoring | **not flagged red: 11/12 with rules, 11/12 in each live-model run**; the model added no false alarm. The miss is a real refund from a different shop ([RESULTS.md](tests/heldout/RESULTS.md)) |
 
-Every held-out set was then tuned on and moved to regression, so none is held out today. `npm run replay-heldout` re-scores each set with the commit it was first scored against and reproduces the numbers above ([RESULTS.md](tests/heldout/RESULTS.md)).
+Sets 4–7 were then tuned on and moved to regression; set 8 is still held out. `npm run replay-heldout` re-scores each set with the commit it was first scored against and reproduces the numbers above ([RESULTS.md](tests/heldout/RESULTS.md)).
 
 **Live model** (`npm run live-eval`, Claude on 36 test emails, Nov 11):
 - 36 of 36 runs completed.
