@@ -91,16 +91,18 @@ export const evalScams = () => evalAttackDir(new URL("./fixtures/scams/", import
 // Held-out: written by fresh agents after the last change, frozen, never tuned on.
 export const evalHeldOut = () => evalAttackDir(new URL("./heldout/emails/", import.meta.url), "held-out", "H");
 
-// Held-out honest emails: genuine messages a buyer with an open case could get. Must never be flagged red.
-export function evalHonest() {
-  const dir = new URL("./heldout/honest/", import.meta.url);
+// Genuine messages a buyer with an open case could get. Must never be flagged red.
+// fixtures/honest: game 5, used to fix false alarms (regression). heldout/honest: written later, frozen.
+export const evalHonest = () => [...honestDir("./fixtures/honest/", "regression-honest", "R"), ...honestDir("./heldout/honest/", "honest", "G")];
+function honestDir(rel, group, prefix) {
+  const dir = new URL(rel, import.meta.url);
   const r = sceneRecord({ amount: "66.00" });
   let files = [];
   try { files = readdirSync(dir).filter((f) => f.endsWith(".txt")).sort(); } catch { return []; }
   return files.map((f) => {
     const text = readFileSync(new URL(f, dir), "utf8");
     const cmp = compare(extractClaims(text), r, at(7));
-    return { id: `G${f.replace(/\D+/g, "")}`, group: "honest", who: text.match(/^Subject:\s*(.+)$/m)?.[1]?.slice(0, 60) || f, kind: cmp.overall,
+    return { id: `${prefix}${f.replace(/\D+/g, "")}`, group, who: text.match(/^Subject:\s*(.+)$/m)?.[1]?.slice(0, 60) || f, kind: cmp.overall,
       checks: [{ name: "a genuine email is never flagged red", pass: cmp.overall !== "mismatch", detail: cmp.findings.filter((x) => x.verdict === "contradicts").map((x) => x.says).join("; ") }] };
   });
 }

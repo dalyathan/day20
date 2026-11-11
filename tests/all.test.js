@@ -12,7 +12,7 @@ const { runCheck } = await import("../lib/agent.js");
 const { sceneRecord, at } = await import("./scenarios.js");
 
 test("eval suite: designed and regression cases pass (held-out is reported by npm run eval, not gated)", () => {
-  for (const r of runAll().filter((x) => x.group !== "held-out" && x.group !== "honest")) for (const c of r.checks.filter((c) => !c.soft)) assert.ok(c.pass, `${r.id} ${c.name}: ${c.detail}`);
+  for (const r of runAll().filter((x) => !["held-out", "honest"].includes(x.group))) for (const c of r.checks.filter((c) => !c.soft)) assert.ok(c.pass, `${r.id} ${c.name}: ${c.detail}`);
 });
 
 test("honesty rules catch what the AI must never write", () => {
