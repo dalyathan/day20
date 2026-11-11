@@ -15,6 +15,13 @@ test("eval suite: designed and regression cases pass (held-out is reported by np
   for (const r of runAll().filter((x) => !["held-out", "honest"].includes(x.group))) for (const c of r.checks.filter((c) => !c.soft)) assert.ok(c.pass, `${r.id} ${c.name}: ${c.detail}`);
 });
 
+test("the rules-only red rate on the scam regression set doesn't drop below what we publish (9/24)", () => {
+  const scams = runAll().filter((x) => x.group === "regression");
+  const red = scams.filter((x) => x.kind === "mismatch").length;
+  assert.equal(scams.length, 24);
+  assert.ok(red >= 9, `only ${red}/24 scams flagged red; the README says 9/24 for rules alone`);
+});
+
 test("honesty rules catch what the AI must never write", () => {
   const bad = {
     R1: "Good news, I escalated your case to PayPal.",

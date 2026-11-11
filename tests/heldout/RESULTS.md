@@ -14,10 +14,10 @@ It checks out each commit below in a temporary git worktree and scores the same 
 
 | Set | Code it was scored against | Result |
 |---|---|---|
-| Game 4 scam emails (`fixtures/scams/s2_*`), written by a fresh scammer agent | `ab9d746` | **12/12 not called safe; 0/12 flagged red** |
-| Game 5 genuine emails (`fixtures/honest/g5_*`) | `b0c3630` | **0/12 clean** (all 12 false alarms) |
-| Game 6 genuine emails (`g6_*`), written after the game-5 fixes | `29d4f66` | **5/12 clean** |
-| Game 7 genuine emails (`g7_*`), written after the game-6 fixes | `b61f13f` | **11/12 clean** |
+| Game 4 scam emails (`fixtures/scams/s2_*`), written by a fresh scammer agent | `6344661` | **12/12 not called safe; 0/12 flagged red** |
+| Game 5 genuine emails (`fixtures/honest/g5_*`) | `feb5756` | **0/12 clean** (all 12 false alarms) |
+| Game 6 genuine emails (`g6_*`), written after the game-5 fixes | `abe96e1` | **5/12 clean** |
+| Game 7 genuine emails (`g7_*`), written after the game-6 fixes | `2de19d6` | **11/12 clean** |
 
 What "not called safe" means: Day 20 only says an email agrees with the case when it claims a refund
 or a closed case *and* PayPal's record agrees. A scam rarely does, so "never called safe" is mostly
