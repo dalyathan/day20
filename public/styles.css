@@ -168,4 +168,3 @@ body { overflow-x: hidden; }
 .mark.neutral { background: #b8bfcc; }
 details.why .finding:first-of-type { border-top: 0; }
 .record td.mono { font-family: ui-monospace, Menlo, monospace; font-size: 13px; word-break: break-all; }
-.btn.stacked { flex-direction: column; gap: 2px; }

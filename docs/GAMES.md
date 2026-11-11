@@ -1,12 +1,12 @@
 # Who tests the AI? The games we played
 
-We tested Still Open by playing games. AI agents took the roles of the people who'd attack it or depend on it, and each role was paid in points for what it found. Points counted only with evidence: the exact input, the exact output, and why it mattered. A made-up or unreproducible claim cost 10 points. After each round we decided on fixes and played again.
+We tested Day 20 by playing games. AI agents took the roles of the people who'd attack it or depend on it, and each role was paid in points for what it found. Points counted only with evidence: the exact input, the exact output, and why it mattered. A made-up or unreproducible claim cost 10 points. After each round we decided on fixes and played again.
 
 The full briefs and verdicts are kept with the project's working files. This page summarizes them.
 
 ## Game 1–2: the dispute itself (24 scenes)
 
-**Cast:** buyers (honest, time-poor, at fault, opportunist, not covered), sellers (ghost store, honest, slow, a big brand with its own dispute bot), Still Open in several versions, and **Rosa**, a blind PayPal reviewer.
+**Cast:** buyers (honest, time-poor, at fault, opportunist, not covered), sellers (ghost store, honest, slow, a big brand with its own dispute bot), Day 20 in several versions, and **Rosa**, a blind PayPal reviewer.
 
 **Findings:**
 - Rosa matched the fair outcome in 16 of 16 claims and caught every fraud attempt.
@@ -15,7 +15,7 @@ The full briefs and verdicts are kept with the project's working files. This pag
 
 These 24 scenes became the eval suite (`tests/scenarios.js`).
 
-## Game 3: can Still Open be beaten?
+## Game 3: can Day 20 be beaten?
 
 | Role | Paid for | What they found | What we changed |
 |---|---|---|---|
@@ -35,7 +35,7 @@ These 24 scenes became the eval suite (`tests/scenarios.js`).
 
 ## Games 5–7: does it cry wolf?
 
-A checker that calls everything a scam is useless. It would also make Maya report an honest seller who's trying to fix things. So we paid **honest senders** for false alarms: genuine emails that are true for her record (a seller asking for time, PayPal's own case notices, USPS, her bank, her own calendar reminder, a friend's advice) that Still Open flagged red.
+A checker that calls everything a scam is useless. It would also make Maya report an honest seller who's trying to fix things. So we paid **honest senders** for false alarms: genuine emails that are true for her record (a seller asking for time, PayPal's own case notices, USPS, her bank, her own calendar reminder, a friend's advice) that Day 20 flagged red.
 
 | Round | Genuine emails flagged red | What we changed |
 |---|---|---|

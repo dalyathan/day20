@@ -21,7 +21,7 @@ function toast(msg) {
 async function copy(text) { try { await navigator.clipboard.writeText(text); toast(t("copied")); } catch { toast(text); } }
 
 const MOON = `<svg class="moon" viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="g" cx="40%" cy="40%"><stop offset="0" stop-color="#fdf3d8"/><stop offset="1" stop-color="#e9d6a6"/></radialGradient></defs><circle cx="100" cy="100" r="58" fill="url(#g)" opacity=".9"/><circle cx="126" cy="86" r="56" fill="#0e1726"/>${Array.from({ length: 20 }, (_, i) => { const a = (i / 20) * Math.PI * 2 - Math.PI / 2; return `<circle cx="${100 + 84 * Math.cos(a)}" cy="${100 + 84 * Math.sin(a)}" r="${i < 7 ? 4 : 3}" fill="${i < 7 ? "#7bd3a8" : "#33425f"}"/>`; }).join("")}</svg>`;
-const LOGO = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 1 1-6.7 2.8" fill="none" stroke="#7bd3a8" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="12" r="2.6" fill="#f3efe6"/></svg>`;
+const LOGO = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="#7bd3a8" stroke-width="2" stroke-dasharray="3 2.2"/><text x="12" y="16" text-anchor="middle" font-size="10" font-family="Georgia,serif" fill="#f3efe6">20</text></svg>`;
 
 function ring(view) {
   const c = view.clock, ph = view.phase;
@@ -36,7 +36,7 @@ function ring(view) {
 }
 
 function topbar({ back = null, title = "" } = {}) {
-  return `<header class="top"><div class="row">${back ? `<a class="back" href="${back}">‹ ${esc(title || "Back")}</a>` : `<a class="brand" href="#">${LOGO} Still Open</a>`}<div><button class="iconbtn" data-act="lang">${t("lang")}</button>${ME?.signedIn ? `<button class="iconbtn" data-act="menu" aria-label="Settings">⋯</button>` : ""}</div></div>${ME?.demo ? demobar() : ""}</header>`;
+  return `<header class="top"><div class="row">${back ? `<a class="back" href="${back}">‹ ${esc(title || "Back")}</a>` : `<a class="brand" href="#">${LOGO} Day 20</a>`}<div><button class="iconbtn" data-act="lang">${t("lang")}</button>${ME?.signedIn ? `<button class="iconbtn" data-act="menu" aria-label="Settings">⋯</button>` : ""}</div></div>${ME?.demo ? demobar() : ""}</header>`;
 }
 
 let DEMO = { day: 7, scenario: null };
@@ -57,14 +57,14 @@ const foot = () => `<div class="foot">${t("disclaimer")}<br><a href="#privacy">P
 function home() {
   $app.innerHTML = `
   <section class="hero">${MOON}<div style="position:relative">
-    <div class="brand" style="font-size:15px;opacity:.85">${LOGO} Still Open</div>
-    <h1 style="margin-top:36px">Still Open</h1>
+    <div class="brand" style="font-size:15px;opacity:.85">${LOGO} Day 20</div>
+    <h1 style="margin-top:36px">Day 20</h1>
     <div class="tag">${t("tagline")}</div>
     <p class="sub">${t("heroSub")}</p>
   </div></section>
   <div class="pad stack">
-    ${ME?.loginEnabled ? `<button class="btn paypal stacked" data-act="consent">${t("continuePP")}<span class="sub">${t("sandbox")}</span></button>` : ""}
-    <button class="btn dark stacked" data-act="demo">${t("tryDemo")}<span class="sub">${t("demoSub")}</span></button>
+    ${ME?.loginEnabled ? `<button class="btn paypal" data-act="consent">${t("continuePP")} <span class="sub">· ${t("sandbox")}</span></button>` : ""}
+    <button class="btn dark" data-act="demo">${t("tryDemo")}<span class="sub">· ${t("demoSub")}</span></button>
     <div class="card"><div class="kicker">${t("does")}</div><ul class="list does"><li>${t("does1")}</li><li>${t("does2")}</li><li>${t("does3")}</li><li>${t("does4")}</li></ul></div>
     <div class="card"><div class="kicker">${t("never")}</div><ul class="list never"><li>${t("never1")}</li><li>${t("never2")}</li><li>${t("never3")}</li><li>${t("never4")}</li></ul></div>
     <div style="text-align:right"><button class="iconbtn" style="color:var(--muted)" data-act="lang">${t("lang")}</button></div>
@@ -205,7 +205,7 @@ function renderResult(r) {
       <div class="adv">${esc(f.advice)}</div></div></div>`).join("")}
     ${c.senderNote ? `<p class="tiny" style="margin-top:8px">${esc(c.senderNote)}</p>` : ""}</details>
   ${r.mode === "agent" ? `<div class="bubble"><div class="who">${t("aiNote")}</div>${esc(r.note)}</div>` : ""}
-  <details><summary>${t("whatDid")}</summary><div class="trace">${r.trace.map((x) => `<div><b>${esc(x.step)}</b> → ${esc(x.result)}</div>`).join("")}${r.violations?.length ? `<div>${t("rulesBroken")}: ${esc(r.violations.join(", "))}</div>` : ""}<div>${r.mode === "agent" ? "Mode: AI model + rules" : "Mode: rules only (no AI model)"}</div></div></details>`;
+  <details><summary>${t("whatDid")}</summary><div class="trace">${r.trace.map((x) => `<div><b>${esc(x.step)}</b> → ${esc(x.result)}</div>`).join("")}${r.violations?.length ? `<div>${t("rulesBroken")}: ${esc(r.violations.join(", "))}</div>` : ""}<div>${r.mode === "agent" ? "Mode: AI model + rules" : "Mode: Day 20's rules (no AI model)"}</div></div></details>`;
   el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -227,7 +227,7 @@ async function factsScreen(id) {
   const f = { ...CASE.facts };
   const chips = (name, opts) => `<div class="choices" data-name="${name}">${opts.map(([v, l]) => `<button type="button" class="choice" data-v="${v}" aria-pressed="${String(f[name]) === v}">${l}</button>`).join("")}</div>`;
   $app.innerHTML = `${topbar({ back: `#case/${id}`, title: "Case" })}
-  <div class="pad"><h2>${t("whatHappened")}</h2><p class="small">This is your own report. Still Open labels it "BUYER REPORTS" everywhere, except where PayPal can check it.</p>
+  <div class="pad"><h2>${t("whatHappened")}</h2><p class="small">This is your own report. Day 20 labels it "BUYER REPORTS" everywhere, except where PayPal can check it.</p>
   <label>${t("arrived")}</label>${chips("received", [["no", t("no")], ["wrong_item", t("wrongItem")], ["not_as_described", t("notAsDescribed")], ["yes", t("yes")]])}
   <label>${t("trackSays")}</label>${chips("tracking", [["delivered", t("delivered")], ["in_transit", t("inTransit")], ["stalled", t("stalled")], ["label_only", t("labelOnly")], ["none", t("noTracking")]])}
   <div id="delw"><label>${t("deliveredWhere")}</label><div class="grid2"><input type="text" id="dcity" placeholder="${t("city")}" value="${esc(f.deliveredCity || "")}"><input type="text" id="dzip" inputmode="numeric" placeholder="${t("zip")}" value="${esc(f.deliveredZip || "")}"></div></div>
@@ -257,7 +257,7 @@ async function remindersScreen(id) {
   const list = CASE.reminders;
   $app.innerHTML = `${topbar({ back: `#case/${id}`, title: "Case" })}
   <div class="pad stack"><h2>${t("remTitle")}</h2><p class="small">${t("remBody")}</p>
-  ${list.length ? `<div class="card">${list.map((r) => `<div style="padding:8px 0;border-top:1px solid var(--line)"><b>${fmt(r.at)}</b><div class="small">${esc(r.title.replace(/^Still Open: /, ""))} · ${esc(r.why)}</div></div>`).join("")}</div>` : `<div class="card">${CASE.view.phase === "open" ? "No reminders left before the deadline." : "The 20-day clock isn't running on this case, so there's nothing to remind you about."}</div>`}
+  ${list.length ? `<div class="card">${list.map((r) => `<div style="padding:8px 0;border-top:1px solid var(--line)"><b>${fmt(r.at)}</b><div class="small">${esc(r.title.replace(/^Day 20: /, ""))} · ${esc(r.why)}</div></div>`).join("")}</div>` : `<div class="card">${CASE.view.phase === "open" ? "No reminders left before the deadline." : "The 20-day clock isn't running on this case, so there's nothing to remind you about."}</div>`}
   ${list.length ? `
   <label for="hour">${t("remTime")}</label><select id="hour" class="field">${Array.from({ length: 24 }, (_, h) => `<option value="${h}" ${h === 16 ? "selected" : ""}>${String(h).padStart(2, "0")}:00</option>`).join("")}</select>
   <label>${t("remHow")}</label><div class="choices" id="chan"><button class="choice" data-v="push" aria-pressed="true">${t("push")}</button><button class="choice" data-v="email" aria-pressed="false">${t("email")}</button></div>
@@ -289,10 +289,10 @@ async function enablePush() {
 
 function privacyScreen() {
   $app.innerHTML = `${topbar({ back: "#", title: "Back" })}<div class="pad stack"><h2>Privacy &amp; safety</h2>
-  <div class="card"><div class="kicker">What Still Open stores</div><ul class="list"><li>Your session, and your PayPal payer ID if you connect PayPal (not your password, not PayPal's access token).</li><li>Your answers about tracking and delivery.</li><li>The result of each email check (claims and findings, not the email itself).</li><li>Reminders you set, and your email address if you choose email reminders.</li></ul></div>
+  <div class="card"><div class="kicker">What Day 20 stores</div><ul class="list"><li>Your session, and your PayPal payer ID if you connect PayPal (not your password, not PayPal's access token).</li><li>Your answers about tracking and delivery.</li><li>The result of each email check (claims and findings, not the email itself).</li><li>Reminders you set, and your email address if you choose email reminders.</li></ul></div>
   <div class="card"><div class="kicker">${t("never")}</div><ul class="list never"><li>${t("never1")}</li><li>${t("never2")}</li><li>${t("never3")}</li><li>${t("never4")}</li></ul></div>
-  <div class="card"><div class="kicker">How to tell the real Still Open from a fake</div><p>The real Still Open never emails or texts you a link to sign in, never asks for a code, and never asks you to pay anything. Reminders only tell you to open the PayPal app yourself.</p></div>
-  <div class="card"><div class="kicker">Kill switch</div><p>"Disconnect" deletes everything Still Open holds about you, at once.</p>${ME?.signedIn ? `<button class="btn ghost" data-act="disconnect">${t("disconnect")}</button>` : ""}</div>
+  <div class="card"><div class="kicker">How to tell the real Day 20 from a fake</div><p>The real Day 20 never emails or texts you a link to sign in, never asks for a code, and never asks you to pay anything. Reminders only tell you to open the PayPal app yourself.</p></div>
+  <div class="card"><div class="kicker">Kill switch</div><p>"Disconnect" deletes everything Day 20 holds about you, at once.</p>${ME?.signedIn ? `<button class="btn ghost" data-act="disconnect">${t("disconnect")}</button>` : ""}</div>
   <p class="small">${t("disclaimer")}</p></div>`;
 }
 
