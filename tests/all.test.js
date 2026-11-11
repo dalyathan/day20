@@ -255,6 +255,18 @@ test("refunds made on the payment count; a partial refund of unknown size is nev
   assert.equal(money(r.refund), "a partial amount");
 });
 
+test("a partial refund of unknown size is Spanish on the Spanish screens", async () => {
+  const { money } = await import("../lib/record.js");
+  const { esComparison } = await import("../lib/es.js");
+  const partial = { value: null, partial: true, currency: "USD" };
+  assert.equal(money(partial, "es"), "una cantidad parcial");
+  assert.equal(money(partial), "a partial amount");
+  const r = { ...sceneRecord({ amount: "66.00" }), refund: partial };
+  const out = esComparison({ overall: "consistent", findings: [], senderNote: false }, r, at(7));
+  assert.match(out.bottomLine, /un reembolso de una cantidad parcial/);
+  assert.ok(!/a partial amount/.test(out.bottomLine), out.bottomLine);
+});
+
 test("rate limits key on the real address: proxy headers only when the deployment trusts that proxy", async () => {
   const { clientIp } = await import("../server.js");
   const req = (h) => ({ headers: h, socket: { remoteAddress: "10.0.0.1" } });

@@ -90,7 +90,7 @@ function caseSummary(r, s, f) {
       amount: money(r.amount),
       refund: r.refund ? money(r.refund) : "none",
       status: s.lang === "es" ? { open: "Abierto", with_paypal: "Con un revisor de PayPal", your_turn: "Esperando tu respuesta", resolved: "Resuelto" }[ph] : STATUS_WORDS[ph],
-      refundWord: s.lang === "es" ? (r.refund ? money(r.refund) : "ninguno") : null,
+      refundWord: s.lang === "es" ? (r.refund ? money(r.refund, "es") : "ninguno") : null,
       rawStatus: r.status,
       phase: ph,
       clock: clock(r, now),
