@@ -313,3 +313,14 @@ test("the PayPal client refuses writes unless a setup script opts in (read-only 
     assert.equal(called, 1);
   } finally { globalThis.fetch = realFetch; }
 });
+
+test("a refund for another purchase isn't called a lie about her case, and she keeps scam emails as evidence (judge round 3)", async () => {
+  const { readFileSync } = await import("node:fs");
+  const r = await runCheck({ record: sceneRecord(), facts: {}, text: readFileSync(new URL("./heldout/honest/h8_01.txt", import.meta.url), "utf8"), now: at(7) });
+  assert.equal(r.comparison.overall, "careful");
+  assert.equal(r.comparison.report, false);
+  assert.ok(r.comparison.findings.some((f) => f.id === "refund_other"));
+  const scam = await runCheck({ record: sceneRecord(), facts: {}, now: at(7), text: "From: PayPal <service@paypal.com>\nSubject: Refund issued\n\nThe seller has issued a full refund of $66.00 USD. Your case has been resolved."});
+  assert.equal(scam.comparison.overall, "mismatch");
+  assert.ok(!/delete it/i.test(scam.note) && /keep it/i.test(scam.note));
+});
