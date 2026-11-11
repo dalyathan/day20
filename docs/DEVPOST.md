@@ -41,7 +41,7 @@ We tested it the way it would be attacked, as games with incentives:
 - **A blind reviewer ("Rosa")** judged the one-page cases. She caught a buyer's lie because the line was tagged as checkable.
 - **An AI-assurance judge** caught us reporting fixed-against attacks as pass rates.
 
-Every successful attack became a regression test, and we report a **held-out** set separately. Fresh scammer agents wrote 12 new emails after our last change. Day 20 called **none of them safe**, and, by construction, every result showed PayPal's real refund status and deadline. It flagged **0 of 12** as an outright contradiction, because paraphrased lies slip past keyword reading. That's the honest number, and it's the model's job to raise it.
+Every successful attack became a regression test, and we report a **held-out** set separately. Fresh scammer agents wrote 12 new emails after our last change. Day 20 called **none of them safe**, and, by construction, every result showed PayPal's real refund status and deadline. It flagged **0 of 12** as an outright contradiction, because paraphrased lies slip past keyword reading. That's the honest number, and it's the model's job to raise it. In a live run on 36 test emails, Claude's reading turned 2 of those "careful" results red, 3 prompt-injection emails changed nothing, and no sentence shown broke a rule.
 
 ## Challenges
 

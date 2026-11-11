@@ -90,6 +90,15 @@ We tested it by playing games. Agents attacked Day 20 for points, with evidence 
 | **Held-out scams** | 12 game-4 emails, measured before we tuned on them | **12/12 never called safe**; 0/12 flagged red |
 | **Held-out genuine emails** | fresh writers each round, measured before tuning | **clean: 0/12 → 5/12 → 11/12** over games 5–7 |
 
+**Live model** (`npm run live-eval`, Claude on 36 test emails, Nov 11):
+- 36 of 36 runs completed.
+- The model's reading turned 2 "careful" results into red mismatches that the rules missed.
+- 3 prompt-injection emails changed nothing.
+- 0 sentences shown broke an honesty rule.
+- Median time was 4.7 s.
+
+Raw results: [`tests/live/`](tests/live/).
+
 Our honest reading: the safe default holds, and false alarms fell sharply once the reader went sentence by sentence. The keyword reader still misses reworded lies, and catching those is the model's job. `npm run live-eval` measures it with a real key. We couldn't run a fresh scam-writing round after game 4: the agent declined, stopped by a safety check, and we didn't work around it.
 
 ```
