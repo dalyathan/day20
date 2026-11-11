@@ -6,10 +6,11 @@ let ME = null;
 let lang = localStorage.getItem("d20lang") || "en";
 const t = (k) => (STR[lang] && STR[lang][k]) || STR.en[k] || k;
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const fmt = (iso) => new Date(iso).toLocaleDateString(lang === "es" ? "es-US" : "en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" });
+const TZ = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"; } catch { return "UTC"; } })();
+const fmt = (iso) => new Date(iso).toLocaleDateString(lang === "es" ? "es-US" : "en-US", { weekday: "short", month: "short", day: "numeric" });
 
 async function api(path, opts = {}) {
-  const res = await fetch(path, { credentials: "same-origin", headers: { "Content-Type": "application/json" }, ...opts, body: opts.body ? JSON.stringify(opts.body) : undefined });
+  const res = await fetch(path, { credentials: "same-origin", headers: { "Content-Type": "application/json", "x-tz": TZ }, ...opts, body: opts.body ? JSON.stringify(opts.body) : undefined });
   const json = await res.json().catch(() => ({}));
   if (!res.ok) throw Object.assign(new Error(json.error || `Error ${res.status}`), { status: res.status });
   return json;
@@ -104,7 +105,8 @@ function stepCard(s) {
   if (s.action) {
     const href = s.action.href === "paypal:resolution" ? `${ME.env === "live" ? "https://www.paypal.com" : "https://www.sandbox.paypal.com"}/resolutioncenter` : s.action.href.startsWith("#") ? `#${s.action.href.slice(1)}/${CASE.view.id}` : s.action.href;
     const ext = /^https?:/.test(href);
-    action = `<a class="btn ${s.action.href === "paypal:resolution" ? "paypal" : "dark"}" href="${esc(href)}" ${ext ? 'target="_blank" rel="noopener"' : ""} style="margin-top:12px">${esc(s.action.label)}</a>${s.action.note ? `<p class="tiny" style="margin:8px 0 0">${esc(s.action.note)}</p>` : ""}`;
+    const toPP = s.action.href === "paypal:resolution";
+    action = `<a class="btn ${toPP ? "outbound" : "dark"}" href="${esc(href)}" ${ext ? 'target="_blank" rel="noopener"' : ""} style="margin-top:12px">${esc(s.action.label)}${toPP ? " ↗" : ""}</a>${toPP ? `<p class="tiny" style="margin:8px 0 0">${esc(t("notPayPal"))}</p>` : ""}${s.action.note ? `<p class="tiny" style="margin:8px 0 0">${esc(s.action.note)}</p>` : ""}`;
   }
   return `<div class="card ${tone}"><div class="kicker">${t("nextStep")}</div><h3>${esc(s.title)}</h3><p style="margin-top:6px">${esc(s.body)}</p>${action}</div>`;
 }

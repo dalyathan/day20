@@ -10,8 +10,9 @@ import { nextStep } from "./lib/advice.js";
 import { esStep } from "./lib/es.js";
 import { buildPage, cleanText, cleanZip, cleanCity } from "./lib/onepage.js";
 import { runCheck } from "./lib/agent.js";
+import { withTz } from "./lib/tz.js";
 import { suggestReminders, toICS } from "./lib/reminders.js";
-import { facts as factsDb, checks as checksDb, push as pushDb, reminders as remDb, forget, cleanup } from "./lib/store.js";
+import { dbOk, facts as factsDb, checks as checksDb, push as pushDb, reminders as remDb, forget, cleanup } from "./lib/store.js";
 import { vapidKeys, sendPush, sendEmail } from "./lib/push.js";
 import { WEB, ENV } from "./lib/paypal.js";
 
@@ -167,6 +168,7 @@ async function api(req, res, url, s) {
       const f = factsDb.get(o, id);
       const history = checksDb.list(o, id);
       const result = await runCheck({ record: r, facts: f, text, image, history, now: nowFor(s, r), lang: s.lang });
+      console.log(JSON.stringify({ ev: "check", mode: result.mode, verdict: result.comparison?.overall || null, findings: (result.comparison?.findings || []).map((x) => x.id), notes: result.noteIds || [], ruleHits: result.violations || [], modelError: Boolean(result.modelError) }));
       if (!result.needText) checksDb.add(o, id, nowFor(s, r).toISOString(), { overall: result.comparison.overall, findings: result.comparison.findings, headline: result.comparison.headline, mode: result.mode });
       return send(res, 200, result);
     }
@@ -232,10 +234,12 @@ async function serveStatic(res, pathname) {
   } catch { send(res, 404, "Not found", "text/plain"); }
 }
 
-export const server = http.createServer(async (req, res) => {
+export const server = http.createServer((req, res) => withTz(req.headers["x-tz"], () => handle(req, res)));
+
+async function handle(req, res) {
   const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
   try {
-    if (url.pathname === "/healthz") return send(res, 200, { ok: true, source: source(), env: ENV });
+    if (url.pathname === "/healthz") { const ok = dbOk(); return send(res, ok ? 200 : 503, { ok, db: ok, source: source(), env: ENV }); }
 
     if (url.pathname === "/auth/paypal") {
       if (!loginEnabled()) return send(res, 400, "Log in with PayPal isn't configured here. Use the demo.", "text/plain");
@@ -257,7 +261,7 @@ export const server = http.createServer(async (req, res) => {
     console.error(e);
     send(res, e.status === 413 ? 413 : 500, { error: e.status === 413 ? "That file is too big." : "Something went wrong reading PayPal. Try again in a minute." });
   }
-});
+}
 
 // Reminder sender: once a minute, send what's due. Push first, email as fallback.
 async function sendDue() {

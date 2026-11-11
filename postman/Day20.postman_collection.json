@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Day 20 \u00b7 buyer-side PayPal dispute flow",
-    "description": "Every PayPal call Day 20 makes, in order, plus Day 20's own API. Read-only except the sandbox setup folder.\n\nPut your sandbox client_id and client_secret in the collection variables. Never commit them.",
+    "description": "Every PayPal call Day 20 makes, in order, plus Day 20's own API. Read-only except the sandbox setup folder.\n\nImport the environment file next to this collection and put your sandbox client_id and client_secret there (the secret is a secret-type variable). Then run 1 and folder 3 in order: each request saves the next ID (dispute -> capture -> order), so the chain works on your own sandbox case. Never commit keys.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -235,7 +235,7 @@
                 }
               ]
             },
-            "description": "Find cases. Day 20 matches them to the signed-in buyer's payer ID.",
+            "description": "Find cases. Day 20 matches them to the signed-in buyer's payer ID. Sets dispute_id to the first case if none is set.",
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -246,7 +246,20 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "if (!pm.collectionVariables.get('dispute_id') && j.items && j.items.length) pm.collectionVariables.set('dispute_id', j.items[0].dispute_id);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Read the case",
@@ -274,7 +287,7 @@
                 "{{dispute_id}}"
               ]
             },
-            "description": "Status, reason, amount, refund outcome, dates: the record Day 20 checks emails against.",
+            "description": "Status, reason, amount, refund outcome, dates: the record Day 20 checks emails against. Sets capture_id.",
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -285,7 +298,22 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('has a status and an amount', () => { pm.expect(j.status).to.be.a('string'); pm.expect(j.dispute_amount.value).to.be.a('string'); });",
+                  "const tx = (j.disputed_transactions || [])[0] || {};",
+                  "if (tx.seller_transaction_id) pm.collectionVariables.set('capture_id', tx.seller_transaction_id);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Capture (links up to the order)",
@@ -313,7 +341,7 @@
                 "{{capture_id}}"
               ]
             },
-            "description": "The dispute carries the capture ID; its 'up' link is the order.",
+            "description": "The dispute carries the capture ID; its 'up' link is the order. Sets order_id. A REFUNDED status here also counts as a refund.",
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -324,7 +352,22 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "const up = (j.links || []).find(l => l.rel === 'up' && /checkout\\/orders/.test(l.href));",
+                  "pm.test('links up to an order', () => pm.expect(up).to.be.an('object'));",
+                  "if (up) pm.collectionVariables.set('order_id', up.href.split('/').pop());"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Order (ship-to address + trackers)",
@@ -363,7 +406,20 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const pu = pm.response.json().purchase_units[0];",
+                  "pm.test('has a ship-to postal code', () => pm.expect(pu.shipping.address.postal_code).to.be.a('string'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Trackers on the transaction",
@@ -407,7 +463,18 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -429,6 +496,71 @@
               ]
             },
             "description": "Identity only: gives Day 20 the buyer's payer ID, not her transactions."
+          }
+        },
+        {
+          "name": "Log in with PayPal: exchange the code",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "pm.collectionVariables.set('user_access_token', j.access_token);",
+                  "pm.test('user token issued', () => pm.expect(j.access_token).to.be.a('string'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{client_id}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{client_secret}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "authorization_code"
+                },
+                {
+                  "key": "code",
+                  "value": "{{auth_code}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/oauth2/token",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "oauth2",
+                "token"
+              ]
+            },
+            "description": "Paste the ?code= from the redirect into auth_code. Day 20 does this server-side and doesn't keep the token."
           }
         },
         {
@@ -575,19 +707,15 @@
       "value": "https://day20.onrender.com"
     },
     {
-      "key": "client_id",
-      "value": ""
-    },
-    {
-      "key": "client_secret",
-      "value": ""
-    },
-    {
       "key": "access_token",
       "value": ""
     },
     {
       "key": "user_access_token",
+      "value": ""
+    },
+    {
+      "key": "auth_code",
       "value": ""
     },
     {

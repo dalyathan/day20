@@ -15,6 +15,10 @@ def req(name, method, path, desc, body=None, auth=True, query=None):
         r["request"]["auth"] = {"type": "bearer", "bearer": [{"key": "token", "value": "{{access_token}}", "type": "string"}]}
     return r
 
+def tests(r, lines):
+    r["event"] = [{"listen": "test", "script": {"type": "text/javascript", "exec": lines}}]
+    return r
+
 def app(name, method, path, body=None, tests=None):
     r = {"name": name, "request": {"method": method, "header": [{"key": "Content-Type", "value": "application/json"}],
         "url": {"raw": "{{app_url}}" + path, "host": ["{{app_url}}"], "path": [p for p in path.split("/") if p]}}}
@@ -44,17 +48,43 @@ setup = [
         {"capture_id": "{{capture_id}}", "tracking_number": "9400111899223197428490", "carrier": "USPS", "notify_payer": False}),
 ]
 read = [
-    req("List disputes", "GET", "/v1/customer/disputes", "Find cases. Day 20 matches them to the signed-in buyer's payer ID.", query=[("page_size", "20")]),
-    req("Read the case", "GET", "/v1/customer/disputes/{{dispute_id}}", "Status, reason, amount, refund outcome, dates: the record Day 20 checks emails against."),
-    req("Capture (links up to the order)", "GET", "/v2/payments/captures/{{capture_id}}", "The dispute carries the capture ID; its 'up' link is the order."),
-    req("Order (ship-to address + trackers)", "GET", "/v2/checkout/orders/{{order_id}}", "Ship-to ZIP and tracking on file: what makes 'delivered to the wrong ZIP' checkable."),
-    req("Trackers on the transaction", "GET", "/v1/shipping/trackers", "Tracking numbers the seller added.", query=[("transaction_id", "{{capture_id}}")]),
+    tests(req("List disputes", "GET", "/v1/customer/disputes", "Find cases. Day 20 matches them to the signed-in buyer's payer ID. Sets dispute_id to the first case if none is set.", query=[("page_size", "20")]),
+        ["pm.test('200 OK', () => pm.response.to.have.status(200));",
+         "const j = pm.response.json();",
+         "if (!pm.collectionVariables.get('dispute_id') && j.items && j.items.length) pm.collectionVariables.set('dispute_id', j.items[0].dispute_id);"]),
+    tests(req("Read the case", "GET", "/v1/customer/disputes/{{dispute_id}}", "Status, reason, amount, refund outcome, dates: the record Day 20 checks emails against. Sets capture_id."),
+        ["pm.test('200 OK', () => pm.response.to.have.status(200));",
+         "const j = pm.response.json();",
+         "pm.test('has a status and an amount', () => { pm.expect(j.status).to.be.a('string'); pm.expect(j.dispute_amount.value).to.be.a('string'); });",
+         "const tx = (j.disputed_transactions || [])[0] || {};",
+         "if (tx.seller_transaction_id) pm.collectionVariables.set('capture_id', tx.seller_transaction_id);"]),
+    tests(req("Capture (links up to the order)", "GET", "/v2/payments/captures/{{capture_id}}", "The dispute carries the capture ID; its 'up' link is the order. Sets order_id. A REFUNDED status here also counts as a refund."),
+        ["pm.test('200 OK', () => pm.response.to.have.status(200));",
+         "const j = pm.response.json();",
+         "const up = (j.links || []).find(l => l.rel === 'up' && /checkout\\/orders/.test(l.href));",
+         "pm.test('links up to an order', () => pm.expect(up).to.be.an('object'));",
+         "if (up) pm.collectionVariables.set('order_id', up.href.split('/').pop());"]),
+    tests(req("Order (ship-to address + trackers)", "GET", "/v2/checkout/orders/{{order_id}}", "Ship-to ZIP and tracking on file: what makes 'delivered to the wrong ZIP' checkable."),
+        ["pm.test('200 OK', () => pm.response.to.have.status(200));",
+         "const pu = pm.response.json().purchase_units[0];",
+         "pm.test('has a ship-to postal code', () => pm.expect(pu.shipping.address.postal_code).to.be.a('string'));"]),
+    tests(req("Trackers on the transaction", "GET", "/v1/shipping/trackers", "Tracking numbers the seller added.", query=[("transaction_id", "{{capture_id}}")]),
+        ["pm.test('200 OK', () => pm.response.to.have.status(200));"]),
 ]
 login = [
     {"name": "Log in with PayPal: authorize (open in a browser)", "request": {"method": "GET",
         "url": {"raw": "https://www.sandbox.paypal.com/signin/authorize?flowEntry=static&client_id={{client_id}}&response_type=code&scope=openid%20profile%20email%20https%3A%2F%2Furi.paypal.com%2Fservices%2Fpaypalattributes&redirect_uri={{return_url}}",
                 "host": ["https://www.sandbox.paypal.com"], "path": ["signin", "authorize"]},
         "description": "Identity only: gives Day 20 the buyer's payer ID, not her transactions."}},
+    {"name": "Log in with PayPal: exchange the code", "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
+        "const j = pm.response.json();", "pm.collectionVariables.set('user_access_token', j.access_token);",
+        "pm.test('user token issued', () => pm.expect(j.access_token).to.be.a('string'));"]}}],
+     "request": {"method": "POST",
+        "auth": {"type": "basic", "basic": [{"key": "username", "value": "{{client_id}}", "type": "string"}, {"key": "password", "value": "{{client_secret}}", "type": "string"}]},
+        "header": [{"key": "Content-Type", "value": "application/x-www-form-urlencoded"}],
+        "body": {"mode": "urlencoded", "urlencoded": [{"key": "grant_type", "value": "authorization_code"}, {"key": "code", "value": "{{auth_code}}"}]},
+        "url": {"raw": "{{base_url}}/v1/oauth2/token", "host": ["{{base_url}}"], "path": ["v1", "oauth2", "token"]},
+        "description": "Paste the ?code= from the redirect into auth_code. Day 20 does this server-side and doesn't keep the token."}},
     {"name": "Log in with PayPal: user info", "request": {"method": "GET",
         "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{user_access_token}}", "type": "string"}]},
         "url": {"raw": "{{base_url}}/v1/identity/oauth2/userinfo?schema=paypalv1.1", "host": ["{{base_url}}"], "path": ["v1", "identity", "oauth2", "userinfo"], "query": [{"key": "schema", "value": "paypalv1.1"}]},
@@ -71,15 +101,19 @@ day20 = [
 ]
 
 col = {"info": {"name": "Day 20 · buyer-side PayPal dispute flow",
-    "description": "Every PayPal call Day 20 makes, in order, plus Day 20's own API. Read-only except the sandbox setup folder.\n\nPut your sandbox client_id and client_secret in the collection variables. Never commit them.",
+    "description": "Every PayPal call Day 20 makes, in order, plus Day 20's own API. Read-only except the sandbox setup folder.\n\nImport the environment file next to this collection and put your sandbox client_id and client_secret there (the secret is a secret-type variable). Then run 1 and folder 3 in order: each request saves the next ID (dispute -> capture -> order), so the chain works on your own sandbox case. Never commit keys.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},
     "item": [token, {"name": "2. Sandbox setup (seller side, demo only)", "item": setup},
              {"name": "3. What Day 20 reads (read-only)", "item": read},
              {"name": "4. Log in with PayPal", "item": login}, {"name": "5. Day 20 API", "item": day20}],
     "variable": [{"key": k, "value": v} for k, v in [
-        ("base_url", "https://api-m.sandbox.paypal.com"), ("app_url", "https://day20.onrender.com"), ("client_id", ""), ("client_secret", ""),
-        ("access_token", ""), ("user_access_token", ""), ("return_url", "https://day20.onrender.com/auth/paypal/callback"),
+        ("base_url", "https://api-m.sandbox.paypal.com"), ("app_url", "https://day20.onrender.com"),
+        ("access_token", ""), ("user_access_token", ""), ("auth_code", ""), ("return_url", "https://day20.onrender.com/auth/paypal/callback"),
         ("dispute_id", "PP-R-UZH-10198816"), ("capture_id", "0PP7442882460564M"), ("order_id", "42J2970806644392S")]]}
+
+env = {"name": "Day 20 sandbox", "values": [
+    {"key": "client_id", "value": "", "type": "default", "enabled": True},
+    {"key": "client_secret", "value": "", "type": "secret", "enabled": True}]}
 
 here = os.path.dirname(os.path.abspath(__file__))
 out = os.path.join(here, "..", "postman", "Day20.postman_collection.json")
@@ -87,3 +121,5 @@ os.makedirs(os.path.dirname(out), exist_ok=True)
 with open(out, "w") as f:
     json.dump(col, f, indent=2)
 print("wrote", os.path.normpath(out))
+with open(os.path.join(os.path.dirname(out), "Day20.sandbox.postman_environment.json"), "w") as f:
+    json.dump(env, f, indent=2)

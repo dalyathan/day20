@@ -21,6 +21,10 @@ Day 20 is a mobile web app for a buyer with an open PayPal dispute.
 
 Day 20 never files, escalates, closes or accepts anything. She does those in PayPal herself.
 
+## Why PayPal would want this
+
+Day 20 isn't a "file more claims" button. In our 24 test scenes it tells the buyer to escalate in 10 and to tell PayPal what actually arrived in 6. In the other 8 it says **don't escalate yet, or don't escalate at all**: the seller is answering and tracking is only stalled, she should check with a neighbour first, the item arrived as described, or the purchase isn't covered. Honest sellers keep their sales, and PayPal's reviewers get fewer weak claims. The claims that do arrive come with a one-page case where the deciding fact is on line 1 and tagged with what PayPal can check, so a reviewer can decide in minutes. And buyers stop losing protection they paid for because a fake email told them to wait out the 20 days.
+
 ## How we built it
 
 - **Runtime:** Node 22 with zero dependencies, hosted on Render, as a PWA front end.
