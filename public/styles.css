@@ -169,3 +169,37 @@ body { overflow-x: hidden; }
 details.why .finding:first-of-type { border-top: 0; }
 .record td.mono { font-family: ui-monospace, Menlo, monospace; font-size: 13px; word-break: break-all; }
 .btn.stacked { flex-direction: column; gap: 2px; }
+
+/* Maya and Rosa (public/characters.js) */
+.chr { display: block; overflow: visible; }
+.chr .chr-breathe { animation: chr-breathe 4.5s ease-in-out infinite; transform-origin: 50% 100%; transform-box: fill-box; }
+.chr .chr-blink { animation: chr-blink 5.2s infinite; transform-origin: center; transform-box: fill-box; }
+.chr .chr-glow { animation: chr-glow 3.2s ease-in-out infinite; }
+.chr-rosa .chr-read { animation: chr-blink 6s infinite, chr-read 4s ease-in-out infinite; }
+.chr-rosa .chr-nod { animation: chr-nod 4s ease-in-out infinite; transform-origin: 50% 90%; transform-box: fill-box; }
+.chr-rosa .chr-line1 { animation: chr-line 4s ease-in-out infinite; }
+.chr-rosa .chr-check { stroke-dasharray: 20; stroke-dashoffset: 20; animation: chr-check 4s ease-in-out infinite; }
+.chr-maya.is-relieved .chr-glow { animation-duration: 5s; }
+@keyframes chr-breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
+@keyframes chr-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+@keyframes chr-glow { 0%, 100% { opacity: 0.75; } 50% { opacity: 1; } }
+@keyframes chr-read { 0%, 30% { transform: translateX(-2.5px); } 45%, 100% { transform: translateX(0); } }
+@keyframes chr-nod { 0%, 55% { transform: rotate(0); } 62% { transform: rotate(3deg); } 70%, 100% { transform: rotate(0); } }
+@keyframes chr-line { 0%, 35% { fill: #fbf7ef; } 50%, 100% { fill: #e3f3ec; } }
+@keyframes chr-check { 0%, 50% { stroke-dashoffset: 20; } 62%, 100% { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .chr * { animation: none !important; } .chr-rosa .chr-check { stroke-dashoffset: 0; } }
+.chr-rosa .chr-point { animation: chr-point 4s ease-in-out infinite; transform-origin: 130px 148px; }
+@keyframes chr-point { 0%, 30% { transform: rotate(6deg); } 45%, 100% { transform: rotate(0); } }
+.chr-maya .chr-tilt { animation: chr-tilt 6s ease-in-out infinite; transform-origin: 50% 90%; transform-box: fill-box; }
+@keyframes chr-tilt { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-1.5deg); } }
+.chr-maya .chr-check { stroke-dasharray: 22; stroke-dashoffset: 0; }
+.chr-maya.is-determined .chr-check { animation: chr-check-loop 3.5s ease-in-out infinite; }
+@keyframes chr-check-loop { 0%, 20% { stroke-dashoffset: 22; } 40%, 100% { stroke-dashoffset: 0; } }
+
+.hero-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
+.hero-text { flex: 1; min-width: 0; }
+.hero-maya { flex: none; margin: -10px -6px -14px 0; }
+.check-head { display: flex; gap: 10px; align-items: flex-end; }
+.check-head #maya-slot { flex: none; background: var(--night); border-radius: 16px; padding: 6px 4px 0; }
+.rosa-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 10px 10px 8px; }
+.rosa-card .chr { margin: 0 auto; }
