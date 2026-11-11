@@ -11,7 +11,7 @@ import { phase, clock, money, REASONS, STATUS_WORDS } from "./lib/record.js";
 import { nextStep } from "./lib/advice.js";
 import { esStep } from "./lib/es.js";
 import { buildPage, cleanText, cleanZip, cleanCity } from "./lib/onepage.js";
-import { runCheck } from "./lib/agent.js";
+import { runCheck, modelInfo } from "./lib/agent.js";
 import { withTz } from "./lib/tz.js";
 import { suggestReminders, toICS } from "./lib/reminders.js";
 import { dbOk, facts as factsDb, checks as checksDb, push as pushDb, reminders as remDb, forget, cleanup } from "./lib/store.js";
@@ -53,20 +53,27 @@ const PUSH_HOSTS = [/^fcm\.googleapis\.com$/, /^updates\.push\.services\.mozilla
 export function pushHostAllowed(endpoint) {
   try { const u = new URL(endpoint); return u.protocol === "https:" && !u.port && PUSH_HOSTS.some((re) => re.test(u.hostname)); } catch { return false; }
 }
-// The caller's address. A client can put anything at the start of x-forwarded-for; the proxy appends the
-// real address, so take the last entry. Cloudflare's own header wins when present (it overwrites it).
-export function clientIp(req) {
-  const cf = req.headers["cf-connecting-ip"] || req.headers["true-client-ip"];
-  if (cf) return String(cf).trim();
-  const xff = String(req.headers["x-forwarded-for"] || "").split(",").map((x) => x.trim()).filter(Boolean);
-  return xff.length ? xff[xff.length - 1] : String(req.socket?.remoteAddress || "");
+// The caller's address, for rate limits. Proxy headers are only trusted when the deployment says which proxy
+// sets them, because a client can send any header itself:
+//   TRUST_PROXY=cloudflare  use cf-connecting-ip (Cloudflare overwrites it; Render serves through Cloudflare)
+//   TRUST_PROXY=xff         use the last x-forwarded-for entry (the one your own proxy appended)
+//   unset                   use the connection's address
+export function clientIp(req, trust = process.env.TRUST_PROXY) {
+  if (trust === "cloudflare" && req.headers["cf-connecting-ip"]) return String(req.headers["cf-connecting-ip"]).trim();
+  if (trust === "xff") {
+    const xff = String(req.headers["x-forwarded-for"] || "").split(",").map((x) => x.trim()).filter(Boolean);
+    if (xff.length) return xff[xff.length - 1];
+  }
+  return String(req.socket?.remoteAddress || "");
 }
 
 // Simple per-session and per-address limits on model calls and new demo sessions.
 const hits = new Map();
 function limited(key, max = 20, windowMs = 3600000) {
   const now = Date.now(); const arr = (hits.get(key) || []).filter((t) => t > now - windowMs);
-  arr.push(now); hits.set(key, arr); return arr.length > max;
+  arr.push(now); hits.set(key, arr);
+  if (hits.size > 50000) hits.delete(hits.keys().next().value); // hard cap on memory
+  return arr.length > max;
 }
 // Forget keys with no recent hits, so made-up keys can't grow memory.
 setInterval(() => { const cut = Date.now() - 3600000; for (const [k, v] of hits) if (!v.some((t) => t > cut)) hits.delete(k); }, 600000).unref();
@@ -199,15 +206,19 @@ async function api(req, res, url, s) {
     }
 
     if (sub === "/reminders" && m === "POST") {
+      if (limited("rem:" + o, 10)) return send(res, 429, { error: "Too many reminder changes this hour." });
       const b = await readBody(req);
-      const hour = Math.max(0, Math.min(23, Number(b.hour ?? 16)));
-      const tz = Number.isFinite(Number(b.tzOffsetMin)) ? Number(b.tzOffsetMin) : 0; // minutes, as Date.getTimezoneOffset()
+      const hour = Math.max(0, Math.min(23, Math.trunc(Number(b.hour ?? 16)) || 0));
+      const rawTz = Math.trunc(Number(b.tzOffsetMin)); // minutes, as Date.getTimezoneOffset(); real zones span -840..720
+      const tz = Number.isFinite(rawTz) ? Math.max(-840, Math.min(720, rawTz)) : 0;
       const channel = b.channel === "email" ? "email" : "push";
       const email = channel === "email" ? str(b.email, 200) : null;
+      if (channel === "email" && !/^[^\s@<>"']+@[^\s@<>"']+\.[a-z]{2,}$/i.test(email || "")) return send(res, 400, { error: "That email address doesn't look right." });
+      const nowMs = Date.now();
       const list = suggestReminders(r, nowFor(s, r)).map((x) => {
         const d = new Date(x.at.slice(0, 10) + "T00:00:00Z");
         return { at: new Date(d.getTime() + hour * 3600000 + tz * 60000).toISOString(), title: x.title, channel, email };
-      });
+      }).filter((x) => Date.parse(x.at) > nowMs); // never schedule in the past (it would send at once)
       remDb.replace(o, id, s.demo ? [] : list); // demo sessions preview but don't schedule real sends
       return send(res, 200, { scheduled: s.demo ? [] : list, preview: list, demo: Boolean(s.demo) });
     }
@@ -251,7 +262,7 @@ export const server = http.createServer((req, res) => withTz(req.headers["x-tz"]
 async function handle(req, res) {
   const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
   try {
-    if (url.pathname === "/healthz") { const ok = dbOk(); return send(res, ok ? 200 : 503, { ok, db: ok, source: source(), env: ENV }); }
+    if (url.pathname === "/healthz") { const ok = dbOk(); return send(res, ok ? 200 : 503, { ok, db: ok, source: source(), env: ENV, ...modelInfo() }); }
 
     if (url.pathname === "/auth/paypal") {
       if (!loginEnabled()) return send(res, 400, "Log in with PayPal isn't configured here. Use the demo.", "text/plain");
@@ -279,6 +290,11 @@ async function handle(req, res) {
 // Reminder sender: once a minute, send what's due. Push first, email as fallback.
 async function sendDue() {
   for (const r of remDb.due(new Date().toISOString())) {
+    // Re-read the case first: a refunded, escalated or closed case must not get an "escalate" reminder.
+    try {
+      const rec = await readCase(r.dispute_id);
+      if (phase(rec) !== "open") { remDb.markSent(r.id, new Date().toISOString() + ` (skipped: case ${phase(rec)})`); continue; }
+    } catch (e) { console.warn(JSON.stringify({ ev: "reminder_recheck_failed", dispute: r.dispute_id, error: String(e.message).slice(0, 200) })); }
     let ok = false;
     if (r.channel === "push") {
       for (const sub of pushDb.forOwner(r.owner)) {
