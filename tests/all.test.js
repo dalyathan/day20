@@ -288,3 +288,16 @@ test("model requests send only parameters the model accepts (a rejected temperat
     for (const b of bodies) assert.deepEqual(Object.keys(b).filter((k) => !["model", "max_tokens", "system", "tools", "messages"].includes(k)), []);
   } finally { globalThis.fetch = realFetch; delete process.env.ANTHROPIC_API_KEY; }
 });
+
+test("model amounts must appear in the email; emailed tracking numbers are the buyer's report (security judge, Devpost round)", async () => {
+  const { gateModelClaims } = await import("../lib/agent.js");
+  const t = "Hi Maya,\n\nYour $66.00 is already sitting in your PayPal balance on our side.\n";
+  const q = "Your $66.00 is already sitting in your PayPal balance on our side.";
+  assert.equal(gateModelClaims({}, { refundClaimed: { amount: 66 }, evidence: { refundClaimed: q } }, t).kept.refundClaimed.amount, 66);
+  assert.equal(gateModelClaims({}, { refundClaimed: { amount: 6600 }, evidence: { refundClaimed: q } }, t).kept.refundClaimed.amount, null);
+  const { buildPage } = await import("../lib/onepage.js");
+  const r = sceneRecord({ amount: "66.00" });
+  const pg = buildPage(r, {}, [{ findings: [{ id: "tracking_FAKE123456789", verdict: "cant_check" }] }]);
+  const line = pg.lines.find((l) => l.text.includes("FAKE123456789"));
+  assert.equal(line.tag, "BUYER REPORTS");
+});

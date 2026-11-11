@@ -61,7 +61,7 @@ From `npm run eval`:
 
   Each set was then fixed and moved to regression, where all 36 genuine emails are now not flagged red.
 
-No set is held out right now: each one we measured was then tuned on. The first measurements are in `tests/heldout/RESULTS.md`, and `npm run replay-heldout` reproduces every one of them from the commit it was scored against.
+Sets 4–7 were then tuned on and moved to regression. Set 8 (12 genuine emails by a fresh writer) is still held out: rules alone 11/12 not flagged red, and with Claude 11/12 in each of 3 runs, so on unseen genuine email Claude neither helped nor hurt. The first measurements are in `tests/heldout/RESULTS.md`, and `npm run replay-heldout` reproduces each of them from the commit it was scored against.
 - **Live model, deployed app (Nov 11):** on all 60 regression emails, the model with the evidence check flags 11/24 scams red (rules alone: 9/24) and 0/36 genuine emails. Without the check it had flagged 2 genuine emails red. See game 9. Reproduce with `npm run live-eval-deployed`.
 
 ## Game 9: the live model on the deployed app
