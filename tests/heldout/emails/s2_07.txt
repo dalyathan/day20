@@ -1,0 +1,13 @@
+From: 4PX Express <notify@4px.com>
+Subject: Your parcel is in transit
+
+Dear customer,
+
+Your parcel has departed the sorting center and is moving toward the destination country. Latest status: In Transit.
+
+Tracking: LP004822133290CN
+Estimated handover to local post: 10-15 business days.
+
+International shipments may not update at every step. Please allow the full window before taking any further steps. We are monitoring it on your behalf.
+
+4PX Express

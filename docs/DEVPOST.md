@@ -24,10 +24,10 @@ Day 20 never files, escalates, closes or accepts anything. She does those in Pay
 
 - **Runtime:** Node 22 with zero dependencies, hosted on Render, as a PWA front end.
 - **PayPal:** Disputes API, Orders v2, Captures, Tracking, and Log in with PayPal, all in the sandbox. Maya's case is a real sandbox dispute: a $66 order, captured, with seller tracking added and a buyer "not received" dispute.
-- **Agent:** a Claude tool loop with `read_case`, `read_claim`, `compare`, `next_step`, `draft_page` and `schedule_reminder`, every one of them read-only.
-  - Screenshots are transcribed by a separate call with no tools.
-  - The verdict and the bottom line come from code, not from the model.
-  - The model's note must pass eight honesty rules enforced in code: no claimed actions, no promises, no "use the link", no naming the sender, no "verified", no reason-coaching, no off-PayPal links or phones, and no fact the record doesn't show. If it breaks one, a plain template replaces it.
+- **Agent:** a Claude tool loop with `read_case`, `read_claim`, `compare`, `next_step`, `draft_page`, `schedule_reminder`, `note_options` and `compose_note`, every one of them read-only.
+  - The model *reads*: messy emails, and screenshots transcribed by a separate call with no tools.
+  - Code *decides and speaks*: the verdict, the bottom line, the next step and the one-page case all come from PayPal's record.
+  - The model picks which code-written sentences Maya sees. It can add a warning but never remove one.
 - **Also shipped:** an MCP server exposing the same read-only tools, a Postman collection of every PayPal call, web push implemented from the RFCs (tested against the RFC 8291 vector), and an eval suite.
 
 ## Who tests the AI?
@@ -36,15 +36,16 @@ We tested it the way it would be attacked, as games with incentives:
 
 - **Scammer agents** were paid for every fake email the checker called safe. In round one, 7 of 12 got through, because a real case number made an email look "consistent". We changed the design: a real case number never counts as proof, and any email about the case defaults to "careful".
 - **A cheat** was paid for false claims that reached the one-page case. It forged a tag through a newline. Buyer text is now sanitised, and only a validated ZIP can sit in a checkable line.
-- **A rule-breaker** was paid for harmful notes that passed the rules, and for helpful ones that got blocked. It found 16 misses and 8 false alarms. The rules were rewritten to handle negation, passive voice, domain parsing and fact checks.
+- **A rule-breaker** was paid for harmful notes that passed our honesty rules. Round two caught 0 of 33 new ones: regexes can't police what a model means. **So we closed the model's output space.** It picks sentences written by code instead of writing its own.
 - **A blind reviewer ("Rosa")** judged the one-page cases. She caught a buyer's lie because the line was tagged as checkable.
+- **An AI-assurance judge** caught us reporting fixed-against attacks as pass rates.
 
-Every successful attack became a regression test. A second round with fresh attackers is reported separately in `docs/GAMES.md`.
+Every successful attack became a regression test, and we report a **held-out** set separately. Fresh scammer agents wrote 12 new emails after our last change. Day 20 called **none of them safe**, and every result showed PayPal's real refund status and deadline. It flagged **0 of 12** as an outright contradiction, because paraphrased lies slip past keyword reading. That's the honest number, and it's the model's job to raise it.
 
 ## Challenges
 
 - **There's no buyer-side read API.** Log in with PayPal gives identity, not transactions. Our sandbox demo reads the case through the seller account, because we own both test accounts, and we say so.
-- **Regex rules can't fully police a language model.** So the model's note is never load-bearing.
+- **Regex rules can't police a language model.** We proved it to ourselves, then changed the design so the model never writes what the buyer reads.
 
 ## What we learned
 

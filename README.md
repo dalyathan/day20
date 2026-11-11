@@ -8,6 +8,7 @@ Day 20 is a read-only assistant for PayPal buyers with an open dispute. It reads
 <img src="docs/screens/case.png" width="240" alt="Case screen: day 7 of 20, 13 days left, and a button to check an email">
 <img src="docs/screens/check.png" width="240" alt="Result: this email is wrong about your PayPal case. PayPal shows no refund. Your case is still open: 13 days left.">
 <img src="docs/screens/onepage.png" width="240" alt="One-page case for the PayPal reviewer, every line tagged by source">
+<img src="docs/screens/case_es.png" width="240" alt="The case screen in Spanish">
 </p>
 
 > **Try it:** open the live app, tap **Try it as Maya**, then **Got an email about this case? Check it** → **Use Maya's 3:14 a.m. email** → **Check it against my case**. No sign-in needed. See [TESTING.md](docs/TESTING.md).
@@ -47,13 +48,14 @@ In our 24-scene dispute game, honest buyers mostly lost **before** review, to th
                       └────────────┬─────────────┘
                                    ▼
             verdict + bottom line ◀── computed by code from PayPal's record, never by the model
-            AI note               ◀── checked against 8 honesty rules; replaced if it breaks one
+            what Maya reads       ◀── sentences written by code; the model only picks which ones
             one-page case         ◀── built by code; buyer text sanitised and tagged as hers
 ```
 
-- **The model reads; code decides.** The model reads messy emails and screenshots and writes a short note. The verdict (`mismatch` / `careful` / `consistent`), the bottom line and the one-page case are computed by code from PayPal's record. With no API key, or if the model is down, the same pipeline runs on rules alone.
-- **Screenshots are transcribed first** by a call with no tools, so the rule-based reader sees every word the model sees.
-- **Honesty rules in code** ([`lib/rules.js`](lib/rules.js)): no claimed actions, no promises, no "use the link", no naming a sender, no "verified", no reason-coaching, no off-PayPal links or phone numbers, and no fact the record doesn't show.
+- **The model reads; code decides and speaks.** Claude reads messy emails and screenshots (`read_claim`). Code computes the verdict (`mismatch` / `careful` / `consistent`), the bottom line, the next step and the one-page case from PayPal's record. The model then **picks** 2–4 sentences, written by code, for Maya to see (`compose_note`). It can't write its own.
+- **The model can only add caution.** Its claims are OR-merged with the rule reader's, so it can raise a flag but never remove one. Any email about the case is at least "careful": Day 20 calls an email safe only when a refund or closed claim agrees with PayPal's record.
+- **Screenshots are transcribed first** by a call with no tools, so the rule reader sees every word the model sees.
+- **No model, same answer.** With no API key, or with the model down, the rules produce the same verdict and the same sentences.
 
 ### PayPal APIs used
 
@@ -70,15 +72,27 @@ All of these are in the [Postman collection](postman/Day20.postman_collection.js
 
 ## Who tests the AI?
 
-We tested Day 20 the way it will be attacked, with agents playing every side under incentives (`docs/GAMES.md`):
+We tested it by playing games. Agents attacked Day 20 for points, with evidence required ([docs/GAMES.md](docs/GAMES.md)).
 
-- **24 dispute scenes** (ghost stores, honest sellers, opportunist buyers, a blind PayPal reviewer) became the eval suite: `npm run eval`.
-- **Adversarial rounds.** Scammer agents scored points for every fake email the checker rated safe. A cheat scored points for every false claim it got onto the one-page case. A rule-breaker scored points for harmful AI notes that passed the rules, and for helpful ones that were wrongly blocked. Every attack that worked became a regression test, and we report results on **new** attacks separately (see `docs/GAMES.md`).
-- **Unit tests:** web push encryption against the RFC 8291 test vector; the agent loop with a mocked model that tries to break rules; model-down fallback; the server end to end.
+- **Scammers** were paid for every fake email the checker rated safe. In round one, 7 of 12 got through, so a real case number stopped counting as proof.
+- **A cheat** forged a "PAYPAL CAN CHECK" line with a newline. Buyer text is now sanitized.
+- **A rule-breaker** showed that regexes can't police what a language model means: 0 of 33 new harmful sentences were caught. **So we closed the model's output space.** It now picks sentences written by code instead of writing its own.
+- **A blind PayPal reviewer** shaped the one-page case.
+- **An AI-assurance judge** caught us reporting fixed-against attacks as pass rates. We now split the numbers.
+
+`npm run eval` reports three groups separately:
+
+| Group | What it is | Result |
+|---|---|---|
+| Designed | The 24 dispute scenes plus test emails, written with the code | all pass |
+| Regression | Game-3 attacks we fixed against | all pass (not evidence of generalization) |
+| **Held-out** | 12 game-4 scam emails, frozen, never tuned on | **12/12 never called safe**, with the real record and deadline always shown; **0/12 flagged red** |
+
+That last number is the honest one. The safe default held, but the keyword reader misses paraphrased lies. Catching those is the model's job, and `npm run live-eval` measures it with a real key.
 
 ```
-npm test        # unit + integration
-npm run eval    # the scenario and attack suite, one line per case
+npm test        # unit + integration: RFC 8291 vector, model can't speak or act, model-down fallback, Spanish, server
+npm run eval    # one line per case, with totals per group
 ```
 
 ## Run it
@@ -112,6 +126,7 @@ Tools: `day20_read_case`, `day20_check_email`, `day20_next_step`, `day20_draft_p
 
 - The demo clock shifts "today" to show day 7. Everything else is read live from the sandbox, or from a labelled replay of a real sandbox case.
 - "Delivered to ZIP 85705" is the buyer's reading of the carrier page. It's tagged so the reviewer looks it up.
-- Regex rules can't catch everything a model might write. That's why the model's note is never load-bearing.
+- The email checker reads keywords. Paraphrased lies get a generic "careful" warning, not a red contradiction (see the held-out result).
+- The live model path is tested with `npm run live-eval`, which needs a real key. The offline suite mocks it.
 
 [Privacy and threat model](docs/PRIVACY_AND_THREATS.md) · MIT licensed · Not affiliated with or endorsed by PayPal. Not legal or financial advice. PayPal decides every case.
