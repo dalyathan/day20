@@ -1,0 +1,20 @@
+From: FedEx <TrackingUpdates@fedex.com>
+To: Maya
+Date: Mon, Nov 16, 2026, 1:48 PM
+Subject: Your package has been delivered
+
+Hi. Your package was delivered Mon, 11/16/2026 at 1:41pm.
+
+Delivered to 2211 N FIRST ST, SAN JOSE, CA 95131
+Received by: Signature not required
+Left at: Front desk/reception
+
+TRACKING NUMBER 285317004429
+FROM Sephora, Olive Branch, MS, US
+TO MAYA, SAN JOSE, CA, US
+SHIP DATE Thu 11/12/2026 05:16 PM
+STANDARD TRANSIT 11/16/2026 by end of day
+
+Obtain proof of delivery: https://www.fedex.com/
+
+FedEx 1.800.GoFedEx 1.800.463.3339
