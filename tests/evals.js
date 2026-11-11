@@ -86,11 +86,25 @@ function evalAttackDir(dir, group, prefix) {
   });
 }
 
-// Attacks from game 3: we fixed the code against these, so they're regression tests, not evidence.
+// Attacks from games 3 and 4: we fixed the code against these, so they're regression tests, not evidence.
 export const evalScams = () => evalAttackDir(new URL("./fixtures/scams/", import.meta.url), "regression", "S");
-// Attacks from game 4, written by fresh agents and frozen. We never tuned on them.
+// Held-out: written by fresh agents after the last change, frozen, never tuned on.
 export const evalHeldOut = () => evalAttackDir(new URL("./heldout/emails/", import.meta.url), "held-out", "H");
 
+// Held-out honest emails: genuine messages a buyer with an open case could get. Must never be flagged red.
+export function evalHonest() {
+  const dir = new URL("./heldout/honest/", import.meta.url);
+  const r = sceneRecord({ amount: "66.00" });
+  let files = [];
+  try { files = readdirSync(dir).filter((f) => f.endsWith(".txt")).sort(); } catch { return []; }
+  return files.map((f) => {
+    const text = readFileSync(new URL(f, dir), "utf8");
+    const cmp = compare(extractClaims(text), r, at(7));
+    return { id: `G${f.replace(/\D+/g, "")}`, group: "honest", who: text.match(/^Subject:\s*(.+)$/m)?.[1]?.slice(0, 60) || f, kind: cmp.overall,
+      checks: [{ name: "a genuine email is never flagged red", pass: cmp.overall !== "mismatch", detail: cmp.findings.filter((x) => x.verdict === "contradicts").map((x) => x.says).join("; ") }] };
+  });
+}
+
 export function runAll() {
-  return [...SCENES.map(evalScene), ...EMAILS.map(evalEmail), ...evalScams(), ...evalHeldOut()];
+  return [...SCENES.map(evalScene), ...EMAILS.map(evalEmail), ...evalScams(), ...evalHeldOut(), ...evalHonest()];
 }

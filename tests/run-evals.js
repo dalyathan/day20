@@ -3,7 +3,7 @@
 import { runAll } from "./evals.js";
 
 const results = runAll();
-const groups = { designed: "Designed with the code (24 scenes + emails)", regression: "Regression: game-3 attacks we fixed against", "held-out": "Held-out: game-4 attacks, frozen, never tuned on" };
+const groups = { designed: "Designed with the code (24 scenes + emails)", regression: "Regression: game 3–4 attacks we fixed against", "held-out": "Held-out scams: game 5, frozen, never tuned on", honest: "Held-out genuine emails: game 5 (false alarms)" };
 const tally = {};
 for (const r of results) {
   const failedHard = r.checks.filter((c) => !c.pass && !c.soft);
@@ -18,7 +18,7 @@ console.log("");
 let allOk = true;
 for (const [g, label] of Object.entries(groups)) {
   const t = tally[g]; if (!t) continue;
-  if (t.casesOk !== t.cases && g !== "held-out") allOk = false;
+  if (t.casesOk !== t.cases && g !== "held-out" && g !== "honest") allOk = false;
   console.log(`${label}: ${t.casesOk}/${t.cases} cases, ${t.checksOk}/${t.checks} checks${t.attacks ? ` · flagged red: ${t.red}/${t.attacks}` : ""}`);
 }
 // Held-out failures are reported, not hidden, and don't fail the build: they're the honest number.
