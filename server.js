@@ -58,7 +58,8 @@ export function pushHostAllowed(endpoint) {
 //   TRUST_PROXY=cloudflare  use cf-connecting-ip (Cloudflare overwrites it; Render serves through Cloudflare)
 //   TRUST_PROXY=xff         use the last x-forwarded-for entry (the one your own proxy appended)
 //   unset                   use the connection's address
-export function clientIp(req, trust = process.env.TRUST_PROXY) {
+// On Render (which sets RENDER=true) the default is cloudflare, so the setting can't silently be missing there.
+export function clientIp(req, trust = process.env.TRUST_PROXY || (process.env.RENDER ? "cloudflare" : undefined)) {
   if (trust === "cloudflare" && req.headers["cf-connecting-ip"]) return String(req.headers["cf-connecting-ip"]).trim();
   if (trust === "xff") {
     const xff = String(req.headers["x-forwarded-for"] || "").split(",").map((x) => x.trim()).filter(Boolean);
