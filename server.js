@@ -64,7 +64,7 @@ function caseSummary(r, s, f) {
       rawStatus: r.status,
       phase: ph,
       clock: clock(r, now),
-      item: r.items?.[0] || null,
+      item: (r.items?.[0] || "").replace(/\s*\(Day 20 demo\)\s*$/i, "") || null,
       seller: r.sellerName,
       shipTo: r.shipTo ? `${r.shipTo.city}, ${r.shipTo.state} ${r.shipTo.zip}` : null,
       tracking: (r.trackers || []).map((t) => `${t.carrier || ""} ${t.number}`.trim()),

@@ -63,8 +63,8 @@ function home() {
     <p class="sub">${t("heroSub")}</p>
   </div></section>
   <div class="pad stack">
-    ${ME?.loginEnabled ? `<button class="btn paypal" data-act="consent">${t("continuePP")} <span class="sub">· ${t("sandbox")}</span></button>` : ""}
-    <button class="btn dark" data-act="demo">${t("tryDemo")}<span class="sub">· ${t("demoSub")}</span></button>
+    ${ME?.loginEnabled ? `<button class="btn paypal stacked" data-act="consent">${t("continuePP")}<span class="sub">${t("sandbox")}</span></button>` : ""}
+    <button class="btn dark stacked" data-act="demo">${t("tryDemo")}<span class="sub">${t("demoSub")}</span></button>
     <div class="card"><div class="kicker">${t("does")}</div><ul class="list does"><li>${t("does1")}</li><li>${t("does2")}</li><li>${t("does3")}</li><li>${t("does4")}</li></ul></div>
     <div class="card"><div class="kicker">${t("never")}</div><ul class="list never"><li>${t("never1")}</li><li>${t("never2")}</li><li>${t("never3")}</li><li>${t("never4")}</li></ul></div>
     <div style="text-align:right"><button class="iconbtn" style="color:var(--muted)" data-act="lang">${t("lang")}</button></div>
