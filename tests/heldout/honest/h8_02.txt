@@ -1,0 +1,27 @@
+From: PayPal Resolution Center <service@paypal.com>
+To: maya.okafor@gmail.com
+Date: Wed, 11 Nov 2026 16:42:08 -0800
+Subject: We've received your case PP-R-UZH-10198816
+
+Hi Maya,
+
+Thanks for letting us know about a problem with your purchase. We've opened a case and notified the seller.
+
+Case ID: PP-R-UZH-10198816
+Reason: Item not received
+Transaction date: Nov 2, 2026
+Amount: $66.00 USD
+
+What happens next
+- The seller has the chance to respond and work things out with you directly in the Resolution Center.
+- If the seller provides a refund, you'll get an email from us and the money will go back to your original payment method.
+- If you and the seller can't resolve this, you can escalate the case to a claim, and PayPal will step in and review it.
+
+Important: If you don't escalate this case to a claim by Dec 1, 2026, it will be closed automatically and you won't be able to reopen it.
+
+Please keep all communication with the seller in the Resolution Center so we have a record if we need to review your case. Never agree to receive a refund outside of PayPal.
+
+You can check your case status at any time by logging in to PayPal and going to the Resolution Center.
+
+Sincerely,
+PayPal
