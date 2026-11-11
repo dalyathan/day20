@@ -1,0 +1,4 @@
+From: Seller support <support@example-shop.com>
+Subject: About your PayPal dispute
+
+Please know if you proceed with a dispute, we would no longer be able to offer any means of compensation on this order and the decision for further compensation will be left to the result of the dispute between our payment processor and PayPal, which could result in zero funds being returned.

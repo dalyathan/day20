@@ -1,0 +1,8 @@
+From: Seller support <support@example-shop.com>
+Subject: About your PayPal dispute
+
+I know you are worried, but please believe that I am acting as a representative of paypal.
+
+Please understand, but if we can give you a refund, we will definitely give you the operation immediately, but because there is no partial refund button in the current case, we can't give you a partial refund.
+
+could you please close the dispute then i will request a refund for you and you can receive that within 24 hours.
