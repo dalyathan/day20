@@ -1,18 +1,177 @@
 {
-  "note": "Shape of GET /v2/checkout/orders/42J2970806644392S, rebuilt from values the sandbox returned on capture and tracking (ship-to and tracker). Run `npm run live-check` to fetch the real one.",
+  "note": "Real response from GET /v2/checkout/orders/42J2970806644392S in the PayPal sandbox (fetched by npm run live-check). Sandbox test accounts only.",
   "id": "42J2970806644392S",
+  "intent": "CAPTURE",
   "status": "COMPLETED",
+  "payment_source": {
+    "paypal": {
+      "email_address": "sb-o6sjq53859003@personal.example.com",
+      "account_id": "9VBG3W6TEXHCY",
+      "account_status": "VERIFIED",
+      "name": {
+        "given_name": "John",
+        "surname": "Doe"
+      },
+      "address": {
+        "country_code": "US"
+      }
+    }
+  },
   "purchase_units": [
     {
       "reference_id": "maya-dress",
-      "description": "Emerald satin midi dress (Day 20 demo)",
-      "amount": { "currency_code": "USD", "value": "66.00" },
-      "shipping": {
-        "name": { "full_name": "John Doe" },
-        "address": { "address_line_1": "2211 N First St", "admin_area_2": "San Jose", "admin_area_1": "CA", "postal_code": "95131", "country_code": "US" },
-        "trackers": [ { "id": "0PP7442882460564M-9400111899223197428490", "carrier": "USPS", "status": "SHIPPED" } ]
+      "amount": {
+        "currency_code": "USD",
+        "value": "66.00"
       },
-      "payments": { "captures": [ { "id": "0PP7442882460564M", "status": "COMPLETED", "amount": { "currency_code": "USD", "value": "66.00" }, "create_time": "2026-11-11T08:38:29Z" } ] }
+      "payee": {
+        "email_address": "sb-83dkq53853701@business.example.com",
+        "merchant_id": "42MHU9RZ48T8W"
+      },
+      "description": "Emerald satin midi dress (Day 20 demo)",
+      "shipping": {
+        "name": {
+          "full_name": "John Doe"
+        },
+        "address": {
+          "address_line_1": "2211 N First St",
+          "admin_area_2": "San Jose",
+          "admin_area_1": "CA",
+          "postal_code": "95131",
+          "country_code": "US"
+        },
+        "trackers": [
+          {
+            "id": "0PP7442882460564M-9400111899223197428490",
+            "status": "SHIPPED",
+            "links": [
+              {
+                "href": "https://api.sandbox.paypal.com/v2/checkout/orders/42J2970806644392S",
+                "rel": "up",
+                "method": "GET"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/checkout/orders/42J2970806644392S/trackers/0PP7442882460564M-9400111899223197428490",
+                "rel": "update",
+                "method": "PATCH"
+              }
+            ],
+            "notify_payer": false
+          }
+        ]
+      },
+      "payments": {
+        "captures": [
+          {
+            "id": "0PP7442882460564M",
+            "status": "PENDING",
+            "status_details": {
+              "reason": "BUYER_COMPLAINT"
+            },
+            "amount": {
+              "currency_code": "USD",
+              "value": "66.00"
+            },
+            "final_capture": true,
+            "seller_protection": {
+              "status": "ELIGIBLE",
+              "dispute_categories": [
+                "ITEM_NOT_RECEIVED",
+                "UNAUTHORIZED_TRANSACTION"
+              ]
+            },
+            "links": [
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/0PP7442882460564M",
+                "rel": "self",
+                "method": "GET"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/0PP7442882460564M/refund",
+                "rel": "refund",
+                "method": "POST"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/checkout/orders/42J2970806644392S",
+                "rel": "up",
+                "method": "GET"
+              }
+            ],
+            "create_time": "2026-11-11T08:38:29Z",
+            "update_time": "2026-11-11T08:45:29Z"
+          }
+        ],
+        "refunds": [
+          {
+            "id": "397642775R459380H",
+            "amount": {
+              "currency_code": "USD",
+              "value": "63.21"
+            },
+            "seller_payable_breakdown": {
+              "gross_amount": {
+                "currency_code": "USD",
+                "value": "63.21"
+              },
+              "paypal_fee": {
+                "currency_code": "USD",
+                "value": "0.00"
+              },
+              "platform_fees": [
+                {
+                  "amount": {
+                    "currency_code": "USD",
+                    "value": "0.00"
+                  }
+                }
+              ],
+              "net_amount": {
+                "currency_code": "USD",
+                "value": "63.21"
+              },
+              "total_refunded_amount": {
+                "currency_code": "USD",
+                "value": "0.00"
+              }
+            },
+            "status": "PENDING",
+            "links": [
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/refunds/397642775R459380H",
+                "rel": "self",
+                "method": "GET"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/0PP7442882460564M",
+                "rel": "up",
+                "method": "GET"
+              }
+            ],
+            "create_time": "2026-11-11T00:45:29-08:00",
+            "update_time": "2026-11-11T00:45:29-08:00"
+          }
+        ]
+      }
+    }
+  ],
+  "payer": {
+    "name": {
+      "given_name": "John",
+      "surname": "Doe"
+    },
+    "email_address": "sb-o6sjq53859003@personal.example.com",
+    "payer_id": "9VBG3W6TEXHCY",
+    "address": {
+      "country_code": "US"
+    }
+  },
+  "create_time": "2026-11-11T08:27:22Z",
+  "update_time": "2026-11-11T08:38:29Z",
+  "links": [
+    {
+      "href": "https://api.sandbox.paypal.com/v2/checkout/orders/42J2970806644392S",
+      "rel": "self",
+      "method": "GET"
     }
   ]
 }
