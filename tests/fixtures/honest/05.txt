@@ -1,0 +1,27 @@
+From: PayPal <service@paypal.com>
+To: Maya
+Date: Thu, Nov 12, 2026, 10:03 AM
+Subject: The seller responded to your case
+
+Hello Maya,
+
+The seller responded to your case
+
+Juniper & Lace sent a response to your case about your purchase of $66.00 USD.
+
+Case ID: PP-R-UZH-10198816
+Transaction ID: 0PP7442882460564M
+Transaction amount: $66.00 USD
+
+What's next?
+Review the seller's response in the Resolution Center. Most issues can be worked out with the seller directly. If you can't work this out with the seller, you can escalate your case to a claim until December 1, 2026. Once a case is closed, it can't be reopened.
+
+Go to the Resolution Center: https://www.paypal.com/disputes/
+
+Help & Contact | Security | Apps
+
+PayPal is committed to preventing fraudulent emails. Emails from PayPal will always contain your full name. Learn to identify phishing. Please don't reply to this email. To get in touch with us, log in to your account and click Help.
+
+PayPal will never ask you for your password in an email.
+
+Copyright 1999-2026 PayPal, Inc. All rights reserved. PayPal is located at 2211 N. First St., San Jose, CA 95131.

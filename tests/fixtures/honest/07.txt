@@ -1,0 +1,22 @@
+From: PayPal <service@paypal.com>
+To: Maya
+Date: Wed, Nov 18, 2026, 8:00 AM
+Subject: Reminder: your case is still open
+
+Hello Maya,
+
+Your case with Juniper & Lace is still open
+
+Case ID: PP-R-UZH-10198816
+Amount: $66.00 USD
+Escalate by: December 1, 2026
+
+If you've resolved this with the seller, you can close the case in the Resolution Center.
+
+If you still haven't received your item, you can escalate your case to a claim and ask PayPal to review it. If you don't escalate by December 1, 2026, the case will be closed automatically and you won't be able to reopen it.
+
+Go to the Resolution Center: https://www.paypal.com/disputes/
+
+Please don't reply to this email. To get in touch with us, log in to your account and click Help.
+
+Copyright 1999-2026 PayPal, Inc. All rights reserved.
