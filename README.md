@@ -11,7 +11,7 @@ Day 20 is a read-only assistant for PayPal buyers with an open dispute. It reads
 <img src="docs/screens/case_es.png" width="240" alt="The case screen in Spanish">
 </p>
 
-> **Try it:** open the live app (link at the top of the Devpost page), tap **Try it as Maya**, then **Got an email about this case? Check it** → **Use Maya's 3:14 a.m. email** → **Check it against my case**. No sign-in needed. See [TESTING.md](docs/TESTING.md).
+> **Try it:** open **https://day20.onrender.com**, tap **Try it as Maya**, then **Got an email about this case? Check it** → **Use Maya's 3:14 a.m. email** → **Check it against my case**. No sign-in needed. See [TESTING.md](docs/TESTING.md).
 
 ## The problem
 
@@ -96,6 +96,7 @@ We tested it by playing games. Agents attacked Day 20 for points, with evidence 
 - 3 prompt-injection emails changed nothing.
 - 0 sentences shown broke an honesty rule.
 - Median time was 4.7 s.
+- On the deployed app, the 12 genuine emails that had caused false alarms were run with the model on: 0 of 12 were flagged red.
 
 Raw results: [`tests/live/`](tests/live/).
 

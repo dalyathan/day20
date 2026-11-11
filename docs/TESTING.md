@@ -2,7 +2,7 @@
 
 ## Option 1: the live app, no sign-in, about 2 minutes
 
-1. Open the app (link at the top of the Devpost page) on a phone or a narrow browser window.
+1. Open **https://day20.onrender.com** on a phone or a narrow browser window.
 2. Tap **Try it as Maya**. This opens a labelled replay of Maya's real PayPal sandbox case (a $66 dress, "item not received") at the open stage, with the demo clock at day 7 of 20.
 3. Tap **Got an email about this case? Check it**, then **Use Maya's 3:14 a.m. email**, then **Check it against my case**.
    - **Expected:** "This email is wrong about your PayPal case. PayPal shows no refund. Your case is still open: 13 days left…"
