@@ -1,5 +1,7 @@
 name: test
 on: [push, pull_request]
+permissions:
+  contents: read
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -16,4 +18,4 @@ jobs:
         run: |
           REPLAY=1 PORT=3000 DB_FILE=/tmp/ci.sqlite node server.js &
           sleep 2
-          npx --yes newman@6 run postman/Day20.postman_collection.json --folder "5. Day 20 API" --env-var app_url=http://localhost:3000
+          npx --yes newman@6.2.1 run postman/Day20.postman_collection.json --folder "5. Day 20 API" --env-var app_url=http://localhost:3000

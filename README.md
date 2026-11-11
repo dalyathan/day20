@@ -71,11 +71,11 @@ Day 20 isn't a "file more claims" button. In the 24 dispute scenes we designed, 
 
 | Call | Why |
 |---|---|
-| `POST /v1/oauth2/token` | Client-credentials token (read-only use) |
+| `POST /v1/oauth2/token` | Client-credentials token. The token itself is a full merchant token; Day 20's code only uses it for GETs |
 | `GET /v1/customer/disputes`, `GET /v1/customer/disputes/{id}` | The case: status, reason, amount, outcome, dates |
 | `GET /v2/payments/captures/{id}` → `GET /v2/checkout/orders/{id}` | Ship-to address and trackers, for the delivery-ZIP check |
 | `GET /v1/shipping/trackers?transaction_id=` | Tracking numbers the seller added |
-| Log in with PayPal (`/signin/authorize`, `/v1/identity/oauth2/userinfo`) | Identity: her payer ID, used to find her cases. Built and tested in the sandbox, but **off on the live demo** (it needs a return URL registered on the app); the demo uses "Try it as Maya" |
+| Log in with PayPal (`/signin/authorize`, `/v1/identity/oauth2/userinfo`) | Identity: her payer ID, used to find her cases. Code path in `lib/auth.js` (covered by the Postman folder 4 requests, not by automated tests), **off on the live demo** (it needs a return URL registered on the app); the demo uses "Try it as Maya" |
 | Sandbox setup only: `POST /v2/checkout/orders`, `/capture`, `/track` | Builds Maya's real sandbox case ([`scripts/demo.js`](scripts/demo.js)) |
 
 All of these are in the [Postman collection](postman/Day20.postman_collection.json).
@@ -97,8 +97,8 @@ We tested it by playing games. Agents attacked Day 20 for points, with evidence 
 |---|---|---|
 | Designed | 24 dispute scenes plus test emails, written with the code | all pass |
 | Regression | 24 scam emails and 36 genuine emails from the games, fixed against | every scam at least "careful" (9/24 red); no genuine email flagged red |
-| **Held-out scams** | 12 game-4 emails, scored once before we tuned on them | **0/12 flagged red**; 12/12 never called safe (mostly by design) |
-| **Held-out genuine emails** | fresh writers each round, scored before tuning | **not flagged red: 0/12 → 5/12 → 11/12** over games 5–7 |
+| **Held-out scams** (rules only, no model) | 12 game-4 emails, scored once before we tuned on them | **0/12 flagged red**; 12/12 never called safe (mostly by design) |
+| **Held-out genuine emails** (rules only, no model) | fresh writers each round, scored before tuning | **not flagged red: 0/12 → 5/12 → 11/12** over games 5–7 |
 
 Every held-out set was then tuned on and moved to regression, so none is held out today. `npm run replay-heldout` re-scores each set with the commit it was first scored against and reproduces the numbers above ([RESULTS.md](tests/heldout/RESULTS.md)).
 
@@ -106,7 +106,7 @@ Every held-out set was then tuned on and moved to regression, so none is held ou
 - 36 of 36 runs completed.
 - The model's reading turned 2 "careful" results into red mismatches that the rules missed.
 - 3 prompt-injection emails: the model's verdict matched the rules-only verdict on the same email each time, and no rule was broken. (The model can only add flags, so an injection can't remove one. We didn't run injection-free copies as a separate control.)
-- 0 sentences shown broke an honesty rule.
+- No sentence shown tripped the honesty rules. (A tripwire, not proof: every sentence shown is written by code, and the rules alone missed harmful model-written text in game 3.)
 - Median time was 4.7 s.
 
 **Live model on the deployed app** (all 24 scam and 36 genuine regression emails, Nov 11; reproduce with `APP_URL=… npm run live-eval-deployed`):
@@ -121,7 +121,7 @@ Every held-out set was then tuned on and moved to regression, so none is held ou
 - Run 1: the model caught 2 reworded refund lies the keyword reader missed, but also flagged 2 genuine emails red: a seller's "if you accept, the refund of $20 would be sent" and a PayPal chat saying "no refund has been issued yet".
 - So a model flag that can turn an email red now needs evidence. A refund, closed case, close request, code request or off-PayPal payment needs the exact sentence quoted, and code checks it's in the email and isn't negated or hypothetical. Case IDs, links and tracking numbers must appear in the email as written.
 - v1 was too strict: it dropped a real catch because the sentence went on to say "it should be there". v2 judges the clause that makes the claim, lets requests be conditional ("if that works for you, please end the claim"), and keeps the engineer judge's must-stay-red sentences ("We can confirm the $66.00 is back").
-- Run 3 kept every catch and no false alarm. The check also stopped one false alarm by itself: on g5_12 the model listed a case ID that isn't in the email. 0 sentences shown broke an honesty rule; median 5.2 s.
+- Run 3 kept every catch and no false alarm. The check also stopped one false alarm by itself: on g5_12 the model listed a case ID that isn't in the email. No sentence shown tripped the honesty rules (a tripwire; every sentence shown is written by code); median 5.2 s.
 - These are the same 60 emails we tuned on, so they show the check works as designed, not how it does on unseen email. One run per email.
 
 Raw results: [`tests/live/`](tests/live/).

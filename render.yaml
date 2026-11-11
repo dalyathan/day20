@@ -13,6 +13,8 @@ services:
       mountPath: /var/data
       sizeGB: 1
     envVars:
+      - key: TRUST_PROXY
+        value: cloudflare   # Render serves through Cloudflare, which overwrites cf-connecting-ip
       - key: NODE_VERSION
         value: "22.13.0"
       - key: PAYPAL_ENV

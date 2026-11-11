@@ -2,7 +2,7 @@
 
 We tested Day 20 by playing games. AI agents took the roles of the people who'd attack it or depend on it, and each role was paid in points for what it found. Points counted only with evidence: the exact input, the exact output, and why it mattered. A made-up or unreproducible claim cost 10 points. After each round we decided on fixes and played again.
 
-The full briefs and verdicts are kept with the project's working files. This page summarizes them.
+The game emails that became tests are in `tests/fixtures/` and the live runs in `tests/live/`. The agents' briefs and verdicts (and so the numbers that come only from them, such as "0 of 33" and Rosa's "16 of 16") were working files and are **not in this repo**, so treat those numbers as our report, not as something you can re-run.
 
 ## Game 1–2: the dispute itself (24 scenes)
 

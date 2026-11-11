@@ -255,10 +255,25 @@ test("refunds made on the payment count; a partial refund of unknown size is nev
   assert.equal(money(r.refund), "a partial amount");
 });
 
-test("rate limits key on the real address, not a client-supplied one", async () => {
+test("rate limits key on the real address: proxy headers only when the deployment trusts that proxy", async () => {
   const { clientIp } = await import("../server.js");
   const req = (h) => ({ headers: h, socket: { remoteAddress: "10.0.0.1" } });
-  assert.equal(clientIp(req({ "x-forwarded-for": "1.2.3.4, 203.0.113.9" })), "203.0.113.9");
-  assert.equal(clientIp(req({ "x-forwarded-for": "1.2.3.4", "cf-connecting-ip": "198.51.100.7" })), "198.51.100.7");
-  assert.equal(clientIp(req({})), "10.0.0.1");
+  const spoof = { "x-forwarded-for": "1.2.3.4, 203.0.113.9", "cf-connecting-ip": "198.51.100.7" };
+  assert.equal(clientIp(req(spoof), undefined), "10.0.0.1");        // nothing trusted: a client can send any header
+  assert.equal(clientIp(req(spoof), "cloudflare"), "198.51.100.7"); // behind Cloudflare, which overwrites it
+  assert.equal(clientIp(req(spoof), "xff"), "203.0.113.9");          // last hop, appended by your own proxy
+});
+
+test("seller replied during the inquiry (WAITING_FOR_BUYER_RESPONSE): the 20-day clock still runs (PayPal judge, repo round)", async () => {
+  const { phase } = await import("../lib/record.js");
+  const { suggestReminders } = await import("../lib/reminders.js");
+  const { compare } = await import("../lib/compare.js");
+  const { extractClaims } = await import("../lib/claims.js");
+  const r = { ...sceneRecord({ amount: "66.00" }), status: "WAITING_FOR_BUYER_RESPONSE", stage: "INQUIRY" };
+  assert.equal(phase(r), "open");
+  assert.ok(suggestReminders(r, at(7)).length > 0);
+  const f = compare(extractClaims("Good news! Everything is handled. No further action is required."), r, at(7)).findings.find((x) => x.id === "no_action");
+  assert.equal(f.verdict, "caution");
+  // After escalation, the same status means PayPal is waiting on her.
+  assert.equal(phase({ ...r, stage: "CHARGEBACK" }), "your_turn");
 });

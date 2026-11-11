@@ -1,6 +1,7 @@
-// One command to prove every PayPal call Day 20 makes works against the sandbox.
-//   npm run live-check
-// Read-only: it only GETs. Prints a pass/fail line per call, never prints secrets.
+// One command to check every read-only PayPal call behind the case screen against the sandbox
+// (not Log in with PayPal, which needs a browser).   npm run live-check
+// It POSTs only for the OAuth token, GETs everything else, and saves the record it read to
+// tests/fixtures/live_record.json. Prints a pass/fail line per call, never prints secrets.
 import { getToken, getDispute, listDisputes, getOrderForCapture, getTrackers, ENV } from "../lib/paypal.js";
 import { normalize, phase, clock, money } from "../lib/record.js";
 import { extractClaims } from "../lib/claims.js";
