@@ -3,7 +3,7 @@ services:
   - type: web
     name: day20
     runtime: node
-    plan: starter            # free also works, but sleeps after 15 min idle (first load ~50 s)
+    plan: starter            # the persistent disk needs a paid plan. For free: set plan: free and delete the disk block and DATA_DIR (data then resets on each deploy, and the app sleeps when idle)
     buildCommand: "true"     # zero dependencies, nothing to install
     startCommand: node server.js
     healthCheckPath: /healthz

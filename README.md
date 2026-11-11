@@ -11,7 +11,7 @@ Day 20 is a read-only assistant for PayPal buyers with an open dispute. It reads
 <img src="docs/screens/case_es.png" width="240" alt="The case screen in Spanish">
 </p>
 
-> **Try it:** open the live app, tap **Try it as Maya**, then **Got an email about this case? Check it** → **Use Maya's 3:14 a.m. email** → **Check it against my case**. No sign-in needed. See [TESTING.md](docs/TESTING.md).
+> **Try it:** open the live app (link at the top of the Devpost page), tap **Try it as Maya**, then **Got an email about this case? Check it** → **Use Maya's 3:14 a.m. email** → **Check it against my case**. No sign-in needed. See [TESTING.md](docs/TESTING.md).
 
 ## The problem
 
@@ -19,9 +19,9 @@ Maya is an ICU nurse. She bought a $66 dress for her best friend's wedding, paid
 
 Then, at 3:14 a.m. on a break, she gets an email from `service@paypal.com`: *"The seller has issued a full refund of $66.00. Your case has been resolved. No further action is required."*
 
-It isn't true. If she believes it and stops watching, her case closes by itself on day 20 and can't be reopened. Ghost stores send emails like this because tired, honest buyers give up, and real PayPal addresses have been abused to deliver them.
+It isn't true. If she believes it and stops watching, then under PayPal's current rules her case closes by itself after 20 days unless she escalates, and a closed case can't be reopened. Ghost stores send emails like this because tired, honest buyers give up. Security researchers have reported scams delivered from PayPal's own genuine `service@paypal.com` address, by abusing PayPal features (e.g. Malwarebytes, 2025–2026).
 
-In our 24-scene dispute game, honest buyers mostly lost **before** review, to the clock and to traps, not **at** review.
+In our 24-scene simulated dispute game, honest buyers mostly lost **before** review, to the clock and to traps, not **at** review.
 
 ## What Day 20 does
 
@@ -33,7 +33,7 @@ In our 24-scene dispute game, honest buyers mostly lost **before** review, to th
 | **Keeps the deadline** | Day 15 and day 18 reminders she chooses, by web push, email or calendar. Silent by default. |
 | **Drafts the one-page case** | The deciding fact first. Every line is tagged `PAYPAL RECORD`, `PAYPAL CAN CHECK` or `BUYER REPORTS`, so the reviewer knows what to verify. |
 
-**What it never does:** file, escalate, close or accept anything; message the seller; ask for a password or code; send sign-in links. The code has no function that writes to PayPal.
+**What it never does:** file, escalate, close or accept anything; message the seller; ask for a password or code; send sign-in links. The app, the agent and the MCP server only read from PayPal; the only writes are in the sandbox setup script, which plays the seller to build the demo case.
 
 ## How it works
 
@@ -53,9 +53,9 @@ In our 24-scene dispute game, honest buyers mostly lost **before** review, to th
 ```
 
 - **The model reads; code decides and speaks.** Claude reads messy emails and screenshots (`read_claim`). Code computes the verdict (`mismatch` / `careful` / `consistent`), the bottom line, the next step and the one-page case from PayPal's record. The model then **picks** 2–4 sentences, written by code, for Maya to see (`compose_note`). It can't write its own.
-- **The model can only add caution.** Its claims are OR-merged with the rule reader's, so it can raise a flag but never remove one. Any email about the case is at least "careful": Day 20 calls an email safe only when a refund or closed claim agrees with PayPal's record.
+- **The model can't remove a warning.** Its claims are OR-merged with the rule reader's, so it can add a flag but never remove one. Any email is at least "careful": Day 20 calls an email "consistent" only when a refund or closed claim it read agrees with PayPal's record.
 - **Screenshots are transcribed first** by a call with no tools, so the rule reader sees every word the model sees.
-- **No model, same answer.** With no API key, or with the model down, the rules produce the same verdict and the same sentences.
+- **No model, still an answer.** With no API key, or with the model down, the rule reader produces the verdict and default sentences on its own.
 
 ### PayPal APIs used
 
@@ -86,7 +86,7 @@ We tested it by playing games. Agents attacked Day 20 for points, with evidence 
 |---|---|---|
 | Designed | The 24 dispute scenes plus test emails, written with the code | all pass |
 | Regression | Game-3 attacks we fixed against | all pass (not evidence of generalization) |
-| **Held-out** | 12 game-4 scam emails, frozen, never tuned on | **12/12 never called safe**, with the real record and deadline always shown; **0/12 flagged red** |
+| **Held-out** | 12 game-4 scam emails, frozen, never tuned on | **12/12 never called safe** (the real record and deadline are shown by construction); **0/12 flagged red** |
 
 That last number is the honest one. The safe default held, but the keyword reader misses paraphrased lies. Catching those is the model's job, and `npm run live-eval` measures it with a real key.
 
@@ -124,7 +124,7 @@ Tools: `day20_read_case`, `day20_check_email`, `day20_next_step`, `day20_draft_p
 
 ## Limits
 
-- The demo clock shifts "today" to show day 7. Everything else is read live from the sandbox, or from a labelled replay of a real sandbox case.
+- The demo opens a labelled **replay** of Maya's real sandbox case, shown at the open stage with the demo clock at day 7. (The real sandbox case went to PayPal review minutes after it was opened, so it can't show the open stage live.) Switch the demo chip to "Live sandbox case" to see the real, current case read from PayPal.
 - "Delivered to ZIP 85705" is the buyer's reading of the carrier page. It's tagged so the reviewer looks it up.
 - The email checker reads keywords. Paraphrased lies get a generic "careful" warning, not a red contradiction (see the held-out result).
 - The live model path is tested with `npm run live-eval`, which needs a real key. The offline suite mocks it.
