@@ -6,7 +6,7 @@
 
 ## Inspiration
 
-Almost everyone has tried to get a refund from a far-away store and given up. We played out 24 dispute scenarios with AI agents: ghost stores, honest sellers, opportunist buyers, and a blind PayPal reviewer. In our simulation, PayPal's rules usually worked when the evidence was clear. Honest buyers lost *before* review. They lost to the 20-day clock, to "accept 30% and keep the item" offers, and to fake "your refund has been issued" emails, some delivered through PayPal's own real addresses. One of those players was Maya, an ICU nurse checking her phone at 3:14 a.m.
+Almost everyone has tried to get a refund from a far-away store and given up. To design Day 20 we role-played 24 dispute scenes with AI agents (an exercise, not data about real buyers): ghost stores, honest sellers, opportunist buyers, and a blind PayPal reviewer. In those scenes, PayPal's rules usually worked when the evidence was clear. Honest buyers lost *before* review. They lost to the 20-day clock, to "accept 30% and keep the item" offers, and to fake "your refund has been issued" emails, some delivered through PayPal's own real addresses. One of those players was Maya, an ICU nurse checking her phone at 3:14 a.m.
 
 ## What it does
 
@@ -28,7 +28,7 @@ Day 20 isn't a "file more claims" button. In the 24 dispute scenes we designed, 
 ## How we built it
 
 - **Runtime:** Node 22 with zero dependencies, hosted on Render, as a PWA front end.
-- **PayPal:** Disputes API, Orders v2, Captures, Tracking, and Log in with PayPal, all in the sandbox. Maya's case is a real sandbox dispute: a $66 order, captured, with seller tracking added and a buyer "not received" dispute. The demo shows a labelled replay of it at the open stage; the live case is one tap away.
+- **PayPal:** Disputes API, Orders v2, Captures and Tracking, in the sandbox (Log in with PayPal is built but off on the live demo). Maya's case is a real sandbox dispute: a $66 order, captured, with seller tracking added and a buyer "not received" dispute. The demo shows a labelled replay of it at the open stage; the live case is one tap away.
 - **Agent:** a Claude tool loop with `read_case`, `read_claim`, `compare`, `next_step`, `draft_page`, `schedule_reminder`, `note_options` and `compose_note`, every one of them read-only.
   - The model *reads*: messy emails, and screenshots transcribed by a separate call with no tools.
   - Code *decides and speaks*: the verdict, the bottom line, the next step and the one-page case all come from PayPal's record.
@@ -42,16 +42,33 @@ We tested it the way it would be attacked, as games with incentives:
 - **Scammer agents** scored a point for every fake email the checker called safe. In round one, 7 of 12 got through, because a real case number made an email look "consistent". We changed the design: a real case number never counts as proof, and any email about the case defaults to "careful".
 - **A cheat** scored a point for false claims that reached the one-page case. It forged a tag through a newline. Buyer text is now sanitised, and only a validated ZIP can sit in a checkable line.
 - **A rule-breaker** scored a point for harmful notes that passed our honesty rules. Round two caught 0 of 33 new ones: regexes can't police what a model means. **So we closed the model's output space.** It picks sentences written by code instead of writing its own.
-- **Honest senders** scored a point for genuine emails that Day 20 wrongly flagged red, because a checker that cries wolf makes buyers report honest sellers. Over three fresh rounds, clean genuine emails went from 0/12 to 5/12 to 11/12.
+- **Honest senders** scored a point for genuine emails that Day 20 wrongly flagged red, because a checker that cries wolf makes buyers report honest sellers. Over three fresh rounds, genuine emails left alone (not flagged red) went from 0/12 to 5/12 to 11/12.
 - **A blind reviewer ("Rosa")** judged the one-page cases. She caught a buyer's lie because the line was tagged as checkable.
 - **An AI-assurance judge** caught us reporting fixed-against attacks as pass rates.
 
-Every successful attack became a regression test, and each new set was scored once, **before** we tuned on it. A fresh scammer agent wrote 12 emails. Day 20 called none of them safe, but that's mostly by design: it only says an email agrees when PayPal's record agrees. The real measure is that it flagged **0 of 12** red, because paraphrased lies slip past keyword reading. That's the honest number, and it's the model's job to raise it. `npm run replay-heldout` reproduces every held-out number from the commit it was scored against. In a live run on 36 test emails, Claude's reading turned 2 of those "careful" results red, 3 prompt-injection emails changed nothing, no sentence shown broke a rule. On the deployed app, the model raised scams caught red from 9 to 11 of 24, but also flagged 2 genuine emails red (a conditional offer and a "no refund yet" chat). So a model flag that can turn an email red now needs evidence: the exact sentence, which code checks is really there and isn't negated or hypothetical. Re-run live on the same 60 emails: 11 of 24 scams red, 0 of 36 genuine emails red, every one judged by the model. Those are emails we tuned on, so it shows the check works, not how it does on new email.
+Every successful attack became a regression test, and each new set was scored once, **before** we tuned on it (`npm run replay-heldout` reproduces every one of those first scores from the commit it was scored against).
+
+**Does Claude help?** On the same 60 test emails, run through the deployed app:
+
+| | Rules alone | With Claude |
+|---|---|---|
+| Scams flagged as contradicting PayPal's record | 9 / 24 | **11 / 24** |
+| Genuine emails wrongly flagged | 0 / 36 | **0 / 36** |
+
+Those are emails we tuned on. The first live run without our evidence check flagged 2 genuine emails red (a conditional offer and a "no refund yet" chat), so now a model flag that can turn an email red needs the exact sentence quoted, and code checks it's really in the email and isn't negated or hypothetical.
+
+**On email it had never seen:** a fresh writer who never saw the code wrote 12 genuine emails, frozen before scoring. With Claude on, 11 of 12 were left alone in each of 3 runs, and Claude added no false alarm (the miss is a real refund from a different shop, which the keyword rules misread). On 12 earlier unseen scams, rules alone flagged 0 red, though none was called safe. **We haven't measured Claude on unseen scams:** a fresh agent asked to write new scam emails was stopped by a safety check, and we didn't work around it.
 
 ## Challenges
 
 - **There's no buyer-side read API.** Log in with PayPal gives identity, not transactions. Our sandbox demo reads the case through the seller account, because we own both test accounts, and we say so.
 - **Regex rules can't police a language model.** We proved it to ourselves, then changed the design so the model never writes what the buyer reads.
+
+## Accomplishments that we're proud of
+
+- The model can't put a word on Maya's screen: it picks sentences code wrote, and its red flags need a quote code can check.
+- Every number we publish re-runs from the repo, including the held-out scores from old commits, and we publish our misses.
+- A real sandbox dispute end to end, a live app judges can try in 30 seconds, and the same tools as an MCP server.
 
 ## What we learned
 
