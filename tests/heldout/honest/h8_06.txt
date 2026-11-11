@@ -1,0 +1,21 @@
+From: USPS Missing Mail <missingmail@usps.gov>
+To: maya.okafor@gmail.com
+Date: Tue, 17 Nov 2026 14:48:03 -0800
+Subject: Update on your Missing Mail Search Request MMS-3381906
+
+Dear MAYA OKAFOR,
+
+This is an update on your Missing Mail Search Request, submitted November 12, 2026.
+
+Search Request Number: MMS-3381906
+Tracking Number: 9400111899223197428490
+Mail Class: USPS Ground Advantage
+
+According to our records, this item was delivered on November 7, 2026 in TUCSON, AZ 85705. The delivery address recorded for this item does not match the address you provided on your search request (SAN JOSE, CA 95131).
+
+Because the package was scanned as delivered at a different address, it was most likely addressed to that location by the sender. We are unable to redirect or retrieve an item once it has been delivered. We recommend that you contact the sender (the shipper who created the label) to confirm the shipping address they used, and pursue a refund or replacement through your merchant or payment provider.
+
+Your search request will remain open for 15 days in case any new information becomes available.
+
+Thank you,
+USPS Missing Mail Team

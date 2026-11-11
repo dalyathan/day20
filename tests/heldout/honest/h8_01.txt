@@ -1,0 +1,27 @@
+From: PayPal <service@paypal.com>
+To: maya.okafor@gmail.com
+Date: Thu, 12 Nov 2026 09:14:22 -0800
+Subject: You've got a refund from Fernhill Goods Co.
+
+Hello Maya,
+
+Fernhill Goods Co. just sent you a refund of $27.50 USD.
+
+Refund details
+Merchant: Fernhill Goods Co.
+Original transaction date: Oct 24, 2026
+Original amount: $27.50 USD
+Refund amount: $27.50 USD
+Refund transaction ID: 3KP90215XG4471938
+Original transaction ID: 8VX44103LM2209516
+Item: Hand-poured soy candle, "Cedar & Smoke" (2-pack)
+Note from merchant: "Sorry, this scent was discontinued before we could fill your order. Full refund issued."
+
+The money will go back to the payment method you used for this purchase. Card refunds can take up to 30 days to appear on your statement.
+
+This refund is not related to any other transactions or cases on your account. You can see all of your activity, including any open cases, in your PayPal account.
+
+Thanks,
+PayPal
+
+Please don't reply to this email. To get in touch, log in to your account and click Help.
