@@ -62,7 +62,16 @@ From `npm run eval`:
   Each set was then fixed and moved to regression, where all 36 genuine emails are now clean.
 
 No set is held out right now: each one we measured was then tuned on. The first measurements are in `tests/heldout/RESULTS.md`, and `npm run replay-heldout` reproduces every one of them from the commit it was scored against.
-- **Live model:** run `npm run live-eval` with a real key.
+- **Live model, deployed app (Nov 11):** on all 60 regression emails, the model raised scams caught red from 9/24 to 11/24, and wrongly flagged 2/36 genuine emails red that rules alone called "careful". *The model's extra reading has a false-alarm cost too, which is exactly what game 5–7 warned about.* Model red flags now need a quoted plain sentence (see below). Run `npm run live-eval` with a key to measure again.
+
+## Game 9: the live model on the deployed app
+
+We ran every regression email through the live app with the model on (60 checks, `tests/live/deployed-2026-11-11.jsonl`).
+
+| What happened | What we changed |
+|---|---|
+| The model caught 2 reworded refund lies the keyword reader missed ("Your $66.00 is already sitting in your PayPal balance", "taken care of the $66.00 on our end"). It also turned 2 genuine emails red: a seller's "if you accept, the refund of $20 would be sent" and a PayPal chat that said "no refund has been issued yet". Our design let the model only *add* flags, and we'd assumed adding was safe. It isn't: an added flag is a false alarm. | A model flag that can turn an email red now needs the exact sentence, quoted. Code checks the quote is in the email and plain up to its end: not negated, not conditional, not an offer. On the four sentences behind these results it keeps both catches and drops both false alarms (`tests/all.test.js`). We tuned it on those emails, so it needs a fresh live run to count. |
+| The API credit ran out at check 56. | Nothing to change: the last 5 checks fell back to rules and still answered. That's the fallback working in production. |
 
 ## What we'd do next
 
