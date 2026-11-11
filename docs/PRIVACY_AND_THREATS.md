@@ -19,7 +19,7 @@ Day 20 is a read-only assistant for a buyer with an open PayPal dispute. It's bu
 
 ## What Day 20 can't do, by construction
 
-- **It can't file, escalate, close or accept anything.** The server, the agent and the MCP server only make GET calls to PayPal, plus the token request. The only writes in the repo are in the sandbox setup script (`scripts/demo.js`), which plays the seller to build the demo case. The AI model's tools are all read-only (`lib/agent.js`).
+- **It can't file, escalate, close or accept anything.** The server, the agent and the MCP server only make GET calls to PayPal, plus the token request. This is enforced: `pp()` in `lib/paypal.js` throws on any method but GET unless a caller passes `allowWrite`, which only `scripts/demo.js` does, and a test checks it. The only writes in the repo are in the sandbox setup script (`scripts/demo.js`), which plays the seller to build the demo case. The AI model's tools are all read-only (`lib/agent.js`).
 - **It can't message the seller.** There's no channel to the seller.
 - **It can't move money.**
 
