@@ -132,3 +132,34 @@ test("server: demo, case, check, page, disconnect", async () => {
     assert.equal((await call("GET", "/api/cases")).status, 401);
   } finally { server.close(); }
 });
+
+test("dates follow the buyer's time zone; bad zones fall back to UTC", async () => {
+  const { withTz } = await import("../lib/tz.js");
+  const { fmtDate } = await import("../lib/compare.js");
+  const at = "2026-12-01T03:00:00Z"; // still Nov 30 in California
+  assert.equal(fmtDate(at), "Tue, Dec 1");
+  assert.equal(withTz("America/Los_Angeles", () => fmtDate(at)), "Mon, Nov 30");
+  assert.equal(withTz("../../etc", () => fmtDate(at)), "Tue, Dec 1");
+});
+
+test("MCP server: lists read-only tools, reads the saved case, refuses other IDs in replay", async () => {
+  const { spawn } = await import("node:child_process");
+  const p = spawn(process.execPath, [new URL("../mcp/server.js", import.meta.url).pathname], { env: { ...process.env, REPLAY: "1" }, stdio: ["pipe", "pipe", "pipe"] });
+  const lines = []; let buf = "";
+  p.stdout.on("data", (d) => { buf += d; let i; while ((i = buf.indexOf("\n")) >= 0) { lines.push(JSON.parse(buf.slice(0, i))); buf = buf.slice(i + 1); } });
+  const ask = async (id, method, params) => {
+    p.stdin.write(JSON.stringify({ jsonrpc: "2.0", id, method, params }) + "\n");
+    for (let t = 0; t < 100; t++) { const m = lines.find((x) => x.id === id); if (m) return m; await new Promise((r) => setTimeout(r, 30)); }
+    throw new Error("no reply " + method);
+  };
+  try {
+    const init = await ask(1, "initialize", { protocolVersion: "2025-06-18" });
+    assert.match(init.result.instructions, /REPLAY MODE/);
+    const list = await ask(2, "tools/list");
+    assert.ok(list.result.tools.length >= 5 && list.result.tools.every((t) => t.annotations?.readOnlyHint));
+    const ok = await ask(3, "tools/call", { name: "day20_read_case", arguments: { dispute_id: "PP-R-UZH-10198816" } });
+    assert.ok(!ok.result.isError);
+    const other = await ask(4, "tools/call", { name: "day20_read_case", arguments: { dispute_id: "PP-D-12345" } });
+    assert.ok(other.result.isError && /only has the saved sandbox case/.test(other.result.content[0].text));
+  } finally { p.kill(); }
+});

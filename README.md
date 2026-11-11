@@ -35,6 +35,10 @@ In our 24-scene simulated dispute game, honest buyers mostly lost **before** rev
 
 **What it never does:** file, escalate, close or accept anything; message the seller; ask for a password or code; send sign-in links. The app, the agent and the MCP server only read from PayPal; the only writes are in the sandbox setup script, which plays the seller to build the demo case.
 
+## Why PayPal would want this
+
+Day 20 isn't a "file more claims" button. In our 24 test scenes it tells the buyer to escalate in 10 and to tell PayPal what actually arrived in 6. In the other 8 it says **don't escalate yet, or don't escalate at all**: the seller is answering and tracking is only stalled, she should check with a neighbour first, the item arrived as described, or the purchase isn't covered. Honest sellers keep their sales, and PayPal's reviewers get fewer weak claims. The claims that do arrive come with a one-page case where the deciding fact is on line 1 and tagged with what PayPal can check, so a reviewer can decide in minutes. And buyers stop losing protection they paid for because a fake email told them to wait out the 20 days.
+
 ## How it works
 
 ```
@@ -105,8 +109,9 @@ Raw results: [`tests/live/`](tests/live/).
 Our honest reading: the safe default holds, and false alarms fell sharply once the reader went sentence by sentence. The keyword reader still misses reworded lies, and catching those is the model's job. `npm run live-eval` measures it with a real key. We couldn't run a fresh scam-writing round after game 4: the agent declined, stopped by a safety check, and we didn't work around it.
 
 ```
-npm test        # unit + integration: RFC 8291 vector, model can't speak or act, model-down fallback, Spanish, server
+npm test        # unit + integration: RFC 8291 vector, model can't speak or act, model-down fallback, Spanish, server (push allowlist, forged cookies), time zones, MCP smoke test
 npm run eval    # one line per case, with totals per group
+npm run replay-heldout  # re-score each held-out set with the commit it was first scored against
 ```
 
 ## Run it
@@ -120,7 +125,11 @@ npm run live-check             # proves every PayPal call against the sandbox
 npm run dev                    # http://localhost:3000
 ```
 
-Deploy: [`render.yaml`](render.yaml) (Render Blueprint). Enter secrets in Render's form, never in the repo.
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/dalyathan/day20)
+
+The button uses [`render.yaml`](render.yaml) (Render Blueprint): one web service with a small disk for SQLite, and `/healthz` checks the database. With no keys it runs in replay mode on the saved sandbox case. Enter secrets in Render's form, never in the repo.
+
+**Postman:** import `postman/Day20.postman_collection.json` and the environment next to it. Run request 1, then folder 3: each request saves the next ID (dispute → capture → order) and checks the response.
 
 **MCP server** (the same read-only tools for any AI assistant):
 

@@ -7,7 +7,7 @@
 //
 // Every tool here is read-only. None of them can file, escalate, close, accept or send anything.
 import { createInterface } from "node:readline";
-import { readCase } from "../lib/cases.js";
+import { readCase, source, DEMO_DISPUTE_ID } from "../lib/cases.js";
 import { phase, clock, money, STATUS_WORDS } from "../lib/record.js";
 import { extractClaims } from "../lib/claims.js";
 import { compare } from "../lib/compare.js";
@@ -56,13 +56,14 @@ async function call(name, a = {}) {
 }
 
 const send = (msg) => process.stdout.write(JSON.stringify(msg) + "\n");
+if (source() === "replay") process.stderr.write(`day20 MCP: no PayPal credentials (or REPLAY=1). Replay mode: only the saved case ${DEMO_DISPUTE_ID}.\n`);
 const rl = createInterface({ input: process.stdin });
 rl.on("line", async (line) => {
   let m; try { m = JSON.parse(line); } catch { return send({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" } }); }
   const reply = (result) => m.id !== undefined && send({ jsonrpc: "2.0", id: m.id, result });
   const fail = (code, message) => m.id !== undefined && send({ jsonrpc: "2.0", id: m.id, error: { code, message } });
   try {
-    if (m.method === "initialize") return reply({ protocolVersion: m.params?.protocolVersion || "2025-06-18", capabilities: { tools: {} }, serverInfo: { name: "day20", version: "1.0.0" }, instructions: "Read-only tools for a PayPal buyer with an open dispute. Never claim you filed or escalated anything: the buyer does that in PayPal." });
+    if (m.method === "initialize") return reply({ protocolVersion: m.params?.protocolVersion || "2025-06-18", capabilities: { tools: {} }, serverInfo: { name: "day20", version: "1.0.0" }, instructions: "Read-only tools for a PayPal buyer with an open dispute. Never claim you filed or escalated anything: the buyer does that in PayPal." + (source() === "replay" ? ` REPLAY MODE: no PayPal credentials are set, so only the saved sandbox case ${DEMO_DISPUTE_ID} can be read, and its data is a saved copy, not live.` : "") });
     if (m.method === "notifications/initialized" || m.method?.startsWith("notifications/")) return;
     if (m.method === "ping") return reply({});
     if (m.method === "tools/list") return reply({ tools: TOOLS });

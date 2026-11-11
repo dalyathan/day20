@@ -71,6 +71,7 @@ p { margin: 0 0 10px; }
 .btn { display: flex; width: 100%; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 14px; padding: 15px 16px; font-size: 16px; font-weight: 600; cursor: pointer; text-decoration: none; font-family: var(--sans); }
 .btn.primary { background: var(--emerald); color: #fff; }
 .btn.paypal { background: #ffc439; color: #111; }
+.btn.outbound { background: #fff; color: #111; border: 2px solid #111; }
 .btn.dark { background: var(--night); color: #fff; }
 .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
 .btn.light { background: #fff; color: var(--ink); border: 1px solid var(--line); }
