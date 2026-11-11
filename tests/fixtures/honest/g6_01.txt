@@ -1,0 +1,30 @@
+From: PayPal <service@paypal.com>
+To: Maya
+Date: Wed, Nov 11, 2026, 12:51 AM
+Subject: We've let the seller know about your issue
+
+Hi Maya,
+
+We've told Juniper & Lace that you haven't received your item. Here's what happens next.
+
+Transaction date: Nov 2, 2026
+Seller: Juniper & Lace
+Amount: $66.00 USD
+Case ID: PP-R-UZH-10198816
+
+What happens next
+The seller has 10 days to respond to you in the Resolution Center. Most sellers reply within a few days, and many issues are worked out directly between buyers and sellers.
+
+Keep an eye on your email and the Resolution Center for the seller's response. You can also message the seller there at any time.
+
+If you and the seller can't work it out, you can escalate this case to a claim by Dec 1, 2026 and we'll step in.
+
+View case details
+<https://epl.paypal-communication.com/T/v6000001973a4c1b2e/c3b1/case?id=PP-R-UZH-10198816>
+
+Thanks,
+PayPal
+
+Help & Contact | Security | Apps
+PayPal is committed to preventing fraudulent emails. Emails from PayPal will always contain your full name.
+Copyright 1999-2026 PayPal, Inc. All rights reserved. PayPal is located at 2211 N. First St., San Jose, CA 95131.
