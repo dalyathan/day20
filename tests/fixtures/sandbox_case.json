@@ -1,0 +1,40 @@
+{
+  "fetchedAt": "2026-11-11T08:52:15.699Z",
+  "note": "Real response from GET /v1/customer/disputes/PP-R-UZH-10198816 in the PayPal sandbox. Sandbox test accounts only; no real person or money.",
+  "dispute": {
+    "dispute_id": "PP-R-UZH-10198816",
+    "create_time": "2026-11-11T08:42:42.082Z",
+    "update_time": "2026-11-11T08:45:53.734Z",
+    "disputed_transactions": [
+      {
+        "buyer_transaction_id": "78H86543WF443961E",
+        "seller_transaction_id": "0PP7442882460564M",
+        "create_time": "2026-11-11T08:38:29.000Z",
+        "transaction_status": "HELD",
+        "gross_amount": { "currency_code": "USD", "value": "66.00" },
+        "buyer": { "email": "sb-o6sjq53859003@personal.example.com", "payer_id": "9VBG3W6TEXHCY", "name": "John Doe" },
+        "seller": { "email": "sb-83dkq53853701@business.example.com", "merchant_id": "42MHU9RZ48T8W", "name": "Test Store" },
+        "items": [
+          { "item_name": "Emerald satin midi dress (Day 20 demo)", "item_description": "Emerald satin midi dress (Day 20 demo)", "item_quantity": "1", "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED", "item_type": "PRODUCT" }
+        ],
+        "seller_protection_eligible": true,
+        "seller_protection_type": "EXPANDED_SELLER_PROTECTION"
+      }
+    ],
+    "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+    "status": "UNDER_REVIEW",
+    "dispute_amount": { "currency_code": "USD", "value": "66.00" },
+    "dispute_state": "UNDER_PAYPAL_REVIEW",
+    "fund_movements": [
+      { "party": "SELLER", "amount": { "currency_code": "USD", "value": "63.21" }, "initiated_time": "2026-11-11T08:45:29.000Z", "type": "DEBIT", "reason": "HOLD_PLACED" }
+    ],
+    "dispute_life_cycle_stage": "CHARGEBACK",
+    "dispute_channel": "INTERNAL",
+    "extensions": { "merchant_contacted": false, "buyer_contacted_time": "2026-11-11T08:42:41.267Z" },
+    "evidences": [
+      { "evidence_type": "CREATE", "notes": "Day 20 sandbox demo. DELIVERED: Tucson, AZ 85705 (per seller's USPS tracking 9400111899223197428490). SHIP-TO on the transaction: San Jose, CA 95131. Item never arrived. Prepared with an agent, filed by the buyer.", "source": "SUBMITTED_BY_BUYER", "date": "2026-11-11T08:42:42.082Z", "dispute_life_cycle_stage": "INQUIRY" }
+    ],
+    "offer": { "buyer_requested_amount": { "currency_code": "USD", "value": "66.00" } },
+    "refund_details": { "allowed_refund_amount": { "currency_code": "USD", "value": "66.00" } }
+  }
+}

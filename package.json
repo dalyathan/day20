@@ -1,0 +1,23 @@
+{
+  "name": "day20",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Day 20: a read-only buyer-side agent that checks emails against your real PayPal case and keeps your 20-day deadline.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --env-file=.env server.js",
+    "replay": "REPLAY=1 node server.js",
+    "test": "node --test tests/*.test.js",
+    "eval": "node tests/run-evals.js",
+    "mcp": "node mcp/server.js",
+    "live-check": "node --env-file=.env scripts/live-check.js",
+    "live-eval": "node --env-file=.env scripts/live-eval.js",
+    "check": "node --env-file=.env scripts/check.js",
+    "demo": "node --env-file=.env scripts/demo.js"
+  }
+}
