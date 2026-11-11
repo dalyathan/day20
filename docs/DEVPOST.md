@@ -37,6 +37,7 @@ We tested it the way it would be attacked, as games with incentives:
 - **Scammer agents** were paid for every fake email the checker called safe. In round one, 7 of 12 got through, because a real case number made an email look "consistent". We changed the design: a real case number never counts as proof, and any email about the case defaults to "careful".
 - **A cheat** was paid for false claims that reached the one-page case. It forged a tag through a newline. Buyer text is now sanitised, and only a validated ZIP can sit in a checkable line.
 - **A rule-breaker** was paid for harmful notes that passed our honesty rules. Round two caught 0 of 33 new ones: regexes can't police what a model means. **So we closed the model's output space.** It picks sentences written by code instead of writing its own.
+- **Honest senders** were paid for genuine emails that Day 20 wrongly flagged red, because a checker that cries wolf makes buyers report honest sellers. Over three fresh rounds, clean genuine emails went from 0/12 to 5/12 to 11/12.
 - **A blind reviewer ("Rosa")** judged the one-page cases. She caught a buyer's lie because the line was tagged as checkable.
 - **An AI-assurance judge** caught us reporting fixed-against attacks as pass rates.
 

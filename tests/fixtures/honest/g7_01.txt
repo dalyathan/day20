@@ -1,0 +1,23 @@
+From: PayPal <service@paypal.com>
+To: Maya
+Date: Mon, Nov 16, 2026, 5:22 PM
+Subject: Your chat with PayPal Customer Service
+
+Hi Maya,
+
+Thanks for chatting with us today. Here's a copy of your conversation for your records.
+
+Chat reference: 2611-1647-0083
+
+Alex (PayPal): Hi Maya, thanks for waiting. How can I help today?
+Maya: I have an open case for a dress that never came. Tracking says delivered but in Tucson AZ, I live in San Jose. What should I do?
+Alex (PayPal): I'm sorry about that. I can see case PP-R-UZH-10198816 for $66.00 USD with Juniper & Lace. It's still open and waiting on the seller. No refund has been issued on this transaction yet.
+Alex (PayPal): You have until December 1, 2026 to escalate it to a claim. If you escalate, we'll review it and make a decision, usually within 30 days.
+Maya: Should I escalate now?
+Alex (PayPal): That's your choice. Some buyers wait a few days if the seller is working with them. Just don't let the 20 days pass, because the case closes automatically after that and can't be reopened.
+Maya: ok thanks
+Alex (PayPal): You're welcome. Is there anything else I can help with?
+
+How did we do? Take a 1-minute survey: https://www.paypal.com/smarthelp/survey
+
+Copyright 1999-2026 PayPal, Inc. All rights reserved.

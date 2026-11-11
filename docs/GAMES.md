@@ -33,19 +33,35 @@ These 24 scenes became the eval suite (`tests/scenarios.js`).
 | **AI-assurance judge** | Train/test leakage: the attacks we fixed against were reported as pass rates. 21 checks couldn't fail. The live model was never tested. | Results are split three ways: designed, regression and held-out. We removed the checks that couldn't fail. `npm run live-eval` runs the real model and writes JSONL. |
 | **Scammer 2** | 12 new emails. **12/12 rated "careful" (never "safe")**, and the bottom line (built by code) showed the real record. **0/12 flagged red.** Lies worded without our keywords got a generic warning instead of a contradiction. | The emails are frozen as a held-out set (`tests/heldout/`). We report this number and haven't tuned on it. |
 
+## Games 5–7: does it cry wolf?
+
+A checker that calls everything a scam is useless. It would also make Maya report an honest seller who's trying to fix things. So we paid **honest senders** for false alarms: genuine emails that are true for her record (a seller asking for time, PayPal's own case notices, USPS, her bank, her own calendar reminder, a friend's advice) that Day 20 flagged red.
+
+| Round | Genuine emails flagged red | What we changed |
+|---|---|---|
+| Game 5 | **12 of 12**. Whole-text patterns read "I haven't issued a refund yet" as a refund, "Once a case is closed…" as a closed case, and "PayPal will never ask for your password" as a request for one. Any non-PayPal link counted as a contradiction. | We rewrote the reader to work **sentence by sentence**. It only reads claims from sentences that assert something: not negated, not conditional, not generic. A carrier's own "case closed" isn't her PayPal case. A plain link is a caution, not a contradiction. "Report to phishing@paypal.com" appears only on real phishing signs. |
+| Game 6 (fresh writer) | **7 of 12**. Our negation pattern matched any word ending in "nt" ("payment"). Someone else's dispute ("my claim", "on our side") counted as hers. PayPal's own link domains were read as lookalikes. A bank's Zelle promo was read as a payment request. | We fixed the negation bug and added whose-case checks. We allow-listed PayPal's own domains. Off-platform payment only counts as a request aimed at her. A full-amount offer is described as a full refund. |
+| Game 7 (fresh writer) | **1 of 12**: a store newsletter's returns policy ("can be returned … for a refund") was read as her refund. Three findings were wrong (a negated "wait", a FedEx "by end of day" read as urgency, another package's delivery). | Policy and "can/may" lines count as conditional. Negation now applies to stall detection. Urgency is read sentence by sentence and skips carrier lines. |
+
+The cost of fewer false alarms: on the scam regression set, "flagged red" moved between 8 and 10 of 24 (9 now). Every scam stayed at least "careful".
+
+**A note on what we couldn't run:** a fresh agent asked to write a new round of scam emails declined, stopped by a safety check. We didn't try to get around it. So our held-out scam number is still the game-4 one.
+
 ## The numbers, phrased honestly
 
 From `npm run eval`:
 
 - **Designed cases** (24 scenes plus test emails, written alongside the code): all pass. *That shows the code does what we designed, not that it generalizes.*
-- **Regression** (game-3 attacks we fixed against): all pass, and 8 of 12 flagged red. *No regressions. It isn't evidence of generalization.*
-- **Held-out** (12 game-4 scam emails, frozen, never tuned on):
-  - 12 of 12 were never called safe. Every result showed PayPal's real refund status and deadline, by construction: code builds that line.
-  - 0 of 12 were flagged as an outright contradiction.
+- **Regression** (attacks and false alarms we fixed): all pass. *That shows no regressions. It isn't evidence of generalization.*
+- **Held-out scams** (game 4, measured before we tuned on them): 12 of 12 were never called safe, and 0 of 12 were flagged red. *The safe default held, but the keyword reader missed reworded lies.*
+- **Held-out genuine emails** (each round measured before we tuned on it):
+  - game 5: 0 of 12 clean;
+  - game 6: 5 of 12 clean;
+  - game 7: 11 of 12 clean.
 
-  *This is our honest generalization number. The safe default held. The keyword reader missed paraphrased lies.*
-- **Live model:** `npm run live-eval` (run with a real key) reports how often the model's reading raises a "careful" to a red "mismatch", and whether any sentence it showed broke a rule.
+  Each set was then fixed and moved to regression, where all 36 genuine emails are now clean.
+- **Live model:** run `npm run live-eval` with a real key.
 
 ## What we'd do next
 
-The held-out result points at the next step. The model is good at reading meaning, so it should raise more flags from paraphrased lies. It can only add flags, never remove them, and it can only pick sentences, never write them. That's why we let it do this. Then we'd write a new held-out set to test it.
+The keyword reader is a floor. Reworded lies need the model's reading. But the model can only add flags, so more reading means more caution, and the false-alarm games show that caution has a cost. The next step is to measure both rates with the live model, on fresh sets in both directions.

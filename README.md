@@ -78,17 +78,19 @@ We tested it by playing games. Agents attacked Day 20 for points, with evidence 
 - **A cheat** forged a "PAYPAL CAN CHECK" line with a newline. Buyer text is now sanitized.
 - **A rule-breaker** showed that regexes can't police what a language model means: 0 of 33 new harmful sentences were caught. **So we closed the model's output space.** It now picks sentences written by code instead of writing its own.
 - **A blind PayPal reviewer** shaped the one-page case.
+- **Honest senders** were paid for genuine emails that Day 20 flagged red. In round one, all 12 were flagged, because a checker that cries wolf makes Maya report honest sellers. We rewrote the reader to work sentence by sentence.
 - **An AI-assurance judge** caught us reporting fixed-against attacks as pass rates. We now split the numbers.
 
-`npm run eval` reports three groups separately:
+`npm run eval` reports where each case came from, because a pass rate on cases we fixed against isn't evidence:
 
 | Group | What it is | Result |
 |---|---|---|
-| Designed | The 24 dispute scenes plus test emails, written with the code | all pass |
-| Regression | Game-3 attacks we fixed against | all pass (not evidence of generalization) |
-| **Held-out** | 12 game-4 scam emails, frozen, never tuned on | **12/12 never called safe** (the real record and deadline are shown by construction); **0/12 flagged red** |
+| Designed | 24 dispute scenes plus test emails, written with the code | all pass |
+| Regression | 24 scam emails and 36 genuine emails from the games, fixed against | every scam at least "careful" (9/24 red); every genuine email clean |
+| **Held-out scams** | 12 game-4 emails, measured before we tuned on them | **12/12 never called safe**; 0/12 flagged red |
+| **Held-out genuine emails** | fresh writers each round, measured before tuning | **clean: 0/12 → 5/12 → 11/12** over games 5–7 |
 
-That last number is the honest one. The safe default held, but the keyword reader misses paraphrased lies. Catching those is the model's job, and `npm run live-eval` measures it with a real key.
+Our honest reading: the safe default holds, and false alarms fell sharply once the reader went sentence by sentence. The keyword reader still misses reworded lies, and catching those is the model's job. `npm run live-eval` measures it with a real key. We couldn't run a fresh scam-writing round after game 4: the agent declined, stopped by a safety check, and we didn't work around it.
 
 ```
 npm test        # unit + integration: RFC 8291 vector, model can't speak or act, model-down fallback, Spanish, server
