@@ -21,5 +21,10 @@
     "live-eval-deployed": "node scripts/live-eval-deployed.mjs",
     "check": "node --env-file=.env scripts/check.js",
     "demo": "node --env-file=.env scripts/demo.js"
+  },
+  "author": "Surafel Melese Tariku <surafelmelese09@gmail.com> (https://github.com/dalyathan)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dalyathan/day20.git"
   }
 }

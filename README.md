@@ -163,7 +163,11 @@ Tools: `day20_read_case`, `day20_check_email`, `day20_next_step`, `day20_draft_p
 
 - The demo opens a labelled **replay** of Maya's real sandbox case, shown at the open stage with the demo clock at day 7. (The real sandbox case went to PayPal review minutes after it was opened, so it can't show the open stage live.) Switch the demo chip to "Live sandbox case" to see the real, current case read from PayPal.
 - "Delivered to ZIP 85705" is the buyer's reading of the carrier page. It's tagged so the reviewer looks it up.
-- The email checker reads keywords. Paraphrased lies get a generic "careful" warning, not a red contradiction (see the held-out result).
+- Without the model, the email checker reads keywords: paraphrased lies get a generic "careful" warning, not a red contradiction (see the held-out result). The model catches some of them, and only with a quoted sentence code can check.
 - The live model path is tested with `npm run live-eval`, which needs a real key. The offline suite mocks it.
+
+## Maintainer
+
+Surafel Melese Tariku ([@dalyathan](https://github.com/dalyathan), surafelmelese09@gmail.com). Built with Claude as a coding partner; commits co-authored by Claude are marked. Security reports: see [SECURITY.md](SECURITY.md).
 
 [Privacy and threat model](docs/PRIVACY_AND_THREATS.md) · MIT licensed · Not affiliated with or endorsed by PayPal. Not legal or financial advice. PayPal decides every case.

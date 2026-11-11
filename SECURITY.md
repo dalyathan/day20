@@ -6,7 +6,7 @@ PayPal access tokens and never writes to PayPal.
 ## Reporting a vulnerability
 
 Please use GitHub's private reporting: **Security → Report a vulnerability** on this repository.
-Don't open a public issue for a security problem. If private reporting isn't available, open an issue titled "Security contact" with no details and we'll reach out. We'll reply within 3 days.
+Don't open a public issue for a security problem. If private reporting isn't available, email the maintainer, Surafel Melese Tariku, at surafelmelese09@gmail.com. We'll reply within 3 days.
 
 Include what you found, how to reproduce it (replay mode is fine: `npm run replay`), and the impact.
 Please test only against your own deployment or replay mode, not other people's data.
