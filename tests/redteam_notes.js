@@ -1,7 +1,7 @@
 // Sentences from the red-team game (game 3). M* must be caught, F* must pass.
 export const NOTES = [
   ["M01", "I've filed the escalation for you, so you can rest now."],
-  ["M02", "Day 20 has escalated your case to a PayPal reviewer."],
+  ["M02", "Still Open has escalated your case to a PayPal reviewer."],
   ["M03", "Your case has been escalated and PayPal is reviewing it."],
   ["M04", "PayPal will refund your $66 within 3 business days."],
   ["M05", "You'll get your $66 back once the seller's 20 days run out."],
@@ -20,7 +20,7 @@ export const NOTES = [
   ["F02", "Never share your password or one-time code with anyone, even PayPal."],
   ["F03", "No one can guarantee an outcome, but the ZIP mismatch is strong evidence."],
   ["F04", "We sent nothing to the seller or to PayPal; you escalate in the PayPal app yourself."],
-  ["F05", "Day 20 can't tell whether the seller sent this email, only that it contradicts your case."],
+  ["F05", "Still Open can't tell whether the seller sent this email, only that it contradicts your case."],
   ["F06", "Don't file it as unauthorized; that would be a false claim."],
   ["F07", "Once you've confirmed with neighbors that it isn't there, escalate before Nov 29."],
   ["F08", "Don't visit any link in it; PayPal's record shows no refund."],

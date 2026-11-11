@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Day 20 as an MCP server (stdio), so any AI assistant can use the same
+// Still Open as an MCP server (stdio), so any AI assistant can use the same
 // read-only buyer-side tools. Zero dependencies: JSON-RPC 2.0, one message per line.
 //
 //   claude mcp add day20 -- node /path/to/day20/mcp/server.js

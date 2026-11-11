@@ -9,7 +9,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const order = await pp("/v2/checkout/orders", { method: "POST", body: {
   intent: "CAPTURE",
-  purchase_units: [{ reference_id: "maya-dress", description: "Emerald satin midi dress (Day 20 demo)", amount: { currency_code: "USD", value: "66.00" } }],
+  purchase_units: [{ reference_id: "maya-dress", description: "Emerald satin midi dress (Still Open demo)", amount: { currency_code: "USD", value: "66.00" } }],
   payment_source: { paypal: { experience_context: { return_url: "https://example.com/approved", cancel_url: "https://example.com/cancelled", shipping_preference: "GET_FROM_FILE", user_action: "PAY_NOW" } } },
 }});
 const approveUrl = (order.links || []).find((l) => l.rel === "payer-action" || l.rel === "approve")?.href;

@@ -1,8 +1,8 @@
-# Day 20
+# Still Open
 
 **Emails can lie. Your PayPal case can't.**
 
-Day 20 is a read-only assistant for PayPal buyers with an open dispute. It reads the buyer's real case record from PayPal, checks any email about the case against that record, tells her the next step and the real deadline, and drafts a one-page case for the PayPal reviewer. Filing, escalating and closing stay with her, in PayPal.
+Still Open is a read-only assistant for PayPal buyers with an open dispute. It reads the buyer's real case record from PayPal, checks any email about the case against that record, tells her the next step and the real deadline, and drafts a one-page case for the PayPal reviewer. Filing, escalating and closing stay with her, in PayPal.
 
 <p>
 <img src="docs/screens/case.png" width="240" alt="Case screen: day 7 of 20, 13 days left, and a button to check an email">
@@ -23,7 +23,7 @@ It isn't true. If she believes it and stops watching, then under PayPal's curren
 
 In our 24-scene simulated dispute game, honest buyers mostly lost **before** review, to the clock and to traps, not **at** review.
 
-## What Day 20 does
+## What Still Open does
 
 | | |
 |---|---|
@@ -53,7 +53,7 @@ In our 24-scene simulated dispute game, honest buyers mostly lost **before** rev
 ```
 
 - **The model reads; code decides and speaks.** Claude reads messy emails and screenshots (`read_claim`). Code computes the verdict (`mismatch` / `careful` / `consistent`), the bottom line, the next step and the one-page case from PayPal's record. The model then **picks** 2–4 sentences, written by code, for Maya to see (`compose_note`). It can't write its own.
-- **The model can't remove a warning.** Its claims are OR-merged with the rule reader's, so it can add a flag but never remove one. Any email is at least "careful": Day 20 calls an email "consistent" only when a refund or closed claim it read agrees with PayPal's record.
+- **The model can't remove a warning.** Its claims are OR-merged with the rule reader's, so it can add a flag but never remove one. Any email is at least "careful": Still Open calls an email "consistent" only when a refund or closed claim it read agrees with PayPal's record.
 - **Screenshots are transcribed first** by a call with no tools, so the rule reader sees every word the model sees.
 - **No model, still an answer.** With no API key, or with the model down, the rule reader produces the verdict and default sentences on its own.
 
@@ -72,13 +72,13 @@ All of these are in the [Postman collection](postman/Day20.postman_collection.js
 
 ## Who tests the AI?
 
-We tested it by playing games. Agents attacked Day 20 for points, with evidence required ([docs/GAMES.md](docs/GAMES.md)).
+We tested it by playing games. Agents attacked Still Open for points, with evidence required ([docs/GAMES.md](docs/GAMES.md)).
 
 - **Scammers** were paid for every fake email the checker rated safe. In round one, 7 of 12 got through, so a real case number stopped counting as proof.
 - **A cheat** forged a "PAYPAL CAN CHECK" line with a newline. Buyer text is now sanitized.
 - **A rule-breaker** showed that regexes can't police what a language model means: 0 of 33 new harmful sentences were caught. **So we closed the model's output space.** It now picks sentences written by code instead of writing its own.
 - **A blind PayPal reviewer** shaped the one-page case.
-- **Honest senders** were paid for genuine emails that Day 20 flagged red. In round one, all 12 were flagged, because a checker that cries wolf makes Maya report honest sellers. We rewrote the reader to work sentence by sentence.
+- **Honest senders** were paid for genuine emails that Still Open flagged red. In round one, all 12 were flagged, because a checker that cries wolf makes Maya report honest sellers. We rewrote the reader to work sentence by sentence.
 - **An AI-assurance judge** caught us reporting fixed-against attacks as pass rates. We now split the numbers.
 
 `npm run eval` reports where each case came from, because a pass rate on cases we fixed against isn't evidence:
