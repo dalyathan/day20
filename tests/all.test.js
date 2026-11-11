@@ -163,3 +163,22 @@ test("MCP server: lists read-only tools, reads the saved case, refuses other IDs
     assert.ok(other.result.isError && /only has the saved sandbox case/.test(other.result.content[0].text));
   } finally { p.kill(); }
 });
+
+test("model red flags need a plain quoted sentence (live false alarms g5_02, g7_01; live catches s2_01, s2_08)", async () => {
+  const { gateModelClaims } = await import("../lib/agent.js");
+  const { readFileSync } = await import("node:fs");
+  const f = (n) => readFileSync(new URL(`./fixtures/${n}.txt`, import.meta.url), "utf8");
+  const gate = (field, quote, text) => gateModelClaims({}, { [field]: true, evidence: quote ? { [field]: quote } : undefined }, text).kept[field] === true;
+  // Kept: the model caught reworded refund lies the keyword reader missed.
+  assert.ok(gate("refundClaimed", "Your $66.00 is already sitting in your PayPal balance on our side", f("scams/s2_01")));
+  assert.ok(gate("refundClaimed", "We've gone ahead and taken care of the $66.00 on our end today - it's done, finished, handled.", f("scams/s2_08")));
+  // Dropped: conditional, offer, negated, cherry-picked, invented, or no quote at all.
+  assert.ok(!gate("refundClaimed", "If you accept it there, the refund of $20 would be sent to your PayPal balance right away.", f("honest/g5_02")));
+  assert.ok(!gate("refundClaimed", "I'd also like to offer you a partial refund of $20 for the hassle.", f("honest/g5_02")));
+  assert.ok(!gate("refundClaimed", "No refund has been issued on this transaction yet.", f("honest/g7_01")));
+  assert.ok(!gate("refundClaimed", "refund has been issued on this transaction", f("honest/g7_01")));
+  assert.ok(!gate("refundClaimed", "Your refund of $66 has been issued.", f("scams/s2_01")));
+  assert.ok(!gate("refundClaimed", null, f("scams/s2_01")));
+  // Fields that can't turn an email red pass through without evidence.
+  assert.equal(gateModelClaims({}, { urgency: true }, "x").kept.urgency, true);
+});

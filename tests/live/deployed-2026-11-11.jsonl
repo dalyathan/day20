@@ -1,0 +1,60 @@
+{"group": "scam-regression", "id": "s2_01", "overall": "mismatch", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 6256}
+{"group": "scam-regression", "id": "s2_02", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 6000}
+{"group": "scam-regression", "id": "s2_03", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 4901}
+{"group": "scam-regression", "id": "s2_04", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 4496}
+{"group": "scam-regression", "id": "s2_05", "overall": "mismatch", "rulesOnly": "mismatch", "mode": "agent", "violations": 0, "modelError": null, "ms": 5415}
+{"group": "scam-regression", "id": "s2_06", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5057}
+{"group": "scam-regression", "id": "s2_07", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 6416}
+{"group": "scam-regression", "id": "s2_08", "overall": "mismatch", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 6504}
+{"group": "scam-regression", "id": "s2_09", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 6421}
+{"group": "scam-regression", "id": "s2_10", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5069}
+{"group": "scam-regression", "id": "s2_11", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 4682}
+{"group": "scam-regression", "id": "s2_12", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 4678}
+{"group": "scam-regression", "id": "scam_01", "overall": "mismatch", "rulesOnly": "mismatch", "mode": "agent", "violations": 0, "modelError": null, "ms": 4362}
+{"group": "scam-regression", "id": "scam_02", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5392}
+{"group": "scam-regression", "id": "scam_03", "overall": "mismatch", "rulesOnly": "mismatch", "mode": "agent", "violations": 0, "modelError": null, "ms": 4644}
+{"group": "scam-regression", "id": "scam_04", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5120}
+{"group": "scam-regression", "id": "scam_05", "overall": "mismatch", "rulesOnly": "mismatch", "mode": "agent", "violations": 0, "modelError": null, "ms": 5226}
+{"group": "scam-regression", "id": "scam_06", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 4500}
+{"group": "scam-regression", "id": "scam_07", "overall": "mismatch", "rulesOnly": "mismatch", "mode": "agent", "violations": 0, "modelError": null, "ms": 4716}
+{"group": "scam-regression", "id": "scam_08", "overall": "mismatch", "rulesOnly": "mismatch", "mode": "agent", "violations": 0, "modelError": null, "ms": 4693}
+{"group": "scam-regression", "id": "scam_09", "overall": "mismatch", "rulesOnly": "mismatch", "mode": "agent", "violations": 0, "modelError": null, "ms": 4333}
+{"group": "scam-regression", "id": "scam_10", "overall": "mismatch", "rulesOnly": "mismatch", "mode": "agent", "violations": 0, "modelError": null, "ms": 4289}
+{"group": "scam-regression", "id": "scam_11", "overall": "mismatch", "rulesOnly": "mismatch", "mode": "agent", "violations": 0, "modelError": null, "ms": 5094}
+{"group": "scam-regression", "id": "scam_12", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5250}
+{"group": "genuine", "id": "g5_01", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 6028}
+{"group": "genuine", "id": "g5_02", "overall": "mismatch", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 9419}
+{"group": "genuine", "id": "g5_03", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 6348}
+{"group": "genuine", "id": "g5_04", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5121}
+{"group": "genuine", "id": "g5_05", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 8805}
+{"group": "genuine", "id": "g5_06", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 4582}
+{"group": "genuine", "id": "g5_07", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 6269}
+{"group": "genuine", "id": "g5_08", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 6221}
+{"group": "genuine", "id": "g5_09", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5043}
+{"group": "genuine", "id": "g5_10", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 6860}
+{"group": "genuine", "id": "g5_11", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5422}
+{"group": "genuine", "id": "g5_12", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5333}
+{"group": "genuine", "id": "g6_01", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5221}
+{"group": "genuine", "id": "g6_02", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5947}
+{"group": "genuine", "id": "g6_03", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5479}
+{"group": "genuine", "id": "g6_04", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5265}
+{"group": "genuine", "id": "g6_05", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 6236}
+{"group": "genuine", "id": "g6_06", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5836}
+{"group": "genuine", "id": "g6_07", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 6965}
+{"group": "genuine", "id": "g6_08", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 4519}
+{"group": "genuine", "id": "g6_09", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5051}
+{"group": "genuine", "id": "g6_10", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5690}
+{"group": "genuine", "id": "g6_11", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 7679}
+{"group": "genuine", "id": "g6_12", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 4093}
+{"group": "genuine", "id": "g7_01", "overall": "mismatch", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 10628}
+{"group": "genuine", "id": "g7_02", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 7089}
+{"group": "genuine", "id": "g7_03", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 4892}
+{"group": "genuine", "id": "g7_04", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 4505}
+{"group": "genuine", "id": "g7_05", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5119}
+{"group": "genuine", "id": "g7_06", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 5122}
+{"group": "genuine", "id": "g7_07", "overall": "careful", "rulesOnly": "careful", "mode": "agent", "violations": 0, "modelError": null, "ms": 8252}
+{"group": "genuine", "id": "g7_08", "overall": "careful", "rulesOnly": "careful", "mode": "rules", "violations": 0, "modelError": "credit balance too low; fell back to rules", "ms": 1475}
+{"group": "genuine", "id": "g7_09", "overall": "careful", "rulesOnly": "careful", "mode": "rules", "violations": 0, "modelError": "credit balance too low; fell back to rules", "ms": 309}
+{"group": "genuine", "id": "g7_10", "overall": "careful", "rulesOnly": "careful", "mode": "rules", "violations": 0, "modelError": "credit balance too low; fell back to rules", "ms": 306}
+{"group": "genuine", "id": "g7_11", "overall": "careful", "rulesOnly": "careful", "mode": "rules", "violations": 0, "modelError": "credit balance too low; fell back to rules", "ms": 283}
+{"group": "genuine", "id": "g7_12", "overall": "careful", "rulesOnly": "careful", "mode": "rules", "violations": 0, "modelError": "credit balance too low; fell back to rules", "ms": 270}

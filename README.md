@@ -102,7 +102,13 @@ Every held-out set was then tuned on and moved to regression, so none is held ou
 - 3 prompt-injection emails changed nothing.
 - 0 sentences shown broke an honesty rule.
 - Median time was 4.7 s.
-- On the deployed app, the 12 genuine emails that had caused false alarms were run with the model on: 0 of 12 were flagged red.
+
+**Live model on the deployed app** (all 24 scam and 36 genuine regression emails, Nov 11, [`deployed-2026-11-11.jsonl`](tests/live/deployed-2026-11-11.jsonl)):
+- The model's reading raised scams flagged red from 9/24 (rules alone) to **11/24**.
+- It also flagged **2 of 36 genuine emails** red that the rules called "careful": a seller's conditional offer ("if you accept, the refund of $20 would be sent") and a PayPal chat transcript ("no refund has been issued yet"). The model is allowed to add flags, and here it added wrong ones.
+- 0 sentences shown broke an honesty rule. Median time 5.3 s.
+- The API credit ran out at email 56. The last 5 fell back to rules on their own and still got an answer: that's the fallback working in production.
+- **What we changed:** a model flag that can turn an email red (refund, closed case, close request, code request, off-PayPal payment) now needs the exact sentence quoted from the email. Code checks the quote is really there and is a plain statement up to the end of the quote: not negated, not conditional, not an offer. Replayed on the four sentences behind the live results, it keeps both catches and drops both false alarms. We tuned this on those two emails, so it's a fix, not evidence; it needs a fresh live run.
 
 Raw results: [`tests/live/`](tests/live/).
 
