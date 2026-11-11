@@ -1,5 +1,5 @@
 // Game helper. Usage:
-//   node tests/try.js email <file>   -> how Day 20 reads an email against Maya's open case (day 7)
+//   node tests/try.js email <file>   -> how Still Open reads an email against Maya's open case (day 7)
 //   node tests/try.js note "<text>"  -> which honesty rules a sentence breaks
 //   node tests/try.js facts '<json>' -> next step + one-page case for buyer-entered facts (Maya's open case, day 7)
 import { readFileSync } from "node:fs";

@@ -1,6 +1,6 @@
 {
-  "name": "Day 20",
-  "short_name": "Day 20",
+  "name": "Still Open",
+  "short_name": "Still Open",
   "description": "Checks emails about your PayPal dispute against your real PayPal case, and keeps your 20-day deadline.",
   "start_url": "/",
   "display": "standalone",

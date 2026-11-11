@@ -1,6 +1,6 @@
-# Devpost submission: Day 20
+# Devpost submission: Still Open
 
-**Name:** Day 20
+**Name:** Still Open
 **Tagline:** Emails can lie. Your PayPal case can't.
 **Try it:** https://day20.onrender.com (tap "Try it as Maya") · **Code:** https://github.com/dalyathan/day20
 
@@ -10,7 +10,7 @@ Almost everyone has tried to get a refund from a far-away store and given up. We
 
 ## What it does
 
-Day 20 is a mobile web app for a buyer with an open PayPal dispute.
+Still Open is a mobile web app for a buyer with an open PayPal dispute.
 
 - **It reads her case from PayPal, read-only:** status, refund, amount, dates, the ship-to ZIP, and the tracking on file.
 - **It checks any email she shares against that record:** refund claims, "case closed", reshipment numbers, lookalike links, requests for codes, and stalling ("no need to escalate"). Who sent the email is never treated as proof.
@@ -19,7 +19,7 @@ Day 20 is a mobile web app for a buyer with an open PayPal dispute.
 - **It drafts a one-page case for the PayPal reviewer.** The deciding fact comes first, and every line is tagged `PAYPAL RECORD`, `PAYPAL CAN CHECK` or `BUYER REPORTS`.
 - **It sends reminders she chooses** on day 15 and day 18, by web push, email or calendar, silent by default.
 
-Day 20 never files, escalates, closes or accepts anything. She does those in PayPal herself.
+Still Open never files, escalates, closes or accepts anything. She does those in PayPal herself.
 
 ## How we built it
 
@@ -38,11 +38,11 @@ We tested it the way it would be attacked, as games with incentives:
 - **Scammer agents** were paid for every fake email the checker called safe. In round one, 7 of 12 got through, because a real case number made an email look "consistent". We changed the design: a real case number never counts as proof, and any email about the case defaults to "careful".
 - **A cheat** was paid for false claims that reached the one-page case. It forged a tag through a newline. Buyer text is now sanitised, and only a validated ZIP can sit in a checkable line.
 - **A rule-breaker** was paid for harmful notes that passed our honesty rules. Round two caught 0 of 33 new ones: regexes can't police what a model means. **So we closed the model's output space.** It picks sentences written by code instead of writing its own.
-- **Honest senders** were paid for genuine emails that Day 20 wrongly flagged red, because a checker that cries wolf makes buyers report honest sellers. Over three fresh rounds, clean genuine emails went from 0/12 to 5/12 to 11/12.
+- **Honest senders** were paid for genuine emails that Still Open wrongly flagged red, because a checker that cries wolf makes buyers report honest sellers. Over three fresh rounds, clean genuine emails went from 0/12 to 5/12 to 11/12.
 - **A blind reviewer ("Rosa")** judged the one-page cases. She caught a buyer's lie because the line was tagged as checkable.
 - **An AI-assurance judge** caught us reporting fixed-against attacks as pass rates.
 
-Every successful attack became a regression test, and we report a **held-out** set separately. Fresh scammer agents wrote 12 new emails after our last change. Day 20 called **none of them safe**, and, by construction, every result showed PayPal's real refund status and deadline. It flagged **0 of 12** as an outright contradiction, because paraphrased lies slip past keyword reading. That's the honest number, and it's the model's job to raise it. In a live run on 36 test emails, Claude's reading turned 2 of those "careful" results red, 3 prompt-injection emails changed nothing, no sentence shown broke a rule, and on the deployed app it flagged none of the 12 genuine emails that had caused false alarms.
+Every successful attack became a regression test, and we report a **held-out** set separately. Fresh scammer agents wrote 12 new emails after our last change. Still Open called **none of them safe**, and, by construction, every result showed PayPal's real refund status and deadline. It flagged **0 of 12** as an outright contradiction, because paraphrased lies slip past keyword reading. That's the honest number, and it's the model's job to raise it. In a live run on 36 test emails, Claude's reading turned 2 of those "careful" results red, 3 prompt-injection emails changed nothing, no sentence shown broke a rule, and on the deployed app it flagged none of the 12 genuine emails that had caused false alarms.
 
 ## Challenges
 

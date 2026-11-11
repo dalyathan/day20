@@ -1,7 +1,7 @@
 // The 24 scenes from our dispute game, turned into tests.
 // Each scene was played by agents with incentives (buyer, ghost store, honest
 // seller, agent, blind PayPal reviewer). Here we keep the case facts and what
-// a fair outcome needs from Day 20.
+// a fair outcome needs from Still Open.
 import { readFileSync } from "node:fs";
 import { normalize } from "../lib/record.js";
 
