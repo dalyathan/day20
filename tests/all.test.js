@@ -301,3 +301,15 @@ test("model amounts must appear in the email; emailed tracking numbers are the b
   const line = pg.lines.find((l) => l.text.includes("FAKE123456789"));
   assert.equal(line.tag, "BUYER REPORTS");
 });
+
+test("the PayPal client refuses writes unless a setup script opts in (read-only by construction)", async () => {
+  const { pp } = await import("../lib/paypal.js");
+  const realFetch = globalThis.fetch; let called = 0;
+  globalThis.fetch = async () => { called++; return new Response("{}", { status: 200 }); };
+  try {
+    for (const method of ["POST", "PUT", "PATCH", "DELETE"]) await assert.rejects(pp("/v1/customer/disputes/X/accept-claim", { method, token: "t" }), /read-only/);
+    assert.equal(called, 0);
+    await pp("/v1/customer/disputes/X", { token: "t" });
+    assert.equal(called, 1);
+  } finally { globalThis.fetch = realFetch; }
+});

@@ -149,7 +149,7 @@ async function checkScreen(id) {
   <div class="pad stack">
     <div class="check-head"><div id="maya-slot">${maya("determined", { size: 74 })}</div><div><h2>${t("checkEmail")}</h2>
     <p class="small" style="margin-top:6px">${t("checkIntro")}</p></div></div>
-    ${ME.demo ? `<button class="btn light" data-act="sample">📩 ${t("useSample")}</button>` : ""}
+    ${ME.demo ? `<div class="grid2"><button class="btn light" data-act="sample">📩 ${t("useSample")}</button><button class="btn light" data-act="sampleshot">🖼️ ${t("useSampleShot")}</button></div>` : ""}
     <label for="em">${t("pasteEmail")}</label>
     <textarea id="em" placeholder="From: service@paypal.com&#10;Subject: Your refund has been issued&#10;…"></textarea>
     <label class="filebtn" for="shot">📷 ${t("addScreenshot")}</label>
@@ -331,6 +331,15 @@ document.addEventListener("click", async (e) => {
   if (act === "demo") { await api("/api/demo", { method: "POST", body: { lang, scenario: "open_day7" } }); ME = await api("/api/me"); DEMO = { day: 7, scenario: "open_day7" }; location.hash = "#cases"; return route(); }
   if (act === "runcheck") return runCheck();
   if (act === "sample") { document.getElementById("em").value = SAMPLE; return; }
+  if (act === "sampleshot") {
+    // A screenshot of a test email (no text to paste): only the model can read it.
+    const blob = await fetch("/samples/scam_s2_01.png").then((r) => r.blob());
+    const data = await new Promise((r) => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(blob); });
+    SHOT = { type: "image/png", data: String(data).split(",")[1] };
+    document.getElementById("em").value = "";
+    const img = document.getElementById("thumb"); img.src = data; img.classList.remove("hidden");
+    return;
+  }
   if (act === "copyphish") return copy("phishing@paypal.com");
   if (act === "reported") { await api(`/api/cases/${encodeURIComponent(CASE.view.id)}/reported`, { method: "POST" }).catch(() => {}); a.textContent = "✓ " + t("noted"); a.disabled = true; return; }
   if (act === "demotoggle") { DEMO_OPEN = !DEMO_OPEN; return route(); }
