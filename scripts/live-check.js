@@ -26,7 +26,8 @@ await step("Normalize + compare a fake refund email", async () => {
   writeFileSync(new URL("../tests/fixtures/live_record.json", import.meta.url), JSON.stringify({ fetchedAt: new Date().toISOString(), record: r, order }, null, 2));
   return `${phase(r)} · refund ${r.refund ? money(r.refund) : "none"} · ship-to ZIP ${r.shipTo?.zip || "?"} · email reads "${cmp.overall}"${phase(r) === "open" ? ` · day ${clock(r).day} of 20` : ""}`;
 });
-await step("Anthropic API key present", async () => { if (!process.env.ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY is empty in .env (the app still works on rules)"); return "set"; });
+// The model is optional: a missing key is a note, not a failure.
+console.log(process.env.ANTHROPIC_API_KEY ? "✓ Anthropic API key present" : "· Anthropic API key not set: the app runs on rules alone (optional)");
 
 console.log(`\n${failures ? `${failures} check(s) failed.` : "All checks passed."} Saved the live record to tests/fixtures/live_record.json`);
 process.exit(failures ? 1 : 0);

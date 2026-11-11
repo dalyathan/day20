@@ -11,7 +11,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --env-file=.env server.js",
-    "replay": "REPLAY=1 node server.js",
+    "replay": "node server.js --replay",
     "test": "node --test tests/*.test.js",
     "eval": "node tests/run-evals.js",
     "replay-heldout": "node scripts/replay-heldout.mjs",
