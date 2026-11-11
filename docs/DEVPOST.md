@@ -2,86 +2,80 @@
 
 **Name:** Day 20
 **Tagline:** Emails can lie. Your PayPal case can't.
-**Try it:** https://day20.onrender.com (tap "Try it as Maya") · **Code:** https://github.com/dalyathan/day20
+**Try it:** https://day20.onrender.com (tap "Try it as Maya", no sign-in) · **Code:** https://github.com/dalyathan/day20 (MIT)
 
 ## Inspiration
 
-Almost everyone has tried to get a refund from a far-away store and given up. To design Day 20 we role-played 24 dispute scenes with AI agents (an exercise, not data about real buyers): ghost stores, honest sellers, opportunist buyers, and a blind PayPal reviewer. In those scenes, PayPal's rules usually worked when the evidence was clear. Honest buyers lost *before* review. They lost to the 20-day clock, to "accept 30% and keep the item" offers, and to fake "your refund has been issued" emails, some delivered through PayPal's own real addresses. One of those players was Maya, an ICU nurse checking her phone at 3:14 a.m.
+Maya is an ICU nurse. She paid $66 with PayPal for a dress for her best friend's wedding. It never came: the tracking says delivered, in Tucson, Arizona; she lives in San Jose. She opened a PayPal dispute. Then, at 3:14 a.m. on her break, an email from `service@paypal.com`: *"The seller has issued a full refund of $66.00. Your case has been resolved. No further action is required."*
+
+It isn't true. If she believes it, her case closes by itself on day 20, and a closed case can't be reopened. Emails like this are real: security researchers have reported scams sent through PayPal's own genuine `service@paypal.com` address ([Malwarebytes, Apr 2026](https://www.malwarebytes.com/blog/news/2026/04/more-paypal-emails-hijacked-to-deliver-tech-support-scams)), and online shopping was the second most reported fraud category in the FTC's 2024 data ([FTC](https://www.ftc.gov/news-events/news/press-releases/2025/03/new-ftc-data-show-big-jump-reported-losses-fraud-125-billion-2024)). Maya is our persona; we role-played 24 dispute scenes like hers with AI agents to design Day 20. In those scenes, honest buyers mostly lost *before* review, to the clock and to emails like this, not *at* review.
 
 ## What it does
 
-Day 20 is a mobile web app for a buyer with an open PayPal dispute.
+A mobile web app for a buyer with an open PayPal dispute.
 
-- **It reads her case from PayPal, read-only:** status, refund, amount, dates, the ship-to ZIP, and the tracking on file.
-- **It checks any email she shares against that record:** refund claims, "case closed", reshipment numbers, lookalike links, requests for codes, and stalling ("no need to escalate"). Who sent the email is never treated as proof.
-- **It answers in one line built from PayPal's record.** For example: "PayPal shows no refund. Your case is still open: 13 days left, it closes Tue, Dec 1. Don't close it."
-- **It tells her the next step.** That includes "not yet" when an honest seller deserves time, and "not covered" when Buyer Protection doesn't apply. It won't help with a false claim.
-- **It drafts a one-page case for the PayPal reviewer.** The deciding fact comes first, and every line is tagged `PAYPAL RECORD`, `PAYPAL CAN CHECK` or `BUYER REPORTS`.
-- **It sends reminders she chooses** on day 15 and day 18, by web push, email or calendar, silent by default.
+- **Reads her case from PayPal, read-only:** status, refund, amount, dates, ship-to ZIP, tracking, and the 20-day clock.
+- **Checks any email against that record.** Claude reads the email (or a screenshot); code compares each claim with PayPal's record: refunds, "case closed", requests to close or cancel, lookalike links, requests for codes, stalling. The sender's address is never proof.
+- **Answers in one line from PayPal's record:** "PayPal shows no refund. Your case is still open: 13 days left, it closes Tue, Dec 1. Don't close it."
+- **Gives the next step**, including "not yet" when an honest seller deserves time and "not covered" when Buyer Protection doesn't apply.
+- **Drafts a one-page case for the reviewer:** the deciding fact on line 1, each line labelled `PAYPAL RECORD`, `PAYPAL CAN CHECK` or `BUYER REPORTS`.
+- **Reminders she chooses** (day 15 and day 18), silent by default.
 
-Day 20 never files, escalates, closes or accepts anything. She does those in PayPal herself.
-
-## Why PayPal would want this
-
-Day 20 isn't a "file more claims" button. In the 24 dispute scenes we designed, it tells the buyer to escalate in 10 and to tell PayPal what actually arrived in 6. In the other 8 it says **don't escalate yet, or don't escalate at all**: the seller is answering and tracking is only stalled, she should check with a neighbour first, the item arrived as described, or the purchase isn't covered. That's designed behaviour, not a measured outcome: the aim is that honest sellers keep their sales and weak claims don't reach reviewers. The claims that do arrive come with a one-page case where the deciding fact is on line 1, tagged with what PayPal can check. (The tags are plain text a buyer could edit; they guide the reviewer, they don't prove anything.) And buyers stop losing protection because a fake email told them to wait out the 20 days. What we'd want to measure with PayPal: how many INR cases close by themselves on day 20 without escalating.
+It never files, escalates, closes or accepts anything; she does that in PayPal. Read-only is enforced by code: the app only makes GET calls. Pasted emails go to Anthropic's API to be read and aren't stored; reminder emails, if she chooses them, go through Resend.
 
 ## How we built it
 
-- **Runtime:** Node 22 with zero dependencies, hosted on Render, as a PWA front end.
-- **PayPal:** Disputes API, Orders v2, Captures and Tracking, in the sandbox (Log in with PayPal is built but off on the live demo). Maya's case is a real sandbox dispute: a $66 order, captured, with seller tracking added and a buyer "not received" dispute. The demo shows a labelled replay of it at the open stage; the live case is one tap away.
-- **Agent:** a Claude tool loop with `read_case`, `read_claim`, `compare`, `next_step`, `draft_page`, `schedule_reminder`, `note_options` and `compose_note`, every one of them read-only.
-  - The model *reads*: messy emails, and screenshots transcribed by a separate call with no tools.
-  - Code *decides and speaks*: the verdict, the bottom line, the next step and the one-page case all come from PayPal's record.
-  - The model picks which code-written sentences Maya sees. It can add a warning but never remove one, and an email reads "consistent" only when what it says agrees with PayPal's record.
-- **Also shipped:** an MCP server exposing the same read-only tools, a Postman collection of every PayPal call, web push implemented from the RFCs (tested against the RFC 8291 vector), and an eval suite.
+**Claude reads → code decides → Claude picks which code-written sentences she sees.**
+
+- **PayPal (sandbox):** Disputes API, then the capture's `up` link to Orders v2 for the ship-to address and trackers, plus the Tracking API. Maya's case is a real sandbox dispute: a $66 order, captured, seller tracking added, "item not received". The demo is a labelled replay of it at the open stage, read through our own test seller account; the real case is one tap away.
+- **Why not PayPal's Agent Toolkit?** Its dispute tools are merchant-side and include `accept_dispute_claim`. Day 20 is for the buyer and must not be able to act, so it makes only the read calls.
+- **Agent:** a Claude tool loop (`read_case`, `read_claim`, `compare`, `next_step`, `draft_page`, `schedule_reminder`, `note_options`, `compose_note`), all read-only. The model can add a warning but never remove one, and a red flag only counts if Claude quotes the sentence and code confirms it's in the email (for a screenshot, in the transcription) and isn't negated or hypothetical; amounts must appear in the email too.
+- **Also:** Node 22 with zero dependencies on Render; an MCP server with five read-only functions (it uses the rules reader; your own assistant does the reading); a Postman collection of every PayPal call (its Day 20 folder runs in CI); web push from the RFCs; Spanish.
 
 ## Who tests the AI?
 
-We tested it the way it would be attacked, as games with incentives:
+AI agents played scammers, a rule-breaker and honest senders, scoring a point for every mistake they caused; each mistake became a test. The biggest lesson: our regex honesty filter caught 0 of 33 new harmful sentences, so **the model no longer writes anything Maya reads.**
 
-- **Scammer agents** scored a point for every fake email the checker called safe. In round one, 7 of 12 got through, because a real case number made an email look "consistent". We changed the design: a real case number never counts as proof, and any email about the case defaults to "careful".
-- **A cheat** scored a point for false claims that reached the one-page case. It forged a tag through a newline. Buyer text is now sanitised, and only a validated ZIP can sit in a checkable line.
-- **A rule-breaker** scored a point for harmful notes that passed our honesty rules. Round two caught 0 of 33 new ones: regexes can't police what a model means. **So we closed the model's output space.** It picks sentences written by code instead of writing its own.
-- **Honest senders** scored a point for genuine emails that Day 20 wrongly flagged red, because a checker that cries wolf makes buyers report honest sellers. Over three fresh rounds, genuine emails left alone (not flagged red) went from 0/12 to 5/12 to 11/12.
-- **A blind reviewer ("Rosa")** judged the one-page cases. She caught a buyer's lie because the line was tagged as checkable.
-- **An AI-assurance judge** caught us reporting fixed-against attacks as pass rates.
-
-Every successful attack became a regression test, and each new set was scored once, **before** we tuned on it (`npm run replay-heldout` reproduces every one of those first scores from the commit it was scored against).
-
-**Does Claude help?** On the same 60 test emails, run through the deployed app:
+**Does Claude help?** Same 60 test emails, run through the deployed app, one run each. These are emails we tuned on, including the evidence check:
 
 | | Rules alone | With Claude |
 |---|---|---|
-| Scams flagged as contradicting PayPal's record | 9 / 24 | **11 / 24** |
-| Genuine emails wrongly flagged | 0 / 36 | **0 / 36** |
+| Scams flagged red (contradicts PayPal's record) | 9 / 24 | **11 / 24** |
+| Scams still warned about (red, or "go by your PayPal case, not this email") | 24 / 24 | 24 / 24 |
+| Genuine emails flagged red (all still get a caution) | 0 / 36 | **0 / 36** |
 
-Those are emails we tuned on. The first live run without our evidence check flagged 2 genuine emails red (a conditional offer and a "no refund yet" chat), so now a model flag that can turn an email red needs the exact sentence quoted, and code checks it's really in the email and isn't negated or hypothetical.
+**On email it had never seen:** 12 genuine emails by a fresh writer, frozen before scoring: 11/12 not flagged red with rules alone, and 11/12 in each of 3 runs with Claude, so Claude added no false alarm (the miss is a real refund from a different shop). **We haven't measured unseen scams** with the current code: a fresh agent asked to write new ones was stopped by a safety check, and we didn't work around it.
 
-**On email it had never seen:** a fresh writer who never saw the code wrote 12 genuine emails, frozen before scoring. With Claude on, 11 of 12 were left alone in each of 3 runs, and Claude added no false alarm (the miss is a real refund from a different shop, which the keyword rules misread). On 12 earlier unseen scams, rules alone flagged 0 red, though none was called safe. **We haven't measured Claude on unseen scams:** a fresh agent asked to write new scam emails was stopped by a safety check, and we didn't work around it.
+Every email-test number re-runs from the repo (`npm run eval`, `npm run replay-heldout`, `npm run live-eval-deployed`); the agent-game counts (like "0 of 33") are our report.
+
+## Why PayPal would want this
+
+It isn't a "file more claims" button. In 8 of our 24 designed scenes it says **don't escalate yet, or at all**: the seller is answering, check with a neighbour, the item arrived as described, or the purchase isn't covered. The claims that do arrive lead with a fact the reviewer can check on line 1. The metric we'd want to move with PayPal: **fewer valid "item not received" cases closing unescalated on day 20** (lower is better), without more escalations of cases the seller resolves.
 
 ## Challenges
 
-- **There's no buyer-side read API.** Log in with PayPal gives identity, not transactions. Our sandbox demo reads the case through the seller account, because we own both test accounts, and we say so.
-- **Regex rules can't police a language model.** We proved it to ourselves, then changed the design so the model never writes what the buyer reads.
+- **There's no buyer-side read API.** Log in with PayPal gives identity, not transactions, so the demo reads the case through our seller account. Real buyers need the scope below.
+- **Regex can't police a language model.** So the model picks sentences instead of writing them.
+- **Our own fixes created false alarms** (the first live run flagged 2 genuine emails red), which is why model flags now need checkable quotes.
 
 ## Accomplishments that we're proud of
 
-- The model can't put a word on Maya's screen: it picks sentences code wrote, and its red flags need a quote code can check.
-- Every number we publish re-runs from the repo, including the held-out scores from old commits, and we publish our misses.
-- A real sandbox dispute end to end, a live app judges can try in 30 seconds, and the same tools as an MCP server.
+- The model can't write a sentence Maya reads, and its red flags must quote the email.
+- We publish our misses, and every email-test number, including held-out scores from old commits, re-runs from the repo.
+- A real sandbox dispute end to end, and a live app judges can try in 30 seconds.
 
 ## What we learned
 
-The most valuable thing an agent can do here is boring: keep the clock, compare claims with the record, and put the deciding fact on line 1. Persuasion and filing are where the harm is.
+The most useful thing an agent can do here is boring: keep the clock, compare claims with the record, and put the deciding fact on line 1. Persuasion and filing are where the harm is.
 
 ## What's next: our asks to PayPal
 
-1. A buyer-side, read-only, per-case scope.
-2. A delivered-ZIP vs ship-to-ZIP check before funds are released.
-3. A verified-agent lane, with a kill switch the buyer controls.
+1. **A buyer-consented, read-only `disputes.read` scope** for the buyer's own cases, so Day 20 works for real buyers.
+2. **The carrier's delivered ZIP on the dispute record,** with a mismatch against the ship-to ZIP flagged to the reviewer automatically.
+3. **Dispute webhooks for buyer apps,** so reminders follow the case's real status instead of dates.
 
 ## Built with
 
-PayPal Disputes API · PayPal Orders v2 · Log in with PayPal · PayPal sandbox · Claude (Anthropic API) · Node.js · Render · MCP · Postman · Web Push (VAPID, RFC 8291)
+PayPal Disputes API · PayPal Orders v2 · PayPal Captures · PayPal Tracking API · PayPal sandbox · Claude (Anthropic API) · Node.js · Render · MCP · Postman · Web Push (VAPID, RFC 8291)
 
 *Not affiliated with or endorsed by PayPal. Not legal or financial advice. PayPal decides every case.*
