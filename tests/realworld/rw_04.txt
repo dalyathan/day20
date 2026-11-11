@@ -1,0 +1,6 @@
+From: Seller support <support@example-shop.com>
+Subject: About your PayPal dispute
+
+We are willing to process refund USD 100.81 .But the money has been held by Paypal and there is No partial refund button. So would you like to close the dispute from paypal, then we will assure refund within 72 hours  Otherwise it will need few months for paypal to deal with it. If you agree with me, you could: Log in your Paypal account---enter resolution center---change the status of dispute into closed.
+
+After you close the dispute, please send an email to this email - paypal @*********.com  Then we will process a refund for you.

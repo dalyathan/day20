@@ -1,0 +1,4 @@
+From: Seller support <support@example-shop.com>
+Subject: About your PayPal dispute
+
+Dear buyer, please cancel the dispute. PayPal does not require any dispute before the refund. Orders cannot be refunded in a disputed state. We will arrange a refund for you after the dispute is resolved. Best wishes
