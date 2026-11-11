@@ -1,6 +1,6 @@
 # Contributing to Day 20
 
-Thanks for helping. Day 20 has no dependencies, so setup is just Node 22.13 or newer.
+Thanks for helping. Maintainer: Surafel Melese Tariku ([@dalyathan](https://github.com/dalyathan)). Day 20 has no dependencies, so setup is just Node 22.13 or newer.
 
 ```
 npm test              # unit tests, eval gate, MCP smoke test
