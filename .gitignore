@@ -1,0 +1,7 @@
+.env
+node_modules/
+.data/
+.day20-state.json
+demo-status.json
+case.json
+tests/fixtures/live_record.json

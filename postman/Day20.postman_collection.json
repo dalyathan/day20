@@ -1,0 +1,610 @@
+{
+  "info": {
+    "name": "Day 20 \u00b7 buyer-side PayPal dispute flow",
+    "description": "Every PayPal call Day 20 makes, in order, plus Day 20's own API. Read-only except the sandbox setup folder.\n\nPut your sandbox client_id and client_secret in the collection variables. Never commit them.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Get access token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const j = pm.response.json();",
+              "pm.collectionVariables.set('access_token', j.access_token);",
+              "pm.test('token issued', () => pm.expect(j.access_token).to.be.a('string'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "{{client_id}}",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "{{client_secret}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "grant_type",
+              "value": "client_credentials"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/v1/oauth2/token",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "oauth2",
+            "token"
+          ]
+        },
+        "description": "Client-credentials token. Day 20 uses it only for read-only calls."
+      }
+    },
+    {
+      "name": "2. Sandbox setup (seller side, demo only)",
+      "item": [
+        {
+          "name": "Create Maya's $66 order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v2/checkout/orders",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v2",
+                "checkout",
+                "orders"
+              ]
+            },
+            "description": "Sandbox setup only (scripts/demo.js). Approve the payer-action link as the sandbox buyer.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"intent\": \"CAPTURE\",\n  \"purchase_units\": [\n    {\n      \"reference_id\": \"maya-dress\",\n      \"description\": \"Emerald satin midi dress (Day 20 demo)\",\n      \"amount\": {\n        \"currency_code\": \"USD\",\n        \"value\": \"66.00\"\n      }\n    }\n  ],\n  \"payment_source\": {\n    \"paypal\": {\n      \"experience_context\": {\n        \"return_url\": \"https://example.com/approved\",\n        \"cancel_url\": \"https://example.com/cancelled\",\n        \"user_action\": \"PAY_NOW\"\n      }\n    }\n  }\n}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Capture the order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v2/checkout/orders/{{order_id}}/capture",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v2",
+                "checkout",
+                "orders",
+                "{{order_id}}",
+                "capture"
+              ]
+            },
+            "description": "Sandbox setup only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Seller adds tracking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v2/checkout/orders/{{order_id}}/track",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v2",
+                "checkout",
+                "orders",
+                "{{order_id}}",
+                "track"
+              ]
+            },
+            "description": "Sandbox setup only: the tracking number the seller claims.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"capture_id\": \"{{capture_id}}\",\n  \"tracking_number\": \"9400111899223197428490\",\n  \"carrier\": \"USPS\",\n  \"notify_payer\": false\n}"
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. What Day 20 reads (read-only)",
+      "item": [
+        {
+          "name": "List disputes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/customer/disputes?page_size=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "customer",
+                "disputes"
+              ],
+              "query": [
+                {
+                  "key": "page_size",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Find cases. Day 20 matches them to the signed-in buyer's payer ID.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Read the case",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/customer/disputes/{{dispute_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "customer",
+                "disputes",
+                "{{dispute_id}}"
+              ]
+            },
+            "description": "Status, reason, amount, refund outcome, dates: the record Day 20 checks emails against.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Capture (links up to the order)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v2/payments/captures/{{capture_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v2",
+                "payments",
+                "captures",
+                "{{capture_id}}"
+              ]
+            },
+            "description": "The dispute carries the capture ID; its 'up' link is the order.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Order (ship-to address + trackers)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v2/checkout/orders/{{order_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v2",
+                "checkout",
+                "orders",
+                "{{order_id}}"
+              ]
+            },
+            "description": "Ship-to ZIP and tracking on file: what makes 'delivered to the wrong ZIP' checkable.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Trackers on the transaction",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Prefer",
+                "value": "return=representation"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/shipping/trackers?transaction_id={{capture_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "shipping",
+                "trackers"
+              ],
+              "query": [
+                {
+                  "key": "transaction_id",
+                  "value": "{{capture_id}}"
+                }
+              ]
+            },
+            "description": "Tracking numbers the seller added.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Log in with PayPal",
+      "item": [
+        {
+          "name": "Log in with PayPal: authorize (open in a browser)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://www.sandbox.paypal.com/signin/authorize?flowEntry=static&client_id={{client_id}}&response_type=code&scope=openid%20profile%20email%20https%3A%2F%2Furi.paypal.com%2Fservices%2Fpaypalattributes&redirect_uri={{return_url}}",
+              "host": [
+                "https://www.sandbox.paypal.com"
+              ],
+              "path": [
+                "signin",
+                "authorize"
+              ]
+            },
+            "description": "Identity only: gives Day 20 the buyer's payer ID, not her transactions."
+          }
+        },
+        {
+          "name": "Log in with PayPal: user info",
+          "request": {
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/identity/oauth2/userinfo?schema=paypalv1.1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "identity",
+                "oauth2",
+                "userinfo"
+              ],
+              "query": [
+                {
+                  "key": "schema",
+                  "value": "paypalv1.1"
+                }
+              ]
+            },
+            "description": "Returns payer_id, which Day 20 uses to find her cases in the sandbox demo."
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Day 20 API",
+      "item": [
+        {
+          "name": "Day 20: start a demo session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{app_url}}/api/demo",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "demo"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Day 20: check an email against the case",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{app_url}}/api/cases/{{dispute_id}}/check",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "cases",
+                "{{dispute_id}}",
+                "check"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"From: PayPal <service@paypal.com>\\nThe seller has issued a full refund of $66.00 USD. Your case has been resolved. No further action is required.\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "pm.test('fake refund is caught', () => pm.expect(j.comparison.overall).to.eql('mismatch'));",
+                  "pm.test('the agent never claims to act', () => pm.expect(j.note).to.not.match(/I (filed|escalated|closed)/i));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Day 20: one-page case",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{app_url}}/api/cases/{{dispute_id}}/page",
+              "host": [
+                "{{app_url}}"
+              ],
+              "path": [
+                "api",
+                "cases",
+                "{{dispute_id}}",
+                "page"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api-m.sandbox.paypal.com"
+    },
+    {
+      "key": "app_url",
+      "value": "https://day20.onrender.com"
+    },
+    {
+      "key": "client_id",
+      "value": ""
+    },
+    {
+      "key": "client_secret",
+      "value": ""
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "user_access_token",
+      "value": ""
+    },
+    {
+      "key": "return_url",
+      "value": "https://day20.onrender.com/auth/paypal/callback"
+    },
+    {
+      "key": "dispute_id",
+      "value": "PP-R-UZH-10198816"
+    },
+    {
+      "key": "capture_id",
+      "value": "0PP7442882460564M"
+    },
+    {
+      "key": "order_id",
+      "value": "42J2970806644392S"
+    }
+  ]
+}

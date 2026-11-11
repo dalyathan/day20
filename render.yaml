@@ -1,0 +1,39 @@
+# Render Blueprint: New → Blueprint → pick this repo. Secrets are entered in Render's form, never committed.
+services:
+  - type: web
+    name: day20
+    runtime: node
+    plan: starter            # free also works, but sleeps after 15 min idle (first load ~50 s)
+    buildCommand: "true"     # zero dependencies, nothing to install
+    startCommand: node server.js
+    healthCheckPath: /healthz
+    autoDeploy: true
+    disk:
+      name: day20-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: "22.13.0"
+      - key: PAYPAL_ENV
+        value: sandbox
+      - key: DATA_DIR
+        value: /var/data
+      - key: DEMO_DISPUTE_ID
+        value: PP-R-UZH-10198816
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: PAYPAL_RETURN_URL
+        sync: false          # e.g. https://day20.onrender.com/auth/paypal/callback (also add it in the PayPal app's Return URL)
+      - key: PUBLIC_URL
+        sync: false
+      - key: VAPID_SUBJECT
+        value: mailto:day20-reminders@example.com
+      - key: RESEND_API_KEY
+        sync: false          # optional: email fallback for reminders

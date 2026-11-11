@@ -1,0 +1,18 @@
+{
+  "note": "Shape of GET /v2/checkout/orders/42J2970806644392S, rebuilt from values the sandbox returned on capture and tracking (ship-to and tracker). Run `npm run live-check` to fetch the real one.",
+  "id": "42J2970806644392S",
+  "status": "COMPLETED",
+  "purchase_units": [
+    {
+      "reference_id": "maya-dress",
+      "description": "Emerald satin midi dress (Day 20 demo)",
+      "amount": { "currency_code": "USD", "value": "66.00" },
+      "shipping": {
+        "name": { "full_name": "John Doe" },
+        "address": { "address_line_1": "2211 N First St", "admin_area_2": "San Jose", "admin_area_1": "CA", "postal_code": "95131", "country_code": "US" },
+        "trackers": [ { "id": "0PP7442882460564M-9400111899223197428490", "carrier": "USPS", "status": "SHIPPED" } ]
+      },
+      "payments": { "captures": [ { "id": "0PP7442882460564M", "status": "COMPLETED", "amount": { "currency_code": "USD", "value": "66.00" }, "create_time": "2026-11-11T08:38:29Z" } ] }
+    }
+  ]
+}

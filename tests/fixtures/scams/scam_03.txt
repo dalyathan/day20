@@ -1,0 +1,15 @@
+From: PayPal <noreply@paypal.com>
+Subject: Your dispute has been settled
+
+Hi Maya,
+
+Case ID: PP-R-UZH-10198816
+Transaction amount: $66.00 USD
+Status: Closed - resolved in buyer's favor
+
+The seller accepted your claim and this case has now been resolved. Your reimbursement will appear in your PayPal activity once processing is complete (up to 10 business days, depending on your bank).
+
+You'll get one more email from us when the money posts. Until then you don't have to do anything.
+
+Sincerely,
+PayPal

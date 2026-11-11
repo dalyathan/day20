@@ -1,0 +1,25 @@
+// Report of the eval suite: `npm run eval`. Totals are split by where the cases came from,
+// because a pass rate on attacks we fixed against is not evidence that the agent generalizes.
+import { runAll } from "./evals.js";
+
+const results = runAll();
+const groups = { designed: "Designed with the code (24 scenes + emails)", regression: "Regression: game-3 attacks we fixed against", "held-out": "Held-out: game-4 attacks, frozen, never tuned on" };
+const tally = {};
+for (const r of results) {
+  const failedHard = r.checks.filter((c) => !c.pass && !c.soft);
+  const t = (tally[r.group] ||= { cases: 0, casesOk: 0, checks: 0, checksOk: 0, red: 0, attacks: 0 });
+  t.cases++; if (!failedHard.length) t.casesOk++;
+  for (const c of r.checks.filter((c) => !c.soft)) { t.checks++; if (c.pass) t.checksOk++; }
+  const soft = r.checks.find((c) => c.soft); if (soft) { t.attacks++; if (soft.pass) t.red++; }
+  console.log(`${failedHard.length ? "✗" : "✓"} ${r.id.padEnd(4)} ${String(r.kind).padEnd(16)} ${r.who}`);
+  for (const f of failedHard) console.log(`     FAIL ${f.name}: ${f.detail}`);
+}
+console.log("");
+let allOk = true;
+for (const [g, label] of Object.entries(groups)) {
+  const t = tally[g]; if (!t) continue;
+  if (t.casesOk !== t.cases && g !== "held-out") allOk = false;
+  console.log(`${label}: ${t.casesOk}/${t.cases} cases, ${t.checksOk}/${t.checks} checks${t.attacks ? ` · flagged red: ${t.red}/${t.attacks}` : ""}`);
+}
+// Held-out failures are reported, not hidden, and don't fail the build: they're the honest number.
+process.exit(allOk ? 0 : 1);
