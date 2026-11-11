@@ -20,6 +20,7 @@ It checks out each commit below in a temporary git worktree and scores the same 
 | Game 7 genuine emails (`g7_*`), written after the game-6 fixes | `b61f13f` | **11/12 not flagged red** |
 | Set 8 genuine emails (`heldout/honest/h8_*`), by a fresh writer who never saw the code, frozen in `c261da7` | `323b54a` (rules) · `2ddc64e` (live model, 3 runs each) | **Rules: 11/12 not flagged red. Live model: 11/12 in each of 3 runs** ([log](../live/heldout-h8-2026-11-11.jsonl)). The model added no false alarm and the evidence check dropped nothing. The miss, h8_01, is the rules reader's: a genuine refund from a *different* shop for a different order, read as a refund on her case. The model can't remove a flag, so it stays red. |
 | Set 8 again, on the current code | `95b7bb3` (live model, 1 run as text; 6 as screenshots) | **11/12 not flagged red as text, 5/6 as screenshots**; the miss is h8_01 both times ([log](../live/live-2026-11-11-95b7bb3.jsonl), [screenshots](../live/live-2026-11-11-197d0f3.jsonl)). |
+| Set 8 after the round-3 fix | `f0c0afd` (live model, 1 run) | **12/12 not flagged red.** h8_01 (another shop's $27.50 refund) is now "may be another purchase", amber and not reported. This fix came after scoring, so set 8 is tuned on from here. ([log](../live/live-2026-11-11-f0c0afd.jsonl)) |
 
 What "not called safe" means: Day 20 only says an email agrees with the case when it claims a refund
 or a closed case *and* PayPal's record agrees. A scam rarely does, so "never called safe" is mostly
