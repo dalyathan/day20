@@ -1,4 +1,4 @@
-// Still Open web server. Zero dependencies: Node 22 built-ins only.
+// Day 20 web server. Zero dependencies: Node 22 built-ins only.
 import http from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize as normPath } from "node:path";
@@ -64,7 +64,7 @@ function caseSummary(r, s, f) {
       rawStatus: r.status,
       phase: ph,
       clock: clock(r, now),
-      item: (r.items?.[0] || "").replace(/\s*\((?:Day 20|Still Open) demo\)\s*$/i, "") || null,
+      item: r.items?.[0] || null,
       seller: r.sellerName,
       shipTo: r.shipTo ? `${r.shipTo.city}, ${r.shipTo.state} ${r.shipTo.zip}` : null,
       tracking: (r.trackers || []).map((t) => `${t.carrier || ""} ${t.number}`.trim()),
@@ -199,7 +199,7 @@ async function api(req, res, url, s) {
   if (p === "/api/push/test" && m === "POST") {
     const subs = pushDb.forOwner(owner(s));
     const results = [];
-    for (const sub of subs) results.push(await sendPush(sub, { title: "Still Open", body: "Reminders are on. Still Open will never send you a link to sign in." }).catch((e) => ({ ok: false, error: e.message })));
+    for (const sub of subs) results.push(await sendPush(sub, { title: "Day 20", body: "Reminders are on. Day 20 will never send you a link to sign in." }).catch((e) => ({ ok: false, error: e.message })));
     return send(res, 200, { sent: results.filter((x) => x.ok).length, total: subs.length });
   }
 
@@ -255,18 +255,18 @@ async function sendDue() {
     let ok = false;
     if (r.channel === "push") {
       for (const sub of pushDb.forOwner(r.owner)) {
-        const out = await sendPush(sub, { title: r.title, body: `Case ${r.dispute_id}. Open the PayPal app yourself to act. Still Open never sends sign-in links.` }).catch(() => ({ ok: false }));
+        const out = await sendPush(sub, { title: r.title, body: `Case ${r.dispute_id}. Open the PayPal app yourself to act. Day 20 never sends sign-in links.` }).catch(() => ({ ok: false }));
         if (out.gone) pushDb.remove(sub.endpoint);
         ok = ok || out.ok;
       }
     }
-    if (!ok && r.email) ok = (await sendEmail(r.email, r.title, `Case ${r.dispute_id}.\n\nOpen the PayPal app yourself to check or escalate your case. Still Open never sends sign-in links and never asks for passwords or codes.\n\n— Still Open (not affiliated with PayPal)`).catch(() => ({ ok: false }))).ok;
+    if (!ok && r.email) ok = (await sendEmail(r.email, r.title, `Case ${r.dispute_id}.\n\nOpen the PayPal app yourself to check or escalate your case. Day 20 never sends sign-in links and never asks for passwords or codes.\n\n— Day 20 (not affiliated with PayPal)`).catch(() => ({ ok: false }))).ok;
     remDb.markSent(r.id, new Date().toISOString() + (ok ? "" : " (failed)"));
   }
 }
 
 if (process.argv[1] && new URL(import.meta.url).pathname === process.argv[1]) {
-  server.listen(PORT, () => console.log(`Still Open on http://localhost:${PORT} · source: ${source()} · PayPal ${ENV} · demo case ${DEMO_DISPUTE_ID} · web ${WEB}`));
+  server.listen(PORT, () => console.log(`Day 20 on http://localhost:${PORT} · source: ${source()} · PayPal ${ENV} · demo case ${DEMO_DISPUTE_ID} · web ${WEB}`));
   setInterval(() => sendDue().catch((e) => console.error("reminders", e)), 60000).unref();
   cleanup(); setInterval(() => { try { cleanup(); } catch (e) { console.error("cleanup", e); } }, 6 * 3600000).unref();
 }

@@ -1,4 +1,4 @@
-// One command to prove every PayPal call Still Open makes works against the sandbox.
+// One command to prove every PayPal call Day 20 makes works against the sandbox.
 //   npm run live-check
 // Read-only: it only GETs. Prints a pass/fail line per call, never prints secrets.
 import { getToken, getDispute, listDisputes, getOrderForCapture, getTrackers, ENV } from "../lib/paypal.js";
@@ -12,7 +12,7 @@ const line = (ok, what, detail = "") => console.log(`${ok ? "PASS" : "FAIL"}  ${
 let failures = 0;
 const step = async (what, fn) => { try { const d = await fn(); line(true, what, d); } catch (e) { failures++; line(false, what, String(e.message).slice(0, 220)); } };
 
-console.log(`Still Open live check · PayPal ${ENV} · case ${id}\n`);
+console.log(`Day 20 live check · PayPal ${ENV} · case ${id}\n`);
 let dispute, order, trackers = [];
 await step("OAuth token (client credentials)", async () => { const t = await getToken(); return `scopes include disputes: ${/disputes/.test(t.scope) ? "yes" : "no"}`; });
 await step("List disputes", async () => { const l = await listDisputes("page_size=5"); return `${(l.items || []).length} found`; });

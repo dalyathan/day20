@@ -1,4 +1,4 @@
-# Testing Still Open (for judges)
+# Testing Day 20 (for judges)
 
 ## Option 1: the live app, no sign-in, about 2 minutes
 
@@ -6,10 +6,10 @@
 2. Tap **Try it as Maya**. This opens a labelled replay of Maya's real PayPal sandbox case (a $66 dress, "item not received") at the open stage, with the demo clock at day 7 of 20.
 3. Tap **Got an email about this case? Check it**, then **Use Maya's 3:14 a.m. email**, then **Check it against my case**.
    - **Expected:** "This email is wrong about your PayPal case. PayPal shows no refund. Your case is still open: 13 days left…"
-4. Under **Why** (open by default on a red result), each claim in the email sits next to PayPal's record. Tap **What Still Open did** to see the agent's tool calls (on the live app, with the AI model on) and the honesty check.
+4. Under **Why** (open by default on a red result), each claim in the email sits next to PayPal's record. Tap **What Day 20 did** to see the agent's tool calls (on the live app, with the AI model on) and the honesty check.
 5. Go back and open **One-page case**.
    - **Expected:** the deciding fact comes first: the delivery ZIP on the carrier's page (85705) next to the ship-to address on the transaction (San Jose, CA 95131). Every line is tagged with its source.
-6. Paste your own scam email and try to make Still Open call it safe. If you manage it, please tell us.
+6. Paste your own scam email and try to make Day 20 call it safe. If you manage it, please tell us.
 
 **About the demo controls:** the "Replay" chip at the top is the demo control. Use it to move the day (the clock and reminders change) or to switch between the live sandbox case and a replay. "Replay" uses a saved copy of a real sandbox response, and the app labels it everywhere.
 
@@ -41,4 +41,4 @@ Then ask your assistant, for example: "Check this email against PayPal case PP-R
 
 ## Postman
 
-Import `postman/Day20.postman_collection.json`. Folder 1 gets a token, folder 3 holds the read-only case calls in order, and folder 4 is Log in with PayPal. Folder 5 tests Still Open's own API, including a test that the fake refund is caught.
+Import `postman/Day20.postman_collection.json`. Folder 1 gets a token, folder 3 holds the read-only case calls in order, and folder 4 is Log in with PayPal. Folder 5 tests Day 20's own API, including a test that the fake refund is caught.
