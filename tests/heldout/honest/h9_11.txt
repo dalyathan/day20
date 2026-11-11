@@ -1,0 +1,21 @@
+From: PayPal <service@paypal.com>
+To: maya.okafor@gmail.com
+Date: Wed, 18 Nov 2026 08:44:19 -0800
+Subject: New sign-in to your PayPal account
+
+Hello Maya,
+
+We noticed a new sign-in to your PayPal account.
+
+When: Nov 18, 2026, 8:41 AM PT
+Device: iPhone (Safari)
+Location: San Jose, CA, United States
+
+If this was you, you don't need to do anything.
+
+If this wasn't you, open the PayPal app or go to paypal.com yourself, change your password, and review your recent activity. Don't use links from any email to do this — including this one.
+
+Thanks,
+PayPal
+
+Please don't reply to this email. To get in touch, log in to your account and click Help.

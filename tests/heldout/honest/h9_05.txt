@@ -1,0 +1,27 @@
+From: PayPal <service@paypal.com>
+To: maya.okafor@gmail.com
+Date: Sun, 15 Nov 2026 10:31:29 -0800
+Subject: You've got a refund from Bay City Cycle Repair
+
+Hello Maya,
+
+Bay City Cycle Repair just sent you a refund of $18.25 USD.
+
+Refund details
+Merchant: Bay City Cycle Repair
+Original transaction date: Nov 2, 2026
+Original amount: $18.25 USD
+Refund amount: $18.25 USD
+Refund transaction ID: 7MD03821PB8841207
+Original transaction ID: 4XE99120KK7710351
+Item: Inner tube replacement (walk-in service)
+Note from merchant: "You were charged twice for the same tube swap — sorry about that. Refunded in full."
+
+The money will go back to the payment method you used for this purchase. Card refunds can take up to 30 days to appear on your statement.
+
+This refund is for the transaction above only. You can see all of your activity, including any open cases, in your PayPal account.
+
+Thanks,
+PayPal
+
+Please don't reply to this email. To get in touch, log in to your account and click Help.
