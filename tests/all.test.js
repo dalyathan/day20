@@ -277,3 +277,14 @@ test("seller replied during the inquiry (WAITING_FOR_BUYER_RESPONSE): the 20-day
   // After escalation, the same status means PayPal is waiting on her.
   assert.equal(phase({ ...r, stage: "CHARGEBACK" }), "your_turn");
 });
+
+test("model requests send only parameters the model accepts (a rejected temperature silently disabled the AI live)", async () => {
+  const realFetch = globalThis.fetch; const bodies = [];
+  globalThis.fetch = async (url, opts) => { bodies.push(JSON.parse(opts.body)); return new Response(JSON.stringify({ content: [{ type: "tool_use", id: "t", name: "compose_note", input: { ids: ["bottom"] } }], stop_reason: "end_turn" }), { status: 200 }); };
+  process.env.ANTHROPIC_API_KEY = "test";
+  try {
+    await runCheck({ record: sceneRecord({ amount: "66.00" }), text: "Your refund has been issued.", now: at(7) });
+    assert.ok(bodies.length > 0);
+    for (const b of bodies) assert.deepEqual(Object.keys(b).filter((k) => !["model", "max_tokens", "system", "tools", "messages"].includes(k)), []);
+  } finally { globalThis.fetch = realFetch; delete process.env.ANTHROPIC_API_KEY; }
+});
