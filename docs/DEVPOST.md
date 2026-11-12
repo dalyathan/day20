@@ -1,7 +1,7 @@
 # Devpost submission: Day 20
 
-**Name:** Day 20
-**Tagline:** Emails can lie. Your PayPal case can't. Day 20 checks any email or screenshot about a PayPal dispute against the buyer's real case, and keeps the 20-day clock.
+**Name:** Day 20: Emails can lie. Your PayPal case can't.
+**Tagline:** Day 20 checks any email or screenshot about a PayPal dispute against the buyer's real case, and keeps the 20-day clock so her case doesn't close by itself.
 **Try it:** https://day20.onrender.com (tap "Try it as Maya", no sign-in) · **Code:** https://github.com/dalyathan/day20 (MIT) · **Video:** https://youtu.be/7K4jMCAOZwI
 
 **In one line:** Day 20 checks any email about a PayPal dispute against the buyer's real case, and tells her what's true, what isn't, and what to do before the case closes by itself.
