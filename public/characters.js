@@ -80,8 +80,8 @@ export function rosa({ size = 220, verdict = false, title = "Rosa, a PayPal disp
   return `<svg class="chr chr-rosa" viewBox="0 0 240 200" width="${size}" height="${Math.round(size * 0.833)}" role="img" aria-label="${title}">
   <g id="rosa" class="chr-breathe">
     <g id="rosa-body">
-      <path d="M96 200 C98 160 122 142 156 142 C190 142 214 160 216 200 Z" fill="#2f5aa8"/>
-      <path d="M142 143 L156 168 L170 143 Z" fill="#fbf7ef"/>
+      <path d="M92 200 C92 170 104 150 128 145 L184 145 C208 150 220 170 220 200 Z" fill="#2f5aa8"/>
+      <path d="M142 145 L156 168 L170 145 Z" fill="#fbf7ef"/>
       <g id="rosa-badge">
         <circle cx="190" cy="160" r="9" fill="#fbf7ef"/>
         <path d="M190 154 L190 166 M184 156 L196 156 M184 156 L181.5 161 L186.5 161 Z M196 156 L193.5 161 L198.5 161 Z M187 166 L193 166" stroke="#17233a" stroke-width="1.3" fill="none" stroke-linejoin="round"/>
@@ -89,7 +89,7 @@ export function rosa({ size = 220, verdict = false, title = "Rosa, a PayPal disp
     </g>
     <g id="rosa-neck"><rect x="145" y="118" width="22" height="30" rx="9" fill="#b98157"/></g>
     <g id="rosa-head" class="chr-nod">
-      <path id="rosa-hair-back" d="M118 96 C116 52 136 40 156 40 C178 40 198 54 194 98 C196 122 192 140 182 146 L130 146 C120 138 116 120 118 96 Z" fill="#2b1a12"/>
+      <path id="rosa-hair-back" d="M118 96 C116 52 136 40 156 40 C178 40 198 54 194 98 C196 116 192 128 184 132 L128 132 C120 126 116 114 118 96 Z" fill="#2b1a12"/>
       <ellipse id="rosa-face" cx="156" cy="94" rx="30" ry="36" fill="#c28c63"/>
       <path id="rosa-hair-front" d="M124 94 C120 58 144 48 162 52 C182 56 192 70 190 92 C184 78 172 70 160 70 C150 76 136 80 124 94 Z" fill="#2b1a12"/>
       <path id="rosa-brow-l" d="M134 81 Q142 79 150 80" stroke="#2b1a12" stroke-width="3" stroke-linecap="round" fill="none"/>
@@ -126,8 +126,9 @@ export function rosa({ size = 220, verdict = false, title = "Rosa, a PayPal disp
     </g>
   </g>
   <g id="rosa-arm-point" class="chr-point">
-    <path d="M128 150 L104 130 L113 121 L136 142 Z" fill="#2f5aa8"/>
-    <path d="M104 131 L101 108 L110 106 L113 121 Z" fill="#c28c63"/>
+    <path d="M106 160 L91 133 L104 124 L120 151 Z" fill="#2f5aa8"/>
+    <path d="M92 131 L99 105 L110 107 L104 131 Z" fill="#c28c63"/>
+      <circle cx="98" cy="129" r="7" fill="#2f5aa8"/>
     <circle cx="105" cy="104" r="6.5" fill="#c28c63"/>
     <rect x="94" y="99" width="11" height="4.5" rx="2.2" fill="#c28c63"/>
   </g>
