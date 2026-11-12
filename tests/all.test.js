@@ -344,3 +344,15 @@ test("a scam can't get the green verdict by agreeing with a real refund (judge r
   const real = await runCheck({ record: rec, facts: {}, now: at(9), text: "Your refund of $66.00 has been issued. Your case has been resolved." });
   assert.equal(real.comparison.overall, "consistent");
 });
+
+test("green needs an email that asks nothing of her, whatever the words (judge round 6b)", async () => {
+  const rec = sceneRecord({ refund: "66.00", status: "RESOLVED", stage: "INQUIRY" });
+  const ok = "Your refund of $66.00 has been issued. Your case has been resolved.";
+  for (const ask of ["Kindly send back the extra $594 to our billing team.", "Please buy two Apple cards and text us the numbers on the back.", "Download the helper app from refund-helper.app to finish."]) {
+    const r = await runCheck({ record: rec, facts: {}, now: at(9), text: `${ok} ${ask}` });
+    assert.notEqual(r.comparison.overall, "consistent", ask);
+  }
+  const real = await runCheck({ record: rec, facts: {}, now: at(9), text: ok });
+  assert.equal(real.comparison.overall, "consistent");
+  assert.match(real.comparison.bottomLine, /never needs anything back/);
+});

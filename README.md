@@ -19,7 +19,8 @@ Day 20 is a read-only assistant for PayPal buyers with an open dispute. It reads
 >
 > **Run it in 30 seconds** (Node 22.13+, no dependencies, no keys): `git clone https://github.com/dalyathan/day20 && cd day20 && npm test && npm run replay`, then open http://localhost:3000.
 >
-> **In one line:** on 60 test emails, the live model with its evidence check flagged 11 of 24 scams as contradicting the PayPal record and 0 of 36 genuine emails; every scam got at least a "go by your PayPal case" warning. Details and caveats [below](#who-tests-the-ai).
+>
+> **In one line:** on 24 scam emails we tuned on, keyword rules alone flag 9 red; with Claude, 11, in every run. 0 of 36 genuine emails are flagged red, and every scam gets at least "Go by your PayPal case" with the real deadline. On 6 real scam messages we never tuned on, Claude added nothing. Details and caveats [below](#who-tests-the-ai).
 
 ## The problem
 
