@@ -25,6 +25,8 @@ npm run eval        # 24 scenes + emails + attacks from our adversarial games
 
 Node 22.13 or later. No `npm install`, because there are no dependencies.
 
+Offline replay runs without Claude: Maya's email gets the amber "Go by your PayPal case" warning, not red, and screenshots ask for pasted text. The red catch needs the live app or `ANTHROPIC_API_KEY` in `.env`.
+
 ## Option 3: against your own PayPal sandbox
 
 1. `cp .env.example .env` and add a sandbox app's client ID and secret. Tick "Disputes" in the app's features.
