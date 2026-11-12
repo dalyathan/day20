@@ -2,7 +2,7 @@
 
 **Name:** Day 20
 **Tagline:** Emails can lie. Your PayPal case can't.
-**Try it:** https://day20.onrender.com (tap "Try it as Maya", no sign-in) · **Code:** https://github.com/dalyathan/day20 (MIT)
+**Try it:** https://day20.onrender.com (tap "Try it as Maya", no sign-in) · **Code:** https://github.com/dalyathan/day20 (MIT) · **Video:** https://youtu.be/7K4jMCAOZwI
 
 **In one line:** Day 20 checks any email about a PayPal dispute against the buyer's real case, and never calls a scam safe. Claude reads the email or a screenshot; code makes the call and keeps the 20-day clock.
 

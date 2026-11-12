@@ -2,6 +2,8 @@
 
 [![test](https://github.com/dalyathan/day20/actions/workflows/test.yml/badge.svg)](https://github.com/dalyathan/day20/actions/workflows/test.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) · Live: **https://day20.onrender.com**
 
+**Demo video (2:20):** https://youtu.be/7K4jMCAOZwI
+
 **Emails can lie. Your PayPal case can't.**
 
 Day 20 is a read-only assistant for PayPal buyers with an open dispute. It reads the buyer's real case record from PayPal, checks any email about the case against that record, tells her the next step and the real deadline, and drafts a one-page case for the PayPal reviewer. Filing, escalating and closing stay with her, in PayPal.
