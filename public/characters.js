@@ -16,7 +16,7 @@ export function maya(state = "determined", { size = 180, title = "Maya, an ICU n
   </defs>
   <ellipse id="maya-shadow" cx="102" cy="286" rx="58" ry="7" fill="#000" opacity=".25"/>
   <g id="maya" class="chr-breathe">
-    <g id="maya-coat-back"><path d="M126 108 C160 140 172 200 166 248 L144 238 C146 200 140 160 122 124 Z" fill="#17233a"/></g>
+    <g id="maya-coat-back"><path d="M126 108 C160 140 172 200 166 248 L144 238 C146 200 140 160 122 124 Z" fill="#17233a"/><path d="M74 108 C40 140 28 200 34 248 L56 238 C54 200 60 160 78 124 Z" fill="#17233a"/></g>
     <g id="maya-legs">
       <path d="M80 174 L66 276 L88 279 L100 182 Z" fill="#27606d"/>
       <path d="M102 182 L116 279 L138 276 L124 174 Z" fill="#27606d"/>
