@@ -38,7 +38,7 @@ function ring(view) {
 }
 
 function topbar({ back = null, title = "" } = {}) {
-  return `<header class="top"><div class="row">${back ? `<a class="back" href="${back}">‹ ${esc(title || "Back")}</a>` : `<a class="brand" href="#">${LOGO} Day 20</a>`}<div><button class="iconbtn" data-act="lang">${t("lang")}</button>${ME?.signedIn ? `<button class="iconbtn" data-act="menu" aria-label="Settings">⋯</button>` : ""}</div></div>${ME?.demo ? demobar() : ""}</header>`;
+  return `<header class="top"><div class="row">${back ? `<a class="back" href="${back}">‹ ${esc(title || "Back")}</a>` : `<a class="brand" href="#home">${LOGO} Day 20</a>`}<div><button class="iconbtn" data-act="lang">${t("lang")}</button>${ME?.signedIn ? `<button class="iconbtn" data-act="menu" aria-label="Settings">⋯</button>` : ""}</div></div>${ME?.demo ? demobar() : ""}</header>`;
 }
 
 let DEMO = { day: 7, scenario: null };
@@ -66,6 +66,7 @@ function home() {
     <p class="sub">${t("heroSub")}</p>
   </section>
   <div class="pad stack">
+    ${ME?.signedIn ? `<a class="btn dark" href="#cases">${t("toMyCase")}</a>` : ""}
     ${ME?.loginEnabled ? `<button class="btn paypal stacked" data-act="consent">${t("continuePP")}<span class="sub">${t("sandbox")}</span></button>` : ""}
     <button class="btn dark stacked" data-act="demo">${t("tryDemo")}<span class="sub">${t("demoSub")}</span></button>
     <div class="card"><div class="kicker">${t("does")}</div><ul class="list does"><li>${t("does1")}</li><li>${t("does2")}</li><li>${t("does3")}</li><li>${t("does4")}</li></ul></div>
@@ -305,6 +306,7 @@ async function route() {
   window.scrollTo(0, 0);
   try {
     if (name === "privacy") return privacyScreen();
+    if (name === "home") return home();
     if (!ME?.signedIn) return home();
     if (name === "case" && id) return await caseScreen(id);
     if (name === "check" && id) return await checkScreen(id);
