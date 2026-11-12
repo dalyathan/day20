@@ -76,7 +76,7 @@ export function maya(state = "determined", { size = 180, title = "Maya, an ICU n
 }
 
 export function rosa({ size = 220, verdict = false, title = "Rosa, a PayPal dispute reviewer, weighing the evidence at her desk" } = {}) {
-  // The judge: neutral and appraising. She doesn't cheer; she checks line 1, then nods once.
+  // The reviewer: neutral and appraising. She holds the one-page case and checks the first two lines, then nods once.
   return `<svg class="chr chr-rosa" viewBox="0 0 240 200" width="${size}" height="${Math.round(size * 0.833)}" role="img" aria-label="${title}">
   <g id="rosa" class="chr-breathe">
     <g id="rosa-body">
@@ -125,12 +125,17 @@ export function rosa({ size = 220, verdict = false, title = "Rosa, a PayPal disp
       <rect x="54" y="158" width="16" height="18" fill="#17233a"/>
     </g>
   </g>
-  <g id="rosa-arm-point" class="chr-point">
-    <path d="M106 160 L91 133 L104 124 L120 151 Z" fill="#2f5aa8"/>
-    <path d="M92 131 L99 105 L110 107 L104 131 Z" fill="#c28c63"/>
-      <circle cx="98" cy="129" r="7" fill="#2f5aa8"/>
-    <circle cx="105" cy="104" r="6.5" fill="#c28c63"/>
-    <rect x="94" y="99" width="11" height="4.5" rx="2.2" fill="#c28c63"/>
+  <g id="rosa-page" transform="translate(-10 0)">
+    <g transform="rotate(-4 156 150)">
+      <rect x="128" y="130" width="56" height="40" rx="2" fill="#ffffff" stroke="#d9cfbd" stroke-width="1"/>
+      <rect x="133" y="135" width="46" height="5" rx="1.5" fill="#cfe8dc"/>
+      <rect x="133" y="143" width="46" height="5" rx="1.5" fill="#cfe8dc"/>
+      <rect x="133" y="152" width="40" height="3" rx="1.5" fill="#c9c2b4"/>
+      <rect x="133" y="158" width="44" height="3" rx="1.5" fill="#c9c2b4"/>
+      <rect x="133" y="164" width="34" height="3" rx="1.5" fill="#c9c2b4"/>
+    </g>
+    <circle cx="131" cy="166" r="6" fill="#c28c63"/>
+    <circle cx="181" cy="164" r="6" fill="#c28c63"/>
   </g>
 </svg>`;
 }
