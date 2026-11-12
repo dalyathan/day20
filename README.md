@@ -25,7 +25,7 @@ Day 20 is a read-only assistant for PayPal buyers with an open dispute. It reads
 
 Maya is an ICU nurse. She bought a $66 dress for her best friend's wedding, paid with PayPal for the protection, and it never came. The tracking says delivered, in Tucson, Arizona; she lives in San Jose. She opened a dispute.
 
-Then, at 3:14 a.m. on a break, she gets an email from `service@paypal.com`: *"The seller has issued a full refund of $66.00. Your case has been resolved. No further action is required."*
+Then, at 3:14 a.m. on a break, she gets an email from `service@paypal.com`: *"Just a quick note so you're not left wondering. Your $66.00 is already sitting in your PayPal balance on our side… Everything looks good from here."* No link, no "click here", nothing a keyword filter would flag.
 
 It isn't true. If she believes it and stops watching, then under PayPal's current rules her case closes by itself after 20 days unless she escalates, and a closed case can't be reopened. Ghost stores send emails like this because tired, honest buyers give up. Security researchers have reported scams delivered from PayPal's own genuine `service@paypal.com` address, by abusing PayPal features (Malwarebytes, [Dec 2025](https://www.malwarebytes.com/blog/news/2025/12/paypal-closes-loophole-that-let-scammers-send-real-emails-with-fake-purchase-notices) and [Apr 2026](https://www.malwarebytes.com/blog/news/2026/04/more-paypal-emails-hijacked-to-deliver-tech-support-scams)).
 
@@ -103,7 +103,7 @@ We tested it by playing games. Agents attacked Day 20 for points, with evidence 
 | **Held-out genuine emails** (rules only, no model) | fresh writers each round, scored before tuning | **not flagged red: 0/12 → 5/12 → 11/12** over games 5–7 |
 | **Held-out genuine emails, set 8** (rules, and the live model 3×) | 12 by a fresh writer who never saw the code, frozen before scoring | **not flagged red: 11/12 with rules, 11/12 in each live-model run**; the model added no false alarm. The miss is a real refund from a different shop ([RESULTS.md](tests/heldout/RESULTS.md)) |
 
-Sets 4–7 were then tuned on and moved to regression; set 8 is still held out. `npm run replay-heldout` re-scores each set with the commit it was first scored against and reproduces the numbers above ([RESULTS.md](tests/heldout/RESULTS.md)).
+Sets 4–7 were then tuned on and moved to regression. Set 8 was held out until one fix after scoring (h8_01, below), so it is no longer unseen. `npm run replay-heldout` re-scores each set with the commit it was first scored against and reproduces the numbers above ([RESULTS.md](tests/heldout/RESULTS.md)).
 
 **Live model** (`npm run live-eval`, Claude on 36 test emails, Nov 11):
 - 36 of 36 runs completed.

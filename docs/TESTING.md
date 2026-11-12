@@ -5,7 +5,8 @@
 1. Open **https://day20.onrender.com** on a phone or a narrow browser window.
 2. Tap **Try it as Maya**. This opens a labelled replay of Maya's real PayPal sandbox case (a $66 dress, "item not received") at the open stage, with the demo clock at day 7 of 20.
 3. Tap **Got an email about this case? Check it**, then **Use Maya's 3:14 a.m. email**, then **Check it against my case**.
-   - **Expected:** "This email is wrong about your PayPal case. PayPal shows no refund. Your case is still open: 13 days left…"
+   - **Expected (live app, with Claude):** "This email is wrong about your PayPal case. PayPal shows no refund. Your case is still open: 13 days left…"
+   - **Offline (`npm run replay`, no API key):** Day 20 runs on keyword rules alone, which don't catch this reworded lie: you get the amber "Go by your PayPal case, not this email" with the real deadline, and screenshots ask for pasted text. That gap is what Claude adds.
 4. Under **Why** (open by default on a red result), each claim in the email sits next to PayPal's record. Tap **What Day 20 did** to see the agent's tool calls (on the live app, with the AI model on) and the honesty check.
 5. Go back and open **One-page case**.
    - **Expected:** the deciding fact comes first: the delivery ZIP on the carrier's page (85705) next to the ship-to address on the transaction (San Jose, CA 95131). Every line is tagged with its source.
