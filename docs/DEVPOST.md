@@ -1,7 +1,7 @@
 # Devpost submission: Day 20
 
 **Name:** Day 20: Emails can lie. Your PayPal case can't.
-**Tagline:** Day 20 checks any email or screenshot about a PayPal dispute against the buyer's real case, and keeps the 20-day clock so her case doesn't close by itself.
+**Tagline:** Day 20 checks any email or screenshot about a PayPal dispute against the buyer's real case, and tracks the 20-day deadline so she acts before her case closes by itself.
 **Try it:** https://day20.onrender.com (tap "Try it as Maya", no sign-in) · **Code:** https://github.com/dalyathan/day20 (MIT) · **Video:** https://youtu.be/7K4jMCAOZwI
 
 **In one line:** Day 20 checks any email about a PayPal dispute against the buyer's real case, and tells her what's true, what isn't, and what to do before the case closes by itself.
@@ -16,7 +16,7 @@ No link, no "click here", nothing a spam filter would flag. And it isn't true. I
 
 Emails like this work because they look real: they can name a real case number and even arrive from a real PayPal address ([KnowBe4](https://blog.knowbe4.com/paypal-scam-from-paypal), [Malwarebytes](https://www.malwarebytes.com/blog/news/2026/04/more-paypal-emails-hijacked-to-deliver-tech-support-scams)). Online shopping was the second most reported fraud category in the FTC's 2024 data ([FTC](https://www.ftc.gov/news-events/news/press-releases/2025/03/new-ftc-data-show-big-jump-reported-losses-fraud-125-billion-2024)). Maya has ten minutes on a night break, so Day 20's answer is one line, and the deadline is a date.
 
-**How her night ends:** she checks the USPS page and types in the Tucson ZIP. She screenshots the email and asks Day 20: *"This email is wrong about your PayPal case. PayPal shows no refund. Your case is still open: 13 days left, it closes Tue, Dec 1. Don't close it."* She escalates in PayPal. At 3:19 a.m. she's back with her patients, and on Dec 1 her case is with a PayPal reviewer instead of closed.
+**How her night ends:** she checks the USPS page and types in the Tucson ZIP. She screenshots the email, and Day 20 answers: *"This email is wrong about your PayPal case. PayPal shows no refund. Your case is still open: 13 days left, it closes Tue, Dec 1. Don't close it."* She escalates in PayPal. At 3:19 a.m. she's back with her patients, and on Dec 1 her case is with a PayPal reviewer instead of closed.
 
 ## What it does
 
@@ -24,7 +24,7 @@ Emails like this work because they look real: they can name a real case number a
 - **Checks any email or screenshot against it.** Refund claims, "your case is closed", requests to close or cancel, lookalike links, requests for codes, stalling. It judges the claims, not the sender.
 - **Answers in one line**, from PayPal's record, with the deadline as a date.
 - **Gives the next step**, including "not yet" when an honest seller deserves time and "not covered" when Buyer Protection doesn't apply.
-- **Drafts a one-page case for the reviewer**, with the two facts she can check first: the carrier's delivered ZIP and PayPal's ship-to ZIP. Every line is labelled PayPal record, PayPal can check, or buyer reports.
+- **Drafts a one-page case for the reviewer**, with the two facts the reviewer can check first: the carrier's delivered ZIP and PayPal's ship-to ZIP. Every line is labelled PayPal record, PayPal can check, or buyer reports.
 - **Reminders on day 15 and day 18**, if she wants them.
 - **Works in English and Spanish.**
 
@@ -33,15 +33,15 @@ It only reads. Escalating, closing or accepting is always her call, in PayPal.
 ## How PayPal and Claude work together
 
 - **PayPal** is the source of truth: Day 20 reads the dispute, follows it to the order for the ship-to address and tracking, and keeps the clock.
-- **Claude** reads the email or the screenshot and works out what it claims, including reworded lies with no link and no keyword, like Maya's. Every red flag it raises must quote the email (for a screenshot, the text it read from it).
+- **Claude** reads the email or the screenshot and works out what it claims, including reworded lies with no link and no keyword, like the one in Maya's email. Every red flag it raises must quote the email (for a screenshot, the text it read from it).
 - **Day 20** compares each claim with PayPal's record, decides the verdict and the deadline, and writes every sentence Maya reads. So the answer always comes from her case, never from the model's opinion.
 
 ## Results, on the live app
 
 - **Maya's email was caught in every run**, as text and as a screenshot. Keyword rules alone don't catch it; Claude's quote-checked reading does. (It's one of the scam emails we tuned on.)
 - **No scam was called safe.** On an open case no email can get green, so any scam not flagged red still got "Go by your PayPal case, not this email" and the real deadline.
-- **Genuine emails flagged red: 0 of 36.** On 12 more, written later by someone who never saw the code: 1 before a fix (a real refund from another shop), 0 after.
-- **Real messages scam sellers sent buyers** (6, quoted in PayPal Community threads, never tuned on): 5 of 6 told "Don't close it" in every run.
+- **Genuine emails flagged red: 0 of 36.** On 12 more, written later by someone who never saw the code: 1 flagged before a fix (a real refund email from another shop), 0 after.
+- **Real messages scam sellers sent buyers** (6, quoted in PayPal Community threads, never tuned on): for 5 of 6, Day 20 said "Don't close it" in every run.
 
 `npm run live-summary` recomputes every number from the saved results in [`tests/live/`](https://github.com/dalyathan/day20/tree/main/tests/live).
 
