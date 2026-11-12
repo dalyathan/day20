@@ -41,7 +41,7 @@ It only reads. Escalating, closing or accepting is always her call, in PayPal.
 - **Maya's email was caught in every run**, as text and as a screenshot. Keyword rules alone don't catch it; Claude's quote-checked reading does. (It's one of the scam emails we tuned on.)
 - **No scam was called safe.** On an open case no email can get green, so any scam not flagged red still got "Go by your PayPal case, not this email" and the real deadline.
 - **Genuine emails flagged red: 0 of 36.** On 12 more, written later by someone who never saw the code: 1 flagged before a fix (a real refund email from another shop), 0 after.
-- **Real messages scam sellers sent buyers** (6, quoted in PayPal Community threads, never tuned on): for 5 of 6, Day 20 said "Don't close it" in every run.
+- **Real messages scam sellers sent buyers** (6, quoted in public forum threads, 5 of them on PayPal Community, never tuned on): for 5 of 6, Day 20 said "Don't close it" in every run.
 
 `npm run live-summary` recomputes every number from the saved results in [`tests/live/`](https://github.com/dalyathan/day20/tree/main/tests/live).
 

@@ -9,18 +9,18 @@
    - **Offline (`npm run replay`, no API key):** Day 20 runs on keyword rules alone, which don't catch this reworded lie: you get the amber "Go by your PayPal case, not this email" with the real deadline, and screenshots ask for pasted text. That gap is what Claude adds.
 4. Under **Why** (open by default on a red result), each claim in the email sits next to PayPal's record. Tap **What Day 20 did** to see the agent's tool calls (on the live app, with the AI model on) and the honesty check.
 5. Go back and open **One-page case**.
-   - **Expected:** the deciding fact comes first: the delivery ZIP on the carrier's page (85705) next to the ship-to address on the transaction (San Jose, CA 95131). Every line is tagged with its source.
+   - **Expected:** the key fact comes first, in two lines: the delivery ZIP on the carrier's page (85705) next to the ship-to address on the transaction (San Jose, CA 95131). Every line is tagged with its source.
 6. Paste your own scam email and try to make Day 20 call it safe. If you manage it, please tell us.
 
-**About the demo controls:** the "Replay" chip at the top is the demo control. Use it to move the day (the clock and reminders change) or to switch between the live sandbox case and a replay. "Replay" uses a saved copy of a real sandbox response, and the app labels it everywhere.
+**About the demo controls:** the "Demo · day 7" chip at the top is the demo control. Use it to move the day (the clock and reminders change) or to switch between the live sandbox case and a replay. "Replay" uses a saved copy of a real sandbox response, and the app labels it everywhere.
 
 ## Option 2: run it locally, offline
 
 ```bash
 git clone https://github.com/dalyathan/day20 && cd day20
-npm run replay      # http://localhost:3000, no keys needed
 npm test            # unit + integration tests
 npm run eval        # 24 scenes + emails + attacks from our adversarial games
+npm run replay      # http://localhost:3000, no keys needed (keeps running; Ctrl+C to stop)
 ```
 
 Node 22.13 or later. No `npm install`, because there are no dependencies.

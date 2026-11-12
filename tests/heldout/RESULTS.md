@@ -28,4 +28,4 @@ guaranteed by design. The number that measures the reader is **flagged red**, an
 
 Set 8 is the first held-out set scored with the live model. It is genuine email only: the next held-out scam
 set couldn't be written, because a fresh agent asked to write scam emails was stopped by a safety check, and
-we didn't work around it. So the model's catch rate on unseen scams is still unmeasured.
+we didn't work around it. So the model's catch rate on unseen scams written to beat Day 20 is still unmeasured; only the 6 real-world messages (tests/realworld/) were measured.
