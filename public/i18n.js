@@ -1,7 +1,7 @@
 // Interface words in English and Spanish. Case facts from PayPal are shown as PayPal returns them.
 export const STR = {
   en: {
-    gotEmail: "Got an email about this case? Check it", checkIntro: "Day 20 compares what the email claims with your PayPal case. Who it's from doesn't count as proof.", useSample: "Use Maya's 3:14 a.m. email", useSampleShot: "Or as a screenshot",
+    gotEmail: "Got an email about this case? Check it", checkIntro: "Day 20 compares what the email claims with your PayPal case. Who it's from doesn't count as proof.", useSample: "Use Maya's 3:14 a.m. email", useSampleShot: "Or as a screenshot", toMyCase: "Go to my case",
     why: "Why", paypalRules: "PayPal's rules", aiNote: "Summary · the AI picked these sentences; it can't write its own", rulesBroken: "Tripwire: a shown sentence matched an honesty rule", iForwarded: "I forwarded it", noted: "Noted on your one-page case",
     wherePaste: "Where to paste it", wherePasteBody: "In the PayPal app, open Activity, tap this payment, then open your case. Paste it where PayPal asks you to describe the problem, or add it when you escalate. Attach photos there too.",
     notPayPal: "Opens paypal.com. You can also open the PayPal app yourself.",
@@ -32,7 +32,7 @@ export const STR = {
     demoDay: "Demo clock: day", realTime: "real time", scenario: "Case", liveCase: "Live sandbox case", lang: "Español",
   },
   es: {
-    gotEmail: "¿Te llegó un correo sobre este caso? Revísalo", checkIntro: "Day 20 compara lo que dice el correo con tu caso en PayPal. Quién lo envía no cuenta como prueba.", useSample: "Usar el correo de Maya de las 3:14 a.m.", useSampleShot: "O como captura",
+    gotEmail: "¿Te llegó un correo sobre este caso? Revísalo", checkIntro: "Day 20 compara lo que dice el correo con tu caso en PayPal. Quién lo envía no cuenta como prueba.", useSample: "Usar el correo de Maya de las 3:14 a.m.", useSampleShot: "O como captura", toMyCase: "Ir a mi caso",
     why: "Por qué", paypalRules: "Reglas de PayPal", aiNote: "Resumen · la IA eligió estas frases; no puede escribir las suyas", rulesBroken: "Alerta: una frase mostrada coincidió con una regla de honestidad", iForwarded: "Ya lo reenvié", noted: "Anotado en tu resumen",
     wherePaste: "Dónde pegarlo", wherePasteBody: "En la app de PayPal, abre Actividad, toca este pago y abre tu caso. Pégalo donde PayPal te pide describir el problema, o al escalar. Adjunta fotos ahí también.",
     notPayPal: "Abre paypal.com. También puedes abrir tú misma la app de PayPal.",
