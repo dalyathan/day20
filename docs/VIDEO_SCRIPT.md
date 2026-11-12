@@ -1,6 +1,6 @@
-# Video: Day 20 (2:44, captions, no voiceover)
+# Video: Day 20 (2:20, captions, no voiceover)
 
-Every word on screen is a caption; there's no narration. The video doesn't name the AI model; the Devpost text explains what Claude does. The phone footage is a scripted recording of the app
+Every word on screen is a caption; there's no narration. The video doesn't name the AI model or show results; the Devpost text explains what Claude does and publishes the numbers. The phone footage is a scripted recording of the app
 (commit f0c0afd) with the saved sandbox case, replayed and set to "open" at day 7. The check shows **Claude's
 responses captured from the live app** (day20.onrender.com, commit f0c0afd), rendered by the same app, and a caption
 says so. Maya and Rosa are animated SVG characters from `public/characters.js`. The whole video uses one flat
@@ -20,6 +20,4 @@ background colour.
 | 1:47–1:56 | Maya (animated), smiling. | "3:19 a.m. Five minutes. She escalated in PayPal herself, 13 days before her case would have closed. The two ZIPs are ready for the reviewer. Then back to her patients." |
 | 1:56–2:01 | An open-case card. | "Because she acted: Tue, Dec 1 · day 20. With a PayPal reviewer. Still open. Still hers to win." |
 | 2:01–2:12 | Rosa (animated), the reviewer. | "Rosa reviews PayPal disputes. She opens Maya's case and checks the first two lines of her summary: delivered in Tucson, shipped to San Jose. Tracking to the wrong city isn't proof of delivery. Because Maya acted before day 20, there's still a case to review." |
-| 2:09–2:24 | Results, live app. | "Measured on the live app. Maya's lie, caught as text in all 3 runs, and as a screenshot." Real messages scam sellers sent buyers, told "Don't close it": 5/6 (never tuned on, all 3 runs). Scam emails flagged red (tuned on): 11/24, the same 11 in all 3 runs. Scam screenshots flagged red: 11/24, the same 11 as the text, 1 run. Genuine emails wrongly flagged red (tuned on): 0/36, both runs. "No scam was ever called safe: anything not flagged red gets 'Go by your PayPal case, not this email'." |
-| 2:24–2:33 | Unseen genuine email. | "12 new genuine emails, frozen before scoring: 11 left alone, in every run. The miss: a real refund from another shop, flagged red and marked 'report it'. We fixed that after scoring (now 12 of 12 as text), so this set no longer counts as unseen." |
-| 2:33–2:44 | End card. | "Emails can lie. Your PayPal case can't. Day 20 · day20.onrender.com · Sandbox prototype · read-only by code · free for buyers · open source (MIT). Built on PayPal's sandbox APIs. Not affiliated with or endorsed by PayPal. PayPal decides every case." |
+| 2:13–2:20 | End card. | "Emails can lie. Your PayPal case can't. Day 20 · day20.onrender.com · Sandbox prototype · read-only by code · free for buyers · open source (MIT). Built on PayPal's sandbox APIs. Not affiliated with or endorsed by PayPal. PayPal decides every case." |
