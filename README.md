@@ -128,16 +128,16 @@ Sets 4–7 were then tuned on and moved to regression. Set 8 was held out until 
 - Check v2 kept every catch and no false alarm. The check also stopped one false alarm by itself: on g5_12 the model listed a case ID that isn't in the email. No sentence shown tripped the honesty rules (a tripwire; every sentence shown is written by code); median 5.2 s.
 - These are the same 60 emails we tuned on, so they show the check works as designed, not how it does on unseen email. One run per email.
 
-**Current code, repeated on the deployed app** (Claude on, Nov 11; check code at commit 197d0f3, unchanged in 95b7bb3; `npm run live-summary` prints this from the raw rows; re-run by pasting `scripts/live-eval-browser.js` into the browser console on the live site):
+**Current code, repeated on the deployed app** (Claude on, Nov 11; check code at commit f6ee466, unchanged in 9d80462; `npm run live-summary` prints this from the raw rows; re-run by pasting `scripts/live-eval-browser.js` into the browser console on the live site):
 
 | | Keyword rules alone | With Claude |
 |---|---|---|
-| Scam emails flagged red (24, tuned on) | 9/24 | **11/24 in each of 3 runs**, the same 11 each time ([rows](tests/live/live-2026-11-11-197d0f3.jsonl)) |
+| Scam emails flagged red (24, tuned on) | 9/24 | **11/24 in each of 3 runs**, the same 11 each time ([rows](tests/live/live-2026-11-11-f6ee466.jsonl)) |
 | Genuine emails flagged red (36) | 0/36 | **0/36 in each of 2 runs** |
-| Scam screenshots flagged red (all 24, 1 run) | can't read images | **11/24**, the same 11 as text ([rows](tests/live/live-2026-11-11-95b7bb3.jsonl) and the first file) |
+| Scam screenshots flagged red (all 24, 1 run) | can't read images | **11/24**, the same 11 as text ([rows](tests/live/live-2026-11-11-9d80462.jsonl) and the first file) |
 | Held-out set 8, genuine, flagged red | 1/12 | 1/12 as text (1 run), 1/6 as screenshots; the same h8_01 every time |
-| **Real messages scam sellers sent buyers** (6, quoted in public threads, never tuned on; [sources](tests/realworld/SOURCES.md)): told "Don't close it" | 5/6 | **5/6 in each of 3 runs**; Claude added nothing; none red, none called safe ([rows](tests/live/live-2026-11-11-f0c0afd.jsonl)) |
-| After the round-3 fix (f0c0afd): set 8 flagged red / scams flagged red | 0/12 / 9/24 | **0/12** (h8_01 fixed after scoring, so set 8 is no longer unseen) / **11/24**, the same 11 |
+| **Real messages scam sellers sent buyers** (6, quoted in public threads, never tuned on; [sources](tests/realworld/SOURCES.md)): told "Don't close it" | 5/6 | **5/6 in each of 3 runs**; Claude added nothing; none red, none called safe ([rows](tests/live/live-2026-11-11-c1c97e4.jsonl)) |
+| After the round-3 fix (c1c97e4): set 8 flagged red / scams flagged red | 0/12 / 9/24 | **0/12** (h8_01 fixed after scoring, so set 8 is no longer unseen) / **11/24**, the same 11 |
 
 Claude's 2 extra catches on text (s2_01, s2_08) are reworded refund lies; s2_01 is Maya's 3:14 a.m. email in the demo. The rows were exported from the browser in a compact form and re-expanded (every non-red row was "careful"; no check failed or fell back to rules).
 

@@ -15,11 +15,11 @@ const git = (...a) => execFileSync("git", ["-C", root, ...a], { encoding: "utf8"
 // [set, files, commit the code was at when the set was first scored, kind, published result, sha256 of the emails]
 // The script fails if the emails changed or the result differs from tests/heldout/RESULTS.md.
 const ROUNDS = [
-  ["Game 4 scam emails", "tests/fixtures/scams", /^s2_/, "ab9d746", "scam", "12/12 not called safe, 0/12 flagged red", "55b503ab6aa9181c"],
-  ["Game 5 genuine emails", "tests/fixtures/honest", /^g5_/, "b0c3630", "genuine", "0/12 clean (not flagged red)", "e02a64861fe1c98a"],
-  ["Game 6 genuine emails", "tests/fixtures/honest", /^g6_/, "29d4f66", "genuine", "5/12 clean (not flagged red)", "d8ed9cf55f1175cf"],
-  ["Game 7 genuine emails", "tests/fixtures/honest", /^g7_/, "b61f13f", "genuine", "11/12 clean (not flagged red)", "30403afcada14cfc"],
-  ["Set 8 genuine emails", "tests/heldout/honest", /^h8_/, "323b54a", "genuine", "11/12 clean (not flagged red)", "7f9a6ad131e593e1"],
+  ["Game 4 scam emails", "tests/fixtures/scams", /^s2_/, "3e51c67", "scam", "12/12 not called safe, 0/12 flagged red", "55b503ab6aa9181c"],
+  ["Game 5 genuine emails", "tests/fixtures/honest", /^g5_/, "febc9ce", "genuine", "0/12 clean (not flagged red)", "e02a64861fe1c98a"],
+  ["Game 6 genuine emails", "tests/fixtures/honest", /^g6_/, "f3716ac", "genuine", "5/12 clean (not flagged red)", "d8ed9cf55f1175cf"],
+  ["Game 7 genuine emails", "tests/fixtures/honest", /^g7_/, "6779cfb", "genuine", "11/12 clean (not flagged red)", "30403afcada14cfc"],
+  ["Set 8 genuine emails", "tests/heldout/honest", /^h8_/, "ac986e4", "genuine", "11/12 clean (not flagged red)", "7f9a6ad131e593e1"],
 ];
 let failed = 0;
 if (git("rev-parse", "--is-shallow-repository") === "true") { console.log("This is a shallow clone. Run `git fetch --unshallow` first: the replay checks out old commits."); process.exit(1); }

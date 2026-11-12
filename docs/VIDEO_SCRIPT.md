@@ -1,8 +1,8 @@
 # Video: Day 20 (2:20, captions, no voiceover)
 
 Every word on screen is a caption; there's no narration. The video doesn't name the AI model or show results; the Devpost text explains what Claude does and publishes the numbers. The phone footage is a scripted recording of the app
-(commit f0c0afd) with the saved sandbox case, replayed and set to "open" at day 7. The check shows **Claude's
-responses captured from the live app** (day20.onrender.com, commit f0c0afd), rendered by the same app, and a caption
+(commit c1c97e4) with the saved sandbox case, replayed and set to "open" at day 7. The check shows **Claude's
+responses captured from the live app** (day20.onrender.com, commit c1c97e4), rendered by the same app, and a caption
 says so. Maya and Rosa are animated SVG characters from `public/characters.js`. The whole video uses one flat
 background colour.
 
