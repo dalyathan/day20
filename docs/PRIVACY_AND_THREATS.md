@@ -45,5 +45,6 @@ The real Day 20 never emails or texts you a link to sign in, never asks for a on
 
 - **Login.** Log in with PayPal gives identity only. To read a buyer's own disputes in production, PayPal would need to offer a buyer-side, read-only, per-case scope. In the sandbox demo, Day 20 reads the case through the demo seller account, because we own both test accounts.
 - **Rules alone are narrow.** Without Claude, Day 20 runs on keyword rules: they miss reworded lies (Maya's email gets amber, not red) and bare-domain links. On an open case no email can get green, so a missed lie still gets "Go by your PayPal case" and the real deadline.
+- **Green is narrow.** Green ("matches PayPal's record") needs a refund or closed-case claim that PayPal's record confirms and no request of any kind; a request to send, buy, pay, install or text anything blocks it. The green card still says a real refund never needs anything back from her. A request worded in a way the rules don't recognise could still slip through on a refunded case.
 - **Your word, not PayPal's.** "Delivered to ZIP 85705" is what you read on the carrier's page. It's tagged so the PayPal reviewer looks it up.
 - **What Day 20 isn't.** It isn't legal advice and it isn't affiliated with PayPal. PayPal decides every case.

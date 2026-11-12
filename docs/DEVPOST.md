@@ -33,7 +33,7 @@ It only reads. Escalating, closing or accepting is always her call, in PayPal.
 ## How PayPal and Claude work together
 
 - **PayPal** is the source of truth: Day 20 reads the dispute, follows it to the order for the ship-to address and tracking, and keeps the clock.
-- **Claude** reads the email or the screenshot and works out what it claims, even when the lie is reworded with no link and no keyword. Every red flag it raises must quote the email (for a screenshot, the text it read from it).
+- **Claude** reads the email or the screenshot and works out what it claims, including reworded lies with no link and no keyword, like Maya's. Every red flag it raises must quote the email (for a screenshot, the text it read from it).
 - **Day 20** compares each claim with PayPal's record, decides the verdict and the deadline, and writes every sentence Maya reads. So the answer always comes from her case, never from the model's opinion.
 
 ## Results, on the live app
@@ -47,7 +47,7 @@ It only reads. Escalating, closing or accepting is always her call, in PayPal.
 
 ## How we built it
 
-- **PayPal sandbox:** Disputes API, the capture's link to Orders v2, and the Tracking API. Maya's case is a real sandbox dispute: a $66 order, captured, tracking added, "item not received". The demo replays it at day 7, with its status set back to open (labelled "Replay" in the app).
+- **PayPal sandbox:** Disputes API, the capture's link to Orders v2, and the Tracking API. Maya's case is a real sandbox dispute: a $66 order, captured, tracking added, "item not received". We created it in one sitting, so it was paid and disputed minutes apart; a real case usually opens days after payment. The demo replays it at day 7, with its status set back to open (labelled "Replay" in the app).
 - **Claude (Anthropic API)** as a read-only tool loop, with its claims checked by Day 20 before they count.
 - **Node.js** with zero dependencies, on Render; web push for reminders; an MCP server so any assistant can check an email against a case; a Postman collection of every PayPal call.
 - **Testing:** AI agents played scammers and honest senders and scored a point for every mistake they caused; each mistake became a test.
@@ -69,10 +69,10 @@ The most useful thing an assistant can do here is simple: keep the clock, compar
 
 ## What's next: our asks to PayPal
 
-1. **Label seller-written text in PayPal's own emails**, and block refund claims and case numbers in invoice and money-request notes.
-2. **Show the buyer the delivery mismatch before day 20:** the carrier's delivered ZIP next to the ship-to ZIP on her case page.
-3. **A buyer consent flow for `disputes/read-buyer`, plus buyer-side dispute webhooks**, so an app like Day 20 can read only her own cases, with her permission. Today we found no way for a buyer to grant that scope: Log in with PayPal gives identity only.
-4. **Or build it in:** a "Got an email about this case? Check it" button on the case page in the Resolution Center, which already has the record. Day 20 is the open-source prototype.
+1. **Build it in:** a "Got an email about this case? Check it" button on the case page in the Resolution Center, which already has the record. Day 20 is the open-source prototype.
+2. **Label seller-written text in PayPal's own emails**, and block refund claims and case numbers in invoice and money-request notes.
+3. **Show the buyer the delivery mismatch before day 20:** the carrier's delivered ZIP next to the ship-to ZIP on her case page.
+4. **Or, for outside apps, a buyer consent flow for `disputes/read-buyer`, plus buyer-side dispute webhooks**, so an app like Day 20 can read only her own cases, with her permission. Today we found no way for a buyer to grant that scope: Log in with PayPal gives identity only.
 
 ## Built with
 
