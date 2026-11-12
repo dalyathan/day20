@@ -34,7 +34,7 @@ It only reads. Escalating, closing or accepting is always her call, in PayPal.
 
 - **PayPal** is the source of truth: Day 20 reads the dispute, follows it to the order for the ship-to address and tracking, and keeps the clock.
 - **Claude** reads the email or the screenshot and works out what it claims, even when the lie is reworded with no link and no keyword. Every red flag it raises must quote the email.
-- **Code** compares each claim with PayPal's record, decides the verdict and the deadline, and writes every sentence Maya reads. So the answer always comes from her case, never from the model's opinion.
+- **Day 20** compares each claim with PayPal's record, decides the verdict and the deadline, and writes every sentence Maya reads. So the answer always comes from her case, never from the model's opinion.
 
 ## Results, on the live app
 
@@ -48,20 +48,20 @@ Every number re-runs from the repo, and the raw results are in [`tests/live/`](h
 ## How we built it
 
 - **PayPal sandbox:** Disputes API, the capture's link to Orders v2, and the Tracking API. Maya's case is a real sandbox dispute: a $66 order, captured, tracking added, "item not received". The demo replays it at day 7.
-- **Claude (Anthropic API)** as a read-only tool loop, with its claims checked by code before they count.
+- **Claude (Anthropic API)** as a read-only tool loop, with its claims checked by Day 20 before they count.
 - **Node.js** with zero dependencies, on Render; web push for reminders; an MCP server so any assistant can check an email against a case; a Postman collection of every PayPal call.
 - **Testing:** AI agents played scammers and honest senders and scored a point for every mistake they caused; each mistake became a test.
 
 ## Challenges
 
-- **Making the AI safe to trust at 3 a.m.** We stopped letting the model write anything Maya reads. It picks from sentences code has written, and its red flags must quote the email.
+- **Making the AI safe to trust at 3 a.m.** We stopped letting the model write anything Maya reads. It picks from sentences Day 20 has written, and its red flags must quote the email.
 - **Reading a buyer's case from outside PayPal.** Today the demo reads a sandbox case; real buyers need the consent flow below.
 
 ## Accomplishments that we're proud of
 
 - The answer always comes from PayPal's record, never from the model's opinion.
 - It reads screenshots, because that's how people actually share a scary email.
-- It's read-only by code, and a test checks it.
+- It's read-only: Day 20 refuses any PayPal call that would change something, and a test checks it.
 
 ## What we learned
 
