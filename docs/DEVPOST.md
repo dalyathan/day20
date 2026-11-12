@@ -33,21 +33,21 @@ It only reads. Escalating, closing or accepting is always her call, in PayPal.
 ## How PayPal and Claude work together
 
 - **PayPal** is the source of truth: Day 20 reads the dispute, follows it to the order for the ship-to address and tracking, and keeps the clock.
-- **Claude** reads the email or the screenshot and works out what it claims, even when the lie is reworded with no link and no keyword. Every red flag it raises must quote the email.
+- **Claude** reads the email or the screenshot and works out what it claims, even when the lie is reworded with no link and no keyword. Every red flag it raises must quote the email (for a screenshot, the text it read from it).
 - **Day 20** compares each claim with PayPal's record, decides the verdict and the deadline, and writes every sentence Maya reads. So the answer always comes from her case, never from the model's opinion.
 
 ## Results, on the live app
 
-- **Maya's email was caught in every run**, pasted as text and as a screenshot.
-- **0 of 36 genuine emails** were wrongly flagged as scams.
-- **Real messages scam sellers sent buyers**, quoted in public PayPal Community threads: 5 of 6 got "Don't close it", in every run.
-- **No scam was ever called safe.**
+- **Maya's email was caught in every run**, as text and as a screenshot. Keyword rules alone don't catch it; Claude's quote-checked reading does. (It's one of the 24 scam emails we tuned on.)
+- **Scams flagged red: 11 of 24 with Claude**, 9 of 24 with keyword rules alone. None was called safe: on an open case no email can get green, so every other scam got "Go by your PayPal case, not this email" and the real deadline.
+- **Genuine emails flagged red: 0 of 36.** On 12 more, written later by someone who never saw the code: 1 before a fix (a real refund from another shop), 0 after.
+- **Real messages scam sellers sent buyers** (6, quoted in PayPal Community threads, never tuned on): 5 of 6 told "Don't close it" in every run. The rules already did that; Claude added nothing there.
 
-Every number re-runs from the repo, and the raw results are in [`tests/live/`](https://github.com/dalyathan/day20/tree/main/tests/live).
+`npm run live-summary` recomputes every number from the saved results in [`tests/live/`](https://github.com/dalyathan/day20/tree/main/tests/live).
 
 ## How we built it
 
-- **PayPal sandbox:** Disputes API, the capture's link to Orders v2, and the Tracking API. Maya's case is a real sandbox dispute: a $66 order, captured, tracking added, "item not received". The demo replays it at day 7.
+- **PayPal sandbox:** Disputes API, the capture's link to Orders v2, and the Tracking API. Maya's case is a real sandbox dispute: a $66 order, captured, tracking added, "item not received". The demo replays it at day 7, with its status set back to open (labelled "Replay" in the app).
 - **Claude (Anthropic API)** as a read-only tool loop, with its claims checked by Day 20 before they count.
 - **Node.js** with zero dependencies, on Render; web push for reminders; an MCP server so any assistant can check an email against a case; a Postman collection of every PayPal call.
 - **Testing:** AI agents played scammers and honest senders and scored a point for every mistake they caused; each mistake became a test.
@@ -71,7 +71,8 @@ The most useful thing an assistant can do here is simple: keep the clock, compar
 
 1. **Label seller-written text in PayPal's own emails**, and block refund claims and case numbers in invoice and money-request notes.
 2. **Show the buyer the delivery mismatch before day 20:** the carrier's delivered ZIP next to the ship-to ZIP on her case page.
-3. **A buyer consent flow for `disputes/read-buyer`, plus buyer-side dispute webhooks**, so an app like Day 20 can read only her own cases, with her permission.
+3. **A buyer consent flow for `disputes/read-buyer`, plus buyer-side dispute webhooks**, so an app like Day 20 can read only her own cases, with her permission. Today we found no way for a buyer to grant that scope: Log in with PayPal gives identity only.
+4. **Or build it in:** a "Got an email about this case? Check it" button on the case page in the Resolution Center, which already has the record. Day 20 is the open-source prototype.
 
 ## Built with
 

@@ -28,7 +28,8 @@ Day 20 is a read-only assistant for a buyer with an open PayPal dispute. It's bu
 | Threat | What could go wrong | What Day 20 does |
 |---|---|---|
 | Fake "refund issued" email, even from a genuine PayPal address | The buyer stops watching and her case closes on day 20 | Checks the email's claims against PayPal's case record. The sender address is never treated as proof, because real PayPal addresses have been abused to deliver scams. |
-| Lookalike links (`paypal.com.case-review.net`) | Credential theft, then the scammer closes the case from inside her account | Flags any link that isn't on paypal.com and tells her to open the PayPal app herself |
+| Lookalike links (`paypal.com.case-review.net`) | Credential theft, then the scammer closes the case from inside her account | Flags any http(s) or www link that isn't on paypal.com (bare domains only when Claude reads them) and tells her to open the PayPal app herself |
+| "You were overpaid, send back the difference" or "install AnyDesk", alongside a real refund | A true refund line makes the whole email look trustworthy | A request to send money back, pay by gift card, crypto or a transfer, or install remote-access software is flagged red on its own, even when the rest of the email matches PayPal's record (test: judge round 6) |
 | Prompt injection inside a pasted email | The email tells the AI to say "all clear" | The email is wrapped as data. The model can only call read-only tools. The verdict (`mismatch`, `careful`, `consistent`) comes from code. The buyer only ever sees sentences written by code: the model picks which ones, so injected text can't put words on her screen. |
 | The AI over-promises or invents facts | False hope, or a padded case that hurts her with the reviewer | The model can't write what she reads; it picks from sentences code wrote from PayPal's record. The honesty rules (R1–R8 in `lib/rules.js`) run as a tripwire. The one-page case is built by code from PayPal's record and her own tagged words. |
 | A buyer lies to Day 20 | A false claim reaches PayPal | Her words are tagged as hers. Anything PayPal can check (a carrier scan behind a tracking number on the transaction) is labelled so the reviewer checks it. A lie becomes easier to catch, not harder. |
@@ -43,5 +44,6 @@ The real Day 20 never emails or texts you a link to sign in, never asks for a on
 ## Limits we're open about
 
 - **Login.** Log in with PayPal gives identity only. To read a buyer's own disputes in production, PayPal would need to offer a buyer-side, read-only, per-case scope. In the sandbox demo, Day 20 reads the case through the demo seller account, because we own both test accounts.
+- **Rules alone are narrow.** Without Claude, Day 20 runs on keyword rules: they miss reworded lies (Maya's email gets amber, not red) and bare-domain links. On an open case no email can get green, so a missed lie still gets "Go by your PayPal case" and the real deadline.
 - **Your word, not PayPal's.** "Delivered to ZIP 85705" is what you read on the carrier's page. It's tagged so the PayPal reviewer looks it up.
 - **What Day 20 isn't.** It isn't legal advice and it isn't affiliated with PayPal. PayPal decides every case.

@@ -332,3 +332,15 @@ test("a model-added 'case decided / money on its way' claim needs a quote too (j
   assert.ok(!kept.outcomeClaimed);
   assert.ok(dropped.some((d) => d.startsWith("outcomeClaimed")));
 });
+
+test("a scam can't get the green verdict by agreeing with a real refund (judge round 6)", async () => {
+  const rec = sceneRecord({ refund: "66.00", status: "RESOLVED", stage: "INQUIRY" });
+  const gift = await runCheck({ record: rec, facts: {}, now: at(9), text: "Your refund of $66.00 has been issued. Your case has been resolved. An overpayment occurred; please return the difference with a Target gift card." });
+  assert.notEqual(gift.comparison.overall, "consistent");
+  assert.ok(gift.comparison.findings.some((f) => f.id === "off_platform"));
+  const remote = await runCheck({ record: rec, facts: {}, now: at(9), text: "Your refund of $66.00 has been issued. Your case has been resolved. To finish, please install AnyDesk so our agent can connect." });
+  assert.equal(remote.comparison.overall, "mismatch");
+  assert.ok(remote.comparison.report);
+  const real = await runCheck({ record: rec, facts: {}, now: at(9), text: "Your refund of $66.00 has been issued. Your case has been resolved." });
+  assert.equal(real.comparison.overall, "consistent");
+});
