@@ -253,7 +253,7 @@ async function serveStatic(res, pathname) {
   if (!full.startsWith(PUBLIC)) return send(res, 403, "Forbidden", "text/plain");
   try {
     const data = await readFile(full);
-    res.writeHead(200, { "Content-Type": TYPES[extname(full)] || "application/octet-stream", "Cache-Control": file === "sw.js" || file === "index.html" ? "no-cache" : "public, max-age=300", ...SECURITY_HEADERS });
+    res.writeHead(200, { "Content-Type": TYPES[extname(full)] || "application/octet-stream", "Cache-Control": /\.(js|css|html|webmanifest)$/.test(file) ? "no-cache" : "public, max-age=300", ...SECURITY_HEADERS });
     res.end(data);
   } catch { send(res, 404, "Not found", "text/plain"); }
 }
